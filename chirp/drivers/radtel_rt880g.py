@@ -816,7 +816,8 @@ class RT880G(chirp_common.CloneModeRadio):
         _mem = self._get_memobjs(number)
         mem = chirp_common.Memory()
         if isinstance(number, str):
-            ch_num, _ = self.SPECIALS[number]
+            # Don't unpack into _, which would hide the gettext function
+            ch_num = self.SPECIALS[number][0]
             mem.number = ch_num
             mem.extd_number = number
         else:
@@ -886,36 +887,75 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_DCSENCRYPT, current_index=_mem.dcs_encrypt)
         rset = RadioSetting("dcs_encrypt", "DCS Encrypt", rs)
+        rset.set_doc(_("Chooses how this channel uses DCS. Standard uses the "
+                       "DCS code unchanged, and Encrypt 1, 2 and 3 encrypt it "
+                       "in one of three ways, which only works with DCS. Mute "
+                       "Code replaces the channel's CTCSS or DCS with the "
+                       "code set in Mute Code."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueString(
             0, 8, f"{_mem.mutecode.get_value():x}".upper(), False, HEX_CHARS)
         rset = RadioSetting("mutecode", "Mute Code", rs)
+        rset.set_doc(_("Sets a non-standard digital code, up to 8 hexadecimal "
+                       "digits, that this channel uses instead of CTCSS or "
+                       "DCS when DCS Encrypt is Mute Code. The radio can "
+                       "measure such codes from other radios with its "
+                       "frequency measurement function."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueList(
             LIST_TAILTONE, current_index=_mem.tail_tone)
         rset = RadioSetting("tail_tone", "Tail Tone", rs)
+        rset.set_doc(_("Transmits a special end-of-transmission signal "
+                       "intended to reduce the squelch burst heard by another "
+                       "compatible handheld.") + " " +
+                     _("The manual only lists Off and On. The driver offers a "
+                       "55 Hz tone without a phase shift, or a phase shift of "
+                       "120, 180 or 240 degrees."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueList(
             LIST_SCRAMBLER, current_index=_mem.scrambler)
         rset = RadioSetting("scrambler", "Scrambler", rs)
+        rset.set_doc(_("Enables voice inversion on this channel. Both radios "
+                       "must use compatible scrambling; this does not provide "
+                       "secure encryption.") + " " +
+                     _("Off turns scrambling off, and 1 to 8 select different "
+                       "scrambling modes."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueList(
             LIST_BCL, current_index=_mem.bcl if _mem.bcl <= 2 else 0)
         rset = RadioSetting("bcl", "Busy Channel Lockout", rs)
+        rset.set_doc(_("Prevents transmitting on a channel that is already in "
+                       "use.") + " " +
+                     _("Carrier Match treats the channel as busy whenever a "
+                       "signal is present, and CTC/DCS Match decides by the "
+                       "CTCSS or DCS code of the received signal. Off turns "
+                       "the lockout off."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueList(
             LIST_LIMITRXTX, current_index=_mem.limit_rx_tx)
         rset = RadioSetting("limit_rx_tx", "Limit Rx/Tx", rs)
+        rset.set_doc(_("Restricts this channel to receiving only (Only Rx) or "
+                       "transmitting only (Only Tx). Rx+Tx allows "
+                       "both.") + " " +
+                     _("The manual does not describe this setting."))
         mem.extra.append(rset)
 
         rs = RadioSettingValueList(
             LIST_TIMER, current_index=_mem.tot)
         rset = RadioSetting("tot", "Time Out Timer", rs)
+        rset.set_doc(_("Limits how long a single transmission may last. When "
+                       "the time runs out the radio stops transmitting until "
+                       "PTT is released, which prevents overheating and stops "
+                       "a stuck PTT from blocking the channel for everyone "
+                       "else.") + " " +
+                     _("Off places no limit on the length of a "
+                       "transmission.") + " " +
+                     _("This radio sets it separately for each channel."))
         mem.extra.append(rset)
 
         return mem
@@ -1050,155 +1090,248 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 16, _code, True)
         rset = RadioSetting("name_callsign", "Name/Callsign", rs)
+        rset.set_doc(_("Sets the name or call sign of the radio, up to 16 "
+                       "characters. When Tx End Tone is set to Send Radio "
+                       "Name, the radio sends it at the end of each "
+                       "transmission."))
         rset.set_apply_callback(self.apply_string, _settings)
         group.append(rset)
 
         # Voice Prompt
         rs = RadioSettingValueBoolean(_settings.voice_prompt)
         rset = RadioSetting("voice_prompt", "Voice Prompt", rs)
+        rset.set_doc(_("Announces the channel number and other operations out "
+                       "loud as you use the radio. It can be intrusive in "
+                       "quiet surroundings."))
         group.append(rset)
 
         # Key Beep
         rs = RadioSettingValueBoolean(_settings.key_beep)
         rset = RadioSetting("key_beep", "Key Beep", rs)
+        rset.set_doc(_("Sounds a short confirmation tone as you operate the "
+                       "radio. Turn it off when the radio has to be used "
+                       "discreetly."))
         group.append(rset)
 
         # Key Lock Timer
         rs = RadioSettingValueList(
             LIST_TIMER, current_index=_settings.lock_timer)
         rset = RadioSetting("lock_timer", "Key Lock Timer", rs)
+        rset.set_doc(_("Automatically locks the keypad to prevent accidental "
+                       "changes.") + " " +
+                     _("This sets the delay before the keypad locks.") + " " +
+                     _("When it is off, the keypad can still be locked by "
+                       "hand.") + " " +
+                     _("Hold the * key on the radio to lock or unlock the "
+                       "keypad."))
         group.append(rset)
 
         # Key LED
         rs = RadioSettingValueBoolean(_settings.key_led)
         rset = RadioSetting("key_led", "Key LED", rs)
+        rset.set_doc(_("Turns the keypad backlight on or off. When it is on, "
+                       "the keypad stays lit."))
         group.append(rset)
 
         # Display Timer
         rs = RadioSettingValueList(
             LIST_TIMER, current_index=_settings.lcd_timer)
         rset = RadioSetting("lcd_timer", "Display Timer", rs)
+        rset.set_doc(_("Sets how many seconds the display backlight remains "
+                       "on after a key press or radio activity.") + " " +
+                     _("Off keeps the display lit all the time."))
         group.append(rset)
 
         # LCD Brightness
         rs = RadioSettingValueList(
             LIST_BRIGHTNESS, current_index=_settings.brightness)
         rset = RadioSetting("brightness", "LCD Brightness", rs)
+        rset.set_doc(_("Sets the brightness of the display, from 0 to 4."))
         group.append(rset)
 
         # Menu Exit Timer
         rs = RadioSettingValueList(
             LIST_TIMER, current_index=_settings.menu_exit)
         rset = RadioSetting("menu_exit", "Menu Exit Timer", rs)
+        rset.set_doc(_("Sets how long the menu stays open without a key press "
+                       "before the radio leaves it.") + " " +
+                     _("Off keeps the menu open until you leave it."))
         group.append(rset)
 
         # Tx Priority
         rs = RadioSettingValueList(
             LIST_TXPRI, current_index=_settings.tx_priority)
         rset = RadioSetting("tx_priority", "Tx Priority", rs)
+        rset.set_doc(_("Sets the transmit priority, which decides the main "
+                       "area after a call. With Busy, the main area "
+                       "automatically switches to the area of the last active "
+                       "call when the conversation ends. With Edit, the main "
+                       "area stays where you set it."))
         group.append(rset)
 
         # Frequency Step
         rs = RadioSettingValueList(
             LIST_FREQSTEP, current_index=_settings.freq_step)
         rset = RadioSetting("freq_step", "Frequency Step", rs)
+        rset.set_doc(_("Sets how far the frequency moves for each tuning step "
+                       "in Frequency mode, from 0.25 kHz to 5 MHz. Choose the "
+                       "spacing used by the frequencies you intend to tune."))
         group.append(rset)
 
         # Talkaround
         rs = RadioSettingValueList(
             LIST_TALKAROUND, current_index=_settings.talkaround)
         rset = RadioSetting("talkaround", "Talkaround", rs)
+        rset.set_doc(_("Lets you work without a repeater. Talkaround "
+                       "transmits on the receive frequency, so you can talk "
+                       "to other stations directly instead of through the "
+                       "repeater, and Invert Frequency swaps the transmit and "
+                       "receive frequencies. Off uses the frequencies as "
+                       "programmed."))
         group.append(rset)
 
         # Save Mode
         rs = RadioSettingValueList(
             LIST_SAVEMODE, current_index=_settings.save_mode)
         rset = RadioSetting("save_mode", "Save Mode", rs)
+        rset.set_doc(_("Cuts standby power consumption by switching the "
+                       "receiver off and on in a repeating cycle once no "
+                       "signal has been received for a few seconds. It "
+                       "considerably extends battery life, at the cost of "
+                       "occasionally clipping the first moment of an incoming "
+                       "transmission.") + " " +
+                     _("Off turns battery saving off, and 1:1, 1:2 and 1:3 "
+                       "select one of three saving ratios."))
         group.append(rset)
 
         # Save Start Timer
         rs = RadioSettingValueList(
             LIST_TIMER, current_index=_settings.save_start_timer)
         rset = RadioSetting("save_start_timer", "Save Start Timer", rs)
+        rset.set_doc(_("Sets the delay before Save Mode starts saving "
+                       "power.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Scan Mode
         rs = RadioSettingValueList(
             LIST_SCANMODE, current_index=_settings.scan_mode)
         rset = RadioSetting("scan_mode", "Scan Mode", rs)
+        rset.set_doc(_("Controls what scanning does after finding a signal. "
+                       "TO resumes after a preset time, CO resumes after the "
+                       "signal disappears, and SE stops scanning on the "
+                       "detected frequency or channel."))
         group.append(rset)
 
         # Scan Direction
         rs = RadioSettingValueList(
             LIST_DIRECTION, current_index=_settings.scan_direction)
         rset = RadioSetting("scan_direction", "Scan Direction", rs)
+        rset.set_doc(_("Sets whether scanning steps upwards or downwards."))
         group.append(rset)
 
         # Scan Return
         rs = RadioSettingValueList(
             LIST_SCANRETURN, current_index=_settings.scan_return)
         rset = RadioSetting("scan_return", "Scan Return", rs)
+        rset.set_doc(_("Chooses the channel the radio stays on when a scan "
+                       "ends. Original Channel returns to the channel that "
+                       "was active when the scan started, and Current Channel "
+                       "stays on the channel being scanned."))
         group.append(rset)
 
         # Scan Dwell Timer
         rs = RadioSettingValueList(
             LIST_SCANTIMER, current_index=_settings.scan_dwell_timer)
         rset = RadioSetting("scan_dwell_timer", "Scan Dwell Timer", rs)
+        rset.set_doc(_("Sets how long scanning pauses on a busy channel "
+                       "before it moves on.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Alarm Type
         rs = RadioSettingValueList(
             LIST_ALARMTYPE, current_index=_settings.alarm_type)
         rset = RadioSetting("alarm_type", "Alarm Type", rs)
+        rset.set_doc(_("Chooses what the emergency alarm does. Local Alarm "
+                       "sounds an alarm on this radio, Remote Alarm sends an "
+                       "alarm signal to other radios without sounding it "
+                       "here, and Local + Remote does both."))
         group.append(rset)
 
         # Work Range
         rs = RadioSettingValueList(
             LIST_WORKRANGE, current_index=_settings.work_range)
         rset = RadioSetting("work_range", "Work Range", rs)
+        rset.set_doc(_("Selects the frequency range the radio works in: "
+                       "64-620 MHz, 18-64 MHz or 840-1000 MHz. Changing it on "
+                       "the radio restarts the radio. Fit an antenna made for "
+                       "the selected range, because a mismatched antenna can "
+                       "damage the radio."))
         group.append(rset)
 
         # Denoise
         rs = RadioSettingValueList(
             LIST_DENOISE, current_index=_settings.denoise)
         rset = RadioSetting("denoise", "Denoise", rs)
+        rset.set_doc(_("Turns noise reduction of the transmitted audio on or "
+                       "off. The manual lists only Off and On and does not "
+                       "explain the 840-1000MHz choice."))
         group.append(rset)
 
         # Multi Standby
         rs = RadioSettingValueBoolean(_settings.multi_standby)
         rset = RadioSetting("multi_standby", "Multi Standby", rs)
+        rset.set_doc(_("Monitors signals on the A, B and C areas at the same "
+                       "time. Only one area can receive at any given time."))
         group.append(rset)
 
         # U/V Repeater
         rs = RadioSettingValueBoolean(_settings.uv_repeater)
         rset = RadioSetting("uv_repeater", "U/V Repeater", rs)
+        rset.set_doc(_("Turns the radio into a cross-band repeater. Signals "
+                       "received on area A are retransmitted on area B, and "
+                       "signals received on area B on area A. Area C cannot "
+                       "be used while it is on."))
         group.append(rset)
 
         # Repeater Monitor
         rs = RadioSettingValueBoolean(_settings.repeater_monitor)
         rset = RadioSetting("repeater_monitor", "Repeater Monitor", rs)
+        rset.set_doc(_("Lets you listen to the audio that the cross-band "
+                       "repeater passes on while U/V Repeater is on."))
         group.append(rset)
 
         # NOAA Monitor
         rs = RadioSettingValueBoolean(_settings.noaa_monitor)
         rset = RadioSetting("noaa_monitor", "NOAA Monitor", rs)
+        rset.set_doc(_("Turns monitoring of the NOAA weather channels on or "
+                       "off.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Frequency Input
         rs = RadioSettingValueList(
             LIST_FREQINPUT, current_index=_settings.freq_input)
         rset = RadioSetting("freq_input", "Frequency Input", rs)
+        rset.set_doc(_("Sets how many digits you type to enter a frequency on "
+                       "the keypad: 6 or 8."))
         group.append(rset)
 
         # Reverse Channel
         rs = RadioSettingValueBoolean(_settings2.reverse_channel)
         rset = RadioSetting("settings2.reverse_channel", "Reverse Channel", rs)
+        rset.set_doc(_("Swaps the transmit and receive frequencies.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # CT/DCS Code Show
         rs = RadioSettingValueBoolean(_settings2.ctdcs_code_show)
         rset = RadioSetting("settings2.ctdcs_code_show",
                             "CT/DCS Code Show", rs)
+        rset.set_doc(_("Shows the CTCSS or DCS code of the channel on the "
+                       "display.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Channel Alias Color
@@ -1206,11 +1339,19 @@ class RT880G(chirp_common.CloneModeRadio):
             LIST_COLOR, current_index=_settings2.ch_alias_color)
         rset = RadioSetting("settings2.ch_alias_color",
                             "Channel Alias Color", rs)
+        rset.set_doc(_("Selects the color in which the display shows the "
+                       "channel alias.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Tx Limit
         rs = RadioSettingValueBoolean(_settings2.tx_unlimit)
         rset = RadioSetting("settings2.tx_unlimit", "Tx Limit", rs)
+        rset.set_doc(_("Controls the limit on the frequencies the radio can "
+                       "transmit on.") + " " +
+                     _("The manual does not describe this setting.") + " " +
+                     _("It is not known whether On applies or removes the "
+                       "limit."))
         group.append(rset)
 
         area_group = RadioSettingGroup("basic_area", "Areas")
@@ -1223,24 +1364,33 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_AREA, current_index=_settings.current_area)
         rset = RadioSetting("current_area", "Current Area", rs)
+        rset.set_doc(_("Selects the main area, A, B or C. On the radio, short "
+                       "presses of the exit key switch between them."))
         area_group.append(rset)
 
         # Area A Mode
         rs = RadioSettingValueList(
             LIST_AREAMODE, current_index=_settings.area_a_mode)
         rset = RadioSetting("area_a_mode", "Area A Mode", rs)
+        rset.set_doc(_("Selects the working mode of area %s: Frequency (VFO) "
+                       "mode for direct tuning, Channel mode for the "
+                       "programmed channels, or Zone mode for the channels of "
+                       "one zone.") % "A")
         area_group.append(rset)
 
         # Area A Show
         rs = RadioSettingValueList(
             LIST_AREASHOW, current_index=_settings.area_a_show)
         rset = RadioSetting("area_a_show", "Area A Show", rs)
+        rset.set_doc(_("In Channel and Zone mode, chooses whether area %s "
+                       "shows the channel number or the frequency.") % "A")
         area_group.append(rset)
 
         # Area A Zone
         rs = RadioSettingValueInteger(1, 256, _settings.area_a_zone + 1)
         rset = RadioSetting("area_a_zone", "Area A Zone", rs)
-        rset.set_doc('Value between 1-256')
+        rset.set_doc(_("Selects the zone that area %s uses in Zone mode, from "
+                       "1 to 256.") % "A")
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1248,7 +1398,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueInteger(1, self._channelCount,
                                       _settings.area_a_channel + 1)
         rset = RadioSetting("area_a_channel", "Area A Channel", rs)
-        rset.set_doc(f'Value between 1-{self._channelCount}')
+        rset.set_doc(_("Selects the channel that area %s uses in Channel "
+                       "mode, from 1 to %d.") % ("A", self._channelCount))
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1256,18 +1407,25 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_AREAMODE, current_index=_settings.area_b_mode)
         rset = RadioSetting("area_b_mode", "Area B Mode", rs)
+        rset.set_doc(_("Selects the working mode of area %s: Frequency (VFO) "
+                       "mode for direct tuning, Channel mode for the "
+                       "programmed channels, or Zone mode for the channels of "
+                       "one zone.") % "B")
         area_group.append(rset)
 
         # Area B Show
         rs = RadioSettingValueList(
             LIST_AREASHOW, current_index=_settings.area_b_show)
         rset = RadioSetting("area_b_show", "Area B Show", rs)
+        rset.set_doc(_("In Channel and Zone mode, chooses whether area %s "
+                       "shows the channel number or the frequency.") % "B")
         area_group.append(rset)
 
         # Area B Zone
         rs = RadioSettingValueInteger(1, 256, _settings.area_b_zone + 1)
         rset = RadioSetting("area_b_zone", "Area B Zone", rs)
-        rset.set_doc('Value between 1-256')
+        rset.set_doc(_("Selects the zone that area %s uses in Zone mode, from "
+                       "1 to 256.") % "B")
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1275,7 +1433,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueInteger(1, self._channelCount,
                                       _settings.area_b_channel + 1)
         rset = RadioSetting("area_b_channel", "Area B Channel", rs)
-        rset.set_doc(f'Value between 1-{self._channelCount}')
+        rset.set_doc(_("Selects the channel that area %s uses in Channel "
+                       "mode, from 1 to %d.") % ("B", self._channelCount))
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1283,18 +1442,25 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_AREAMODE, current_index=_settings.area_c_mode)
         rset = RadioSetting("area_c_mode", "Area C Mode", rs)
+        rset.set_doc(_("Selects the working mode of area %s: Frequency (VFO) "
+                       "mode for direct tuning, Channel mode for the "
+                       "programmed channels, or Zone mode for the channels of "
+                       "one zone.") % "C")
         area_group.append(rset)
 
         # Area C Show
         rs = RadioSettingValueList(
             LIST_AREASHOW, current_index=_settings.area_c_show)
         rset = RadioSetting("area_c_show", "Area C Show", rs)
+        rset.set_doc(_("In Channel and Zone mode, chooses whether area %s "
+                       "shows the channel number or the frequency.") % "C")
         area_group.append(rset)
 
         # Area C Zone
         rs = RadioSettingValueInteger(1, 256, _settings.area_c_zone + 1)
         rset = RadioSetting("area_c_zone", "Area C Zone", rs)
-        rset.set_doc('Value between 1-256')
+        rset.set_doc(_("Selects the zone that area %s uses in Zone mode, from "
+                       "1 to 256.") % "C")
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1302,7 +1468,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueInteger(1, self._channelCount,
                                       _settings.area_c_channel + 1)
         rset = RadioSetting("area_c_channel", "Area C Channel", rs)
-        rset.set_doc(f'Value between 1-{self._channelCount}')
+        rset.set_doc(_("Selects the channel that area %s uses in Channel "
+                       "mode, from 1 to %d.") % ("C", self._channelCount))
         rset.set_apply_callback(apply_with_offset, _settings, -1)
         area_group.append(rset)
 
@@ -1313,72 +1480,108 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_LOCK, current_index=_settings.lock_range_1_type)
         rset = RadioSetting("lock_range_1_type", "Lock Range 1 Type", rs)
+        rset.set_doc(_("Sets what the radio allows between the start and end "
+                       "frequencies of lock range %d: Unlock leaves the range "
+                       "unrestricted, Rx Only allows receiving only, and Lock "
+                       "locks the range.") % 1 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 1 Start
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_1_start)
         rset = RadioSetting("lock_range_1_start", "Lock Range 1 Start", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the lowest frequency of lock range %d, in "
+                       "MHz.") % 1 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 1 End
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_1_end)
         rset = RadioSetting("lock_range_1_end", "Lock Range 1 End", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the highest frequency of lock range %d, in "
+                       "MHz.") % 1 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 2 Type
         rs = RadioSettingValueList(
             LIST_LOCK, current_index=_settings.lock_range_2_type)
         rset = RadioSetting("lock_range_2_type", "Lock Range 2 Type", rs)
+        rset.set_doc(_("Sets what the radio allows between the start and end "
+                       "frequencies of lock range %d: Unlock leaves the range "
+                       "unrestricted, Rx Only allows receiving only, and Lock "
+                       "locks the range.") % 2 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 2 Start
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_2_start)
         rset = RadioSetting("lock_range_2_start", "Lock Range 2 Start", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the lowest frequency of lock range %d, in "
+                       "MHz.") % 2 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 2 End
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_2_end)
         rset = RadioSetting("lock_range_2_end", "Lock Range 2 End", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the highest frequency of lock range %d, in "
+                       "MHz.") % 2 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 3 Type
         rs = RadioSettingValueList(
             LIST_LOCK, current_index=_settings.lock_range_3_type)
         rset = RadioSetting("lock_range_3_type", "Lock Range 3 Type", rs)
+        rset.set_doc(_("Sets what the radio allows between the start and end "
+                       "frequencies of lock range %d: Unlock leaves the range "
+                       "unrestricted, Rx Only allows receiving only, and Lock "
+                       "locks the range.") % 3 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 3 Start
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_3_start)
         rset = RadioSetting("lock_range_3_start", "Lock Range 3 Start", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the lowest frequency of lock range %d, in "
+                       "MHz.") % 3 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 3 End
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_3_end)
         rset = RadioSetting("lock_range_3_end", "Lock Range 3 End", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the highest frequency of lock range %d, in "
+                       "MHz.") % 3 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 4 Type
         rs = RadioSettingValueList(
             LIST_LOCK, current_index=_settings.lock_range_4_type)
         rset = RadioSetting("lock_range_4_type", "Lock Range 4 Type", rs)
+        rset.set_doc(_("Sets what the radio allows between the start and end "
+                       "frequencies of lock range %d: Unlock leaves the range "
+                       "unrestricted, Rx Only allows receiving only, and Lock "
+                       "locks the range.") % 4 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 4 Start
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_4_start)
         rset = RadioSetting("lock_range_4_start", "Lock Range 4 Start", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the lowest frequency of lock range %d, in "
+                       "MHz.") % 4 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
         # Lock Range 4 End
         rs = RadioSettingValueInteger(18, 1000, _settings.lock_range_4_end)
         rset = RadioSetting("lock_range_4_end", "Lock Range 4 End", rs)
-        rset.set_doc('Value between 18-1000 (MHz)')
+        rset.set_doc(_("Sets the highest frequency of lock range %d, in "
+                       "MHz.") % 4 + " " +
+                     _("The manual does not describe this setting."))
         lock_group.append(rset)
 
     def get_startup_settings(self, group):
@@ -1389,6 +1592,9 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 32, _code, True)
         rset = RadioSetting("welcome_message", "Welcome Message", rs)
+        rset.set_doc(_("Sets the message shown on the display when the radio "
+                       "starts, up to 32 characters.") + " " +
+                     _("The manual does not describe this setting."))
         rset.set_apply_callback(self.apply_string, _settings)
         group.append(rset)
 
@@ -1396,38 +1602,52 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueBoolean(_settings.welcome_message_enable)
         rset = RadioSetting("welcome_message_enable",
                             "Welcome Message Enable", rs)
+        rset.set_doc(_("Shows the welcome message when the radio "
+                       "starts.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Welcome Message Color
         rs = RadioSettingValueInteger(0, 65536, _settings.welcome_text_color)
         rset = RadioSetting("welcome_text_color", "Welcome Message Color", rs)
-        rset.set_doc('Value between 0-65536')
+        rset.set_doc(_("Sets the color of the welcome message as a 16-bit "
+                       "color value.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Welcome Message Start Line
         rs = RadioSettingValueInteger(0, 319, _settings.welcome_start_line)
         rset = RadioSetting("welcome_start_line",
                             "Welcome Message Start Line", rs)
-        rset.set_doc('Value between 0-319')
+        rset.set_doc(_("Sets the vertical position where the welcome message "
+                       "starts, from 0 to 319.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Welcome Message Start Column
         rs = RadioSettingValueInteger(0, 239, _settings.welcome_start_column)
         rset = RadioSetting("welcome_start_column",
                             "Welcome Message Start Column", rs)
-        rset.set_doc('Value between 0-239')
+        rset.set_doc(_("Sets the horizontal position where the welcome "
+                       "message starts, from 0 to 239.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Startup Image Enable
         rs = RadioSettingValueBoolean(_settings.startup_image_enable)
         rset = RadioSetting("startup_image_enable",
                             "Startup Image Enable", rs)
+        rset.set_doc(_("Shows the startup image when the radio "
+                       "starts.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Startup Ringtone Enable
         rs = RadioSettingValueBoolean(_settings.startup_ringtone_enable)
         rset = RadioSetting("startup_ringtone_enable",
                             "Startup Ringtone Enable", rs)
+        rset.set_doc(_("Plays the startup tone when the radio starts.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # Startup Password
@@ -1435,6 +1655,10 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 16, _code, True)
         rset = RadioSetting("startup_password", "Startup Password", rs)
+        rset.set_doc(_("Sets the password the radio asks for when it starts, "
+                       "up to 16 characters. Startup Password Enable turns "
+                       "the request on.") + " " +
+                     _("The manual does not describe this setting."))
         rset.set_apply_callback(self.apply_string, _settings)
         group.append(rset)
 
@@ -1442,6 +1666,9 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueBoolean(_settings.startup_password_enable)
         rset = RadioSetting("startup_password_enable",
                             "Startup Password Enable", rs)
+        rset.set_doc(_("Makes the radio ask for the startup password each "
+                       "time it is turned on.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
     def get_keydefine_settings(self, group):
@@ -1450,102 +1677,134 @@ class RT880G(chirp_common.CloneModeRadio):
         # Multi PTT
         rs = RadioSettingValueBoolean(_settings.multi_ptt)
         rset = RadioSetting("multi_ptt", "Multi PTT", rs)
+        rset.set_doc(_("Turns side key 1 and side key 2 into extra PTT keys: "
+                       "side key 1 transmits on area B and side key 2 on area "
+                       "C. The functions assigned to the two keys are then "
+                       "disabled."))
         group.append(rset)
 
         # Side Key 1 Short
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.side_key_1_s)
         rset = RadioSetting("side_key_1_s", "Side Key 1 Short", rs)
+        rset.set_doc(_("Chooses what a short press of side key %i "
+                       "does.") % 1 + " " +
+                     _("While Multi PTT is on, side key %i transmits on area "
+                       "%s instead.") % (1, "B"))
         group.append(rset)
 
         # Side Key 1 Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.side_key_1_l)
         rset = RadioSetting("side_key_1_l", "Side Key 1 Long", rs)
+        rset.set_doc(_("Chooses what a long press of side key %i "
+                       "does.") % 1 + " " +
+                     _("While Multi PTT is on, side key %i transmits on area "
+                       "%s instead.") % (1, "B"))
         group.append(rset)
 
         # Side Key 2 Short
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.side_key_2_s)
         rset = RadioSetting("side_key_2_s", "Side Key 2 Short", rs)
+        rset.set_doc(_("Chooses what a short press of side key %i "
+                       "does.") % 2 + " " +
+                     _("While Multi PTT is on, side key %i transmits on area "
+                       "%s instead.") % (2, "C"))
         group.append(rset)
 
         # Side Key 2 Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.side_key_2_l)
         rset = RadioSetting("side_key_2_l", "Side Key 2 Long", rs)
+        rset.set_doc(_("Chooses what a long press of side key %i "
+                       "does.") % 2 + " " +
+                     _("While Multi PTT is on, side key %i transmits on area "
+                       "%s instead.") % (2, "C"))
         group.append(rset)
 
         # Alarm Key 2 Short
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.alarm_key_2_s)
         rset = RadioSetting("alarm_key_2_s", "Alarm Key 2 Short", rs)
+        rset.set_doc(_("Chooses what a short press of the alarm key does."))
         group.append(rset)
 
         # Alarm Key 2 Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.alarm_key_2_l)
         rset = RadioSetting("alarm_key_2_l", "Alarm Key 2 Long", rs)
+        rset.set_doc(_("Chooses what a long press of the alarm key does."))
         group.append(rset)
 
         # 0 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_0_long)
         rset = RadioSetting("key_0_long", "0 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 0)
         group.append(rset)
 
         # 1 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_1_long)
         rset = RadioSetting("key_1_long", "1 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 1)
         group.append(rset)
 
         # 2 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_2_long)
         rset = RadioSetting("key_2_long", "2 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 2)
         group.append(rset)
 
         # 3 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_3_long)
         rset = RadioSetting("key_3_long", "3 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 3)
         group.append(rset)
 
         # 4 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_4_long)
         rset = RadioSetting("key_4_long", "4 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 4)
         group.append(rset)
 
         # 5 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_5_long)
         rset = RadioSetting("key_5_long", "5 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 5)
         group.append(rset)
 
         # 6 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_6_long)
         rset = RadioSetting("key_6_long", "6 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 6)
         group.append(rset)
 
         # 7 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_7_long)
         rset = RadioSetting("key_7_long", "7 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 7)
         group.append(rset)
 
         # 8 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_8_long)
         rset = RadioSetting("key_8_long", "8 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 8)
         group.append(rset)
 
         # 9 Press Long
         rs = RadioSettingValueList(
             LIST_KEYDEFINE, current_index=_settings.key_9_long)
         rset = RadioSetting("key_9_long", "9 Press Long", rs)
+        rset.set_doc(_("Chooses what a long press of the %i key does.") % 9)
         group.append(rset)
 
     def get_analog_settings(self, group):
@@ -1554,101 +1813,153 @@ class RT880G(chirp_common.CloneModeRadio):
         # Squelch Level
         rs = RadioSettingValueInteger(0, 10, _settings.squelch_level)
         rset = RadioSetting("squelch_level", "Squelch Level", rs)
-        rset.set_doc('Value between 0-10')
+        rset.set_doc(_("Sets how strong a received signal must be before the "
+                       "speaker unmutes. 0 leaves the squelch open so you "
+                       "hear noise all the time, higher values reject more "
+                       "weak signals and noise. Raise this value if the "
+                       "speaker keeps unmuting on interference, lower it if "
+                       "distant stations are being cut off."))
         group.append(rset)
 
         # Tx Start Tone
         rs = RadioSettingValueBoolean(_settings.tx_start_tone)
         rset = RadioSetting("tx_start_tone", "Tx Start Tone", rs)
+        rset.set_doc(_("Going by its name, sounds a tone at the start of each "
+                       "transmission. The manual's menu table describes it as "
+                       "a customizable tone at power on instead."))
         group.append(rset)
 
         # Tx End Tone
         rs = RadioSettingValueList(
             LIST_TXENDTONE, current_index=_settings.tx_end_tone)
         rset = RadioSetting("tx_end_tone", "Tx End Tone", rs)
+        rset.set_doc(_("Sends a short tone at the end of each transmission so "
+                       "other stations can hear that you released "
+                       "PTT.") + " " +
+                     _("Roger Beep 1 and Roger Beep 2 are two different "
+                       "tones. Send Radio Name sends the name set in "
+                       "Name/Callsign, and Send GPS sends this radio's GPS "
+                       "position, which another RT-880G shows as a distance "
+                       "and direction. Off sends nothing."))
         group.append(rset)
 
         # Single Tone
         rs = RadioSettingValueInteger(0, 9999, _settings.single_tone)
         rset = RadioSetting("single_tone", "Single Tone (Hz)", rs)
-        rset.set_doc('Value between 0-9999')
+        rset.set_doc(_("Selects the tone-burst frequency sent for repeater "
+                       "access.") + " " +
+                     _("The Send Single Tone key function transmits it on the "
+                       "current frequency until any key is pressed. Repeaters "
+                       "that need a tone burst usually recognize 1750 Hz."))
         group.append(rset)
 
         # VOX
         rs = RadioSettingValueBoolean(_settings.vox)
         rset = RadioSetting("vox", "VOX", rs)
+        rset.set_doc(_("Voice operated transmit. The radio starts "
+                       "transmitting when you speak towards the microphone, "
+                       "so hands-free conversation is possible without "
+                       "pressing PTT."))
         group.append(rset)
 
         # VOX Threshold
         rs = RadioSettingValueInteger(0, 254, _settings.vox_threshold)
         rset = RadioSetting("vox_threshold", "VOX Threshold", rs)
-        rset.set_doc('Value between 0-254')
+        rset.set_doc(_("Sets the VOX sensitivity. Too sensitive a setting "
+                       "keys the transmitter on the noise around the radio, "
+                       "too insensitive a setting fails to pick up your "
+                       "voice."))
         group.append(rset)
 
         # VOX Delay
         rs = RadioSettingValueInteger(0, 5, _settings.vox_delay)
         rset = RadioSetting("vox_delay", "VOX Delay", rs)
-        rset.set_doc('Value between 0-5')
+        rset.set_doc(_("How long the transmitter stays keyed after you stop "
+                       "speaking. A longer delay avoids dropping the "
+                       "transmission during natural pauses in speech.") + " " +
+                     _("The manual does not give the unit."))
         group.append(rset)
 
         # Detect Range
         rs = RadioSettingValueList(
             LIST_DETECTRANGE, current_index=_settings.detect_range)
         rset = RadioSetting("detect_range", "Detect Range", rs)
+        rset.set_doc(_("Selects the frequency range that the Frequency Detect "
+                       "function searches for nearby transmitters. While it "
+                       "runs, the # key switches the range. The manual lists "
+                       "only 18-620 MHz and 840-1000 MHz."))
         group.append(rset)
 
         # Repeater Delay
         rs = RadioSettingValueList(
             LIST_DELAY, current_index=_settings.repeater_delay)
         rset = RadioSetting("repeater_delay", "Repeater Delay", rs)
+        rset.set_doc(_("Sets a delay, from 0 to 2000 ms, for use through a "
+                       "repeater. The manual does not say what is delayed."))
         group.append(rset)
 
         # Mic Gain
         rs = RadioSettingValueInteger(0, 31, _settings.mic_gain)
         rset = RadioSetting("mic_gain", "Mic Gain", rs)
-        rset.set_doc('Value between 0-31')
+        rset.set_doc(_("Sets the microphone sensitivity, from 0 to 31. Higher "
+                       "values make the microphone more sensitive."))
         group.append(rset)
 
         # FM Mode SPK Gain
         rs = RadioSettingValueInteger(0, 63, _settings.fm_spk_gain)
         rset = RadioSetting("fm_spk_gain", "FM Mode SPK Gain", rs)
-        rset.set_doc('Value between 0-63')
+        rset.set_doc(_("Sets the speaker gain in %s mode, from 0 to 63. "
+                       "Higher values make the received audio louder, but too "
+                       "high a setting distorts it.") % "FM")
         group.append(rset)
 
         # FM Mode DAC Gain
         rs = RadioSettingValueInteger(0, 15, _settings.fm_dac_gain)
         rset = RadioSetting("fm_dac_gain", "FM Mode DAC Gain", rs)
-        rset.set_doc('Value between 0-15')
+        rset.set_doc(_("Sets the audio DAC gain in %s mode, from 0 to 15. "
+                       "Lower it if the received audio sounds "
+                       "distorted.") % "FM")
         group.append(rset)
 
         # AM Mode SPK Gain
         rs = RadioSettingValueInteger(0, 63, _settings.am_spk_gain)
         rset = RadioSetting("am_spk_gain", "AM Mode SPK Gain", rs)
-        rset.set_doc('Value between 0-63')
+        rset.set_doc(_("Sets the speaker gain in %s mode, from 0 to 63. "
+                       "Higher values make the received audio louder, but too "
+                       "high a setting distorts it.") % "AM")
         group.append(rset)
 
         # AM Mode DAC Gain
         rs = RadioSettingValueInteger(0, 15, _settings.am_dac_gain)
         rset = RadioSetting("am_dac_gain", "AM Mode DAC Gain", rs)
-        rset.set_doc('Value between 0-15')
+        rset.set_doc(_("Sets the audio DAC gain in %s mode, from 0 to 15. "
+                       "Lower it if the received audio sounds "
+                       "distorted.") % "AM")
         group.append(rset)
 
         # Glitch Threshold
         rs = RadioSettingValueInteger(0, 10, _settings.glitch_threshold)
         rset = RadioSetting("glitch_threshold", "Glitch Threshold", rs)
-        rset.set_doc('Value between 0-10')
+        rset.set_doc(_("Sets the receiver's interference threshold, from 0 to "
+                       "10."))
         group.append(rset)
 
         # Voice Level Refresh
         rs = RadioSettingValueList(
             LIST_DELAY, current_index=_settings.tx_voice_refresh)
         rset = RadioSetting("tx_voice_refresh", "Voice Level Refresh", rs)
+        rset.set_doc(_("Sets how often the audio level bar on the display is "
+                       "updated while you transmit."))
         group.append(rset)
 
         # RSSI Level Refresh
         rs = RadioSettingValueList(
             LIST_DELAY, current_index=_settings.rx_rssi_refresh)
         rset = RadioSetting("rx_rssi_refresh", "RSSI Level Refresh", rs)
+        rset.set_doc(_("Sets how often the signal strength display is updated "
+                       "while receiving. If weak signals pick up noise "
+                       "because it updates too often, increase this "
+                       "interval."))
         group.append(rset)
 
         tt_group = RadioSettingGroup("analog_tt", "Temporary Tuning")
@@ -1657,113 +1968,276 @@ class RT880G(chirp_common.CloneModeRadio):
         # Temporary Tuning Rx Test
         rs = RadioSettingValueBoolean(_settings.tt_rx_test)
         rset = RadioSetting("tt_rx_test", "Rx Test", rs)
+        rset.set_doc(_("Turns on the temporary receive thresholds, which the "
+                       "manual calls Temporary Receive Threshold Open. While "
+                       "it is on, RSSI Threshold and Noise Threshold set how "
+                       "easily a signal opens the receiver.") + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning RSSI Threshold
         rs = RadioSettingValueInteger(0, 127, _settings.tt_rssi_threshold)
         rset = RadioSetting("tt_rssi_threshold", "RSSI Threshold", rs)
-        rset.set_doc('Value between 0-127')
+        rset.set_doc(_("Sets the temporary RSSI threshold, from 0 to 127, "
+                       "used while Rx Test is on. Higher values make it "
+                       "harder for a signal to open the receiver.") + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning Noise Threshold
         rs = RadioSettingValueInteger(0, 127, _settings.tt_noise_threshold)
         rset = RadioSetting("tt_noise_threshold", "Noise Threshold", rs)
-        rset.set_doc('Value between 0-127')
+        rset.set_doc(_("Sets the temporary noise threshold, from 0 to 127, "
+                       "used while Rx Test is on. Higher values make it "
+                       "easier for a signal to open the receiver.") + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning Power Test
         rs = RadioSettingValueBoolean(_settings.tt_power_test)
         rset = RadioSetting("tt_power_test", "Power Test", rs)
+        rset.set_doc(_("Turns on the temporary transmit power values, which "
+                       "the manual calls Temporary Power Open. While it is "
+                       "on, the power value of each frequency range sets the "
+                       "transmit power.") + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 136-174MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_136_174)
         rset = RadioSetting("tt_power_136_174", "136-174MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "136-174MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 400-480MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_400_480)
         rset = RadioSetting("tt_power_400_480", "400-480MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "400-480MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 18-64MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_18_64)
         rset = RadioSetting("tt_power_18_64", "18-64MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "18-64MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 64-136MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_64_136)
         rset = RadioSetting("tt_power_64_136", "64-136MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "64-136MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 173-240MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_173_240)
         rset = RadioSetting("tt_power_173_240", "173-240MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "173-240MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 240-320MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_240_320)
         rset = RadioSetting("tt_power_240_320", "240-320MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "240-320MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 320-400MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_320_400)
         rset = RadioSetting("tt_power_320_400", "320-400MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "320-400MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 480-560MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_480_560)
         rset = RadioSetting("tt_power_480_560", "480-560MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "480-560MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 560-620MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_560_620)
         rset = RadioSetting("tt_power_560_620", "560-620MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "560-620MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 840-920MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_840_920)
         rset = RadioSetting("tt_power_840_920", "840-920MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "840-920MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 920-1000MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_920_1000)
         rset = RadioSetting("tt_power_920_1000", "920-1000MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "920-1000MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 1000-1080MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_1000_1080)
         rset = RadioSetting("tt_power_1000_1080", "1000-1080MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "1000-1080MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 1080-1160MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_1080_1160)
         rset = RadioSetting("tt_power_1080_1160", "1080-1160MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "1080-1160MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 1160-1240MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_1160_1240)
         rset = RadioSetting("tt_power_1160_1240", "1160-1240MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "1160-1240MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
         # Temporary Tuning 1240-1300MHz Power
         rs = RadioSettingValueInteger(0, 255, _settings.tt_power_1240_1300)
         rset = RadioSetting("tt_power_1240_1300", "1240-1300MHz Power", rs)
-        rset.set_doc('Value between 0-255')
+        rset.set_doc(_("Sets the temporary transmit power value for the %s "
+                       "range, from 0 to 254, used while Power Test is on. "
+                       "Above a limit that differs from radio to radio, "
+                       "higher values only raise the current without raising "
+                       "the power, and can damage the power "
+                       "amplifier.") % "1240-1300MHz" + " " +
+                     _("The manual advises against using the temporary tuning "
+                       "settings unless you are familiar with the radio's "
+                       "technical specifications, because improper use can "
+                       "damage components."))
         tt_group.append(rset)
 
     def get_dtmf_settings(self, group):
@@ -1773,57 +2247,93 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_DELAY, current_index=_dtmf.dtmf_delay)
         rset = RadioSetting("dtmf.dtmf_delay", "DTMF Delay", rs)
+        rset.set_doc(_("Delays transmission of the automatic ANI/PTT-ID code "
+                       "after PTT is pressed, allowing the receiving path "
+                       "time to open before the code is sent.") + " " +
+                     _("On this radio that is the DTMF code chosen with DTMF "
+                       "Select."))
         group.append(rset)
 
         # DTMF Interval
         rs = RadioSettingValueList(
             LIST_INTERVAL, current_index=_dtmf.dtmf_interval)
         rset = RadioSetting("dtmf.dtmf_interval", "DTMF Interval", rs)
+        rset.set_doc(_("Sets the silent gap between transmitted DTMF tones. "
+                       "Increase this if the receiving system cannot separate "
+                       "adjacent digits."))
         group.append(rset)
 
         # DTMF Duration
         rs = RadioSettingValueList(
             LIST_INTERVAL, current_index=_dtmf.dtmf_duration)
         rset = RadioSetting("dtmf.dtmf_duration", "DTMF Duration", rs)
+        rset.set_doc(_("Sets how long each DTMF tone is transmitted. Increase "
+                       "this if the receiving system does not reliably decode "
+                       "the digits."))
         group.append(rset)
 
         # DTMF Mode
         rs = RadioSettingValueList(
             LIST_DTMFMODE, current_index=_dtmf.dtmf_mode)
         rset = RadioSetting("dtmf.dtmf_mode", "DTMF Mode", rs)
+        rset.set_doc(_("Controls when the radio sends the DTMF code chosen "
+                       "with DTMF Select: TX Start at the start of each "
+                       "transmission, TX End at the end, or Off to send no "
+                       "DTMF code."))
         group.append(rset)
 
         # DTMF Select
         rs = RadioSettingValueList(
             LIST_DTMFSELECT, current_index=_dtmf.dtmf_select)
         rset = RadioSetting("dtmf.dtmf_select", "DTMF Select", rs)
+        rset.set_doc(_("Selects which of the 16 programmed DTMF codes, Code 1 "
+                       "to Code 16, the radio sends when DTMF Mode is not "
+                       "Off."))
         group.append(rset)
 
         # DTMF Display
         rs = RadioSettingValueBoolean(_dtmf.dtmf_display)
         rset = RadioSetting("dtmf.dtmf_display", "DTMF Display", rs)
+        rset.set_doc(_("Shows received DTMF codes on the display."))
         group.append(rset)
 
         # DTMF Tx Gain
         rs = RadioSettingValueInteger(0, 127, _dtmf.dtmf_tx_gain)
         rset = RadioSetting("dtmf.dtmf_tx_gain", "DTMF Tx Gain", rs)
-        rset.set_doc('Value between 0-127')
+        rset.set_doc(_("Sets the level of the transmitted DTMF tones, from 0 "
+                       "to 127.") + " " +
+                     _("If radios of other brands have trouble with this "
+                       "radio's DTMF codes, adjust DTMF Tx Gain and DTMF Rx "
+                       "Threshold together. The manual recommends a Tx gain "
+                       "of 64 and an Rx threshold of 24."))
         group.append(rset)
 
         # DTMF Rx Threshold
         rs = RadioSettingValueInteger(0, 63, _dtmf.dtmf_rx_threshold)
         rset = RadioSetting("dtmf.dtmf_rx_threshold", "DTMF Rx Threshold", rs)
-        rset.set_doc('Value between 0-63')
+        rset.set_doc(_("Sets the threshold for decoding received DTMF tones, "
+                       "from 0 to 63.") + " " +
+                     _("If radios of other brands have trouble with this "
+                       "radio's DTMF codes, adjust DTMF Tx Gain and DTMF Rx "
+                       "Threshold together. The manual recommends a Tx gain "
+                       "of 64 and an Rx threshold of 24."))
         group.append(rset)
 
         # DTMF Control
         rs = RadioSettingValueBoolean(_dtmf.dtmf_control)
         rset = RadioSetting("dtmf.dtmf_control", "DTMF Control", rs)
+        rset.set_doc(_("Lets other radios control this radio by sending the "
+                       "Remote Monitor, Remote Stun, Remote Kill or Remote "
+                       "Wake code set here. Set a Remote Wake code before you "
+                       "turn this on, because a stunned or killed radio "
+                       "cannot be restored without it."))
         group.append(rset)
 
         # Time Calibrate
         rs = RadioSettingValueBoolean(_dtmf.time_calibrate)
         rset = RadioSetting("dtmf.time_calibrate", "Time Calibrate", rs)
+        rset.set_doc(_("Turns time calibration on or off. The manual does not "
+                       "say what it calibrates."))
         group.append(rset)
 
         def apply_code(setting, obj, length):
@@ -1843,6 +2353,9 @@ class RT880G(chirp_common.CloneModeRadio):
             rs = RadioSettingValueString(0, 14, _code, False, DTMF_CHARS)
             rset = RadioSetting("dtmf.dtmf_codes/%i.code" % i,
                                 "Code %i" % (i + 1), rs)
+            rset.set_doc(_("Programs DTMF code %i, up to 14 characters. DTMF "
+                           "Select chooses which code the radio "
+                           "sends.") % (i + 1))
             rset.set_apply_callback(apply_code, _dtmf.dtmf_codes[i], 14)
             group.append(rset)
 
@@ -1851,6 +2364,11 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 14, _code, False, DTMF_CHARS)
         rset = RadioSetting("dtmf.remote_stun", "Remote Stun", rs)
+        rset.set_doc(_("Sets the DTMF code that stuns this radio when another "
+                       "radio sends it. A stunned radio can still receive, "
+                       "but cannot transmit or be operated from the "
+                       "keypad.") + " " +
+                     _("It only takes effect while DTMF Control is on."))
         rset.set_apply_callback(apply_code, _dtmf.remote_stun, 14)
         group.append(rset)
 
@@ -1859,6 +2377,10 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 14, _code, False, DTMF_CHARS)
         rset = RadioSetting("dtmf.remote_kill", "Remote Kill", rs)
+        rset.set_doc(_("Sets the DTMF code that kills this radio when another "
+                       "radio sends it. A killed radio does not work until it "
+                       "receives the Remote Wake code.") + " " +
+                     _("It only takes effect while DTMF Control is on."))
         rset.set_apply_callback(apply_code, _dtmf.remote_kill, 14)
         group.append(rset)
 
@@ -1867,6 +2389,11 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 14, _code, False, DTMF_CHARS)
         rset = RadioSetting("dtmf.remote_wake", "Remote Wake", rs)
+        rset.set_doc(_("Sets the DTMF code that restores this radio after it "
+                       "has been stunned or killed. Set it before anyone uses "
+                       "the stun or kill codes, because without it the radio "
+                       "cannot be restored.") + " " +
+                     _("It only takes effect while DTMF Control is on."))
         rset.set_apply_callback(apply_code, _dtmf.remote_wake, 14)
         group.append(rset)
 
@@ -1875,6 +2402,11 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 14, _code, False, DTMF_CHARS)
         rset = RadioSetting("dtmf.remote_monitor", "Remote Monitor", rs)
+        rset.set_doc(_("Sets the DTMF code that makes this radio transmit for "
+                       "60 seconds when another radio sends it, so that the "
+                       "other station can listen to what is happening around "
+                       "this radio.") + " " +
+                     _("It only takes effect while DTMF Control is on."))
         rset.set_apply_callback(apply_code, _dtmf.remote_monitor, 14)
         group.append(rset)
 
@@ -1885,53 +2417,72 @@ class RT880G(chirp_common.CloneModeRadio):
         # GPS Enable
         rs = RadioSettingValueBoolean(_settings.gps_enable)
         rset = RadioSetting("gps_enable", "GPS Enable", rs)
+        rset.set_doc(_("Turns background GPS reception on or off."))
         group.append(rset)
 
         # GPS Baud Rate
         rs = RadioSettingValueList(
             LIST_GPSBAUD, current_index=_settings.gps_baud_rate)
         rset = RadioSetting("gps_baud_rate", "Baud Rate", rs)
+        rset.set_doc(_("Sets the baud rate the radio uses to talk to its GPS "
+                       "module. The default is 9600. Only change it after "
+                       "replacing the GPS module, to the rate given in that "
+                       "module's specification."))
         group.append(rset)
 
         # GPS UTC Zone
         rs = RadioSettingValueList(
             LIST_GPSUTC, current_index=_settings.gps_utc_zone)
         rset = RadioSetting("gps_utc_zone", "UTC Zone", rs)
+        rset.set_doc(_("Sets the time zone of your location, as an offset "
+                       "from UTC."))
         group.append(rset)
 
         # GPS Coordinate Type
         rs = RadioSettingValueList(
             LIST_GPSCOORD, current_index=_gps.gps_coord_type)
         rset = RadioSetting("gps.gps_coord_type", "Coordinate Type", rs)
+        rset.set_doc(_("Sets how latitude and longitude are shown: in "
+                       "degrees, in degrees and minutes, or in degrees, "
+                       "minutes and seconds."))
         group.append(rset)
 
         # GPS Speed Unit
         rs = RadioSettingValueList(
             LIST_GPSSPEED, current_index=_gps.gps_speed_unit)
         rset = RadioSetting("gps.gps_speed_unit", "Speed Unit", rs)
+        rset.set_doc(_("Sets the unit in which speed is shown."))
         group.append(rset)
 
         # GPS Distance Unit
         rs = RadioSettingValueList(
             LIST_GPSDIST, current_index=_gps.gps_distance_unit)
         rset = RadioSetting("gps.gps_distance_unit", "Distance Unit", rs)
+        rset.set_doc(_("Sets the unit in which distance is shown."))
         group.append(rset)
 
         # GPS Altitude Unit
         rs = RadioSettingValueList(
             LIST_GPSALT, current_index=_gps.gps_altitude_unit)
         rset = RadioSetting("gps.gps_altitude_unit", "Altitude Unit", rs)
+        rset.set_doc(_("Sets the unit in which altitude is shown."))
         group.append(rset)
 
         # GPS Mileage Type
         rs = RadioSettingValueList(
             LIST_GPSMILEAGE, current_index=_gps.gps_mileage_type)
         rset = RadioSetting("gps.gps_mileage_type", "Mileage Type", rs)
+        rset.set_doc(_("Chooses how the mileage count is kept. Startup Zero "
+                       "clears it each time the radio is turned on, and Keep "
+                       "keeps it."))
         group.append(rset)
 
         # GPS Auto Record
         rs = RadioSettingValueBoolean(_settings.gps_auto_record)
         rset = RadioSetting("gps_auto_record", "Auto Record", rs)
+        rset.set_doc(_("Records the GPS position automatically at regular "
+                       "intervals. The records can be viewed in the GPS track "
+                       "list on the radio."))
         group.append(rset)
 
         # Fixed coordinates are stored as strings with an implicit decimal
@@ -1959,6 +2510,8 @@ class RT880G(chirp_common.CloneModeRadio):
         val = fixed_coord_to_float(_gps.gps_fixed_lat, 2)
         rs = RadioSettingValueFloat(0, 99.99999, val, 0.00001, 5)
         rset = RadioSetting("gps.gps_fixed_lat", "Fixed Latitude", rs)
+        rset.set_doc(_("Sets the fixed latitude, which APRS uses as this "
+                       "radio's position when Station Mode is Fixed."))
         rset.set_apply_callback(apply_fixed_coord, _gps, 8, 5)
         group.append(rset)
 
@@ -1967,6 +2520,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(LIST_GPSLATDIR, current_index=val)
         rset = RadioSetting("gps.gps_fixed_lat_dir",
                             "Fixed Latitude Direction", rs)
+        rset.set_doc(_("Sets whether the fixed latitude is north (N) or south "
+                       "(S) of the equator."))
         rset.set_apply_callback(apply_fixed_coord_dir, _gps, LIST_GPSLATDIR)
         group.append(rset)
 
@@ -1974,6 +2529,8 @@ class RT880G(chirp_common.CloneModeRadio):
         val = fixed_coord_to_float(_gps.gps_fixed_long, 3)
         rs = RadioSettingValueFloat(0, 999.99999, val, 0.00001, 5)
         rset = RadioSetting("gps.gps_fixed_long", "Fixed Longitude", rs)
+        rset.set_doc(_("Sets the fixed longitude, which APRS uses as this "
+                       "radio's position when Station Mode is Fixed."))
         rset.set_apply_callback(apply_fixed_coord, _gps, 9, 5)
         group.append(rset)
 
@@ -1982,6 +2539,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(LIST_GPSLONGDIR, current_index=val)
         rset = RadioSetting("gps.gps_fixed_long_dir",
                             "Fixed Longitude Direction", rs)
+        rset.set_doc(_("Sets whether the fixed longitude is east (E) or west "
+                       "(W) of the prime meridian."))
         rset.set_apply_callback(apply_fixed_coord_dir, _gps, LIST_GPSLONGDIR)
         group.append(rset)
 
@@ -1989,6 +2548,8 @@ class RT880G(chirp_common.CloneModeRadio):
         val = fixed_coord_to_float(_gps.gps_fixed_altitude, 6)
         rs = RadioSettingValueFloat(0, 999999.9, val, 0.1, 1)
         rset = RadioSetting("gps.gps_fixed_altitude", "Fixed Altitude", rs)
+        rset.set_doc(_("Sets the fixed altitude that goes with the fixed "
+                       "latitude and longitude."))
         rset.set_apply_callback(apply_fixed_coord, _gps, 8, 1)
         group.append(rset)
 
@@ -1998,12 +2559,21 @@ class RT880G(chirp_common.CloneModeRadio):
         # APRS Enable
         rs = RadioSettingValueBoolean(_aprs.aprs_enable)
         rset = RadioSetting("aprs.aprs_enable", "APRS Enable", rs)
+        rset.set_doc(_("Turns APRS on or off. With APRS on, the radio sends "
+                       "its own APRS data to other stations and decodes the "
+                       "APRS data it receives. When received data contains a "
+                       "position, the radio shows the direction and distance "
+                       "to that station."))
         group.append(rset)
 
         # APRS Station Mode
         rs = RadioSettingValueList(
             LIST_APRSSTATIONMODE, current_index=_aprs.aprs_station_mode)
         rset = RadioSetting("aprs.aprs_station_mode", "Station Mode", rs)
+        rset.set_doc(_("Chooses where this radio's APRS position comes from. "
+                       "GPS uses the current GPS position, and Fixed uses the "
+                       "fixed latitude, longitude and altitude set in the GPS "
+                       "settings."))
         group.append(rset)
 
         # APRS Callsign
@@ -2011,6 +2581,8 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_callsign", "Callsign", rs)
+        rset.set_doc(_("Sets the call sign that APRS transmits, up to 6 "
+                       "characters. The SSID is set separately."))
         rset.set_apply_callback(self.apply_string, _aprs)
         group.append(rset)
 
@@ -2018,18 +2590,25 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             chirp_common.APRS_SSID, current_index=_aprs.aprs_ssid)
         rset = RadioSetting("aprs.aprs_ssid", "SSID", rs)
+        rset.set_doc(_("Sets the SSID added to the call sign, which tells "
+                       "other stations what kind of station this is."))
         group.append(rset)
 
         # APRS Symbol Table
         rs = RadioSettingValueList(
             LIST_APRSSYMBOLTABLE, current_index=_aprs.aprs_symbol_table)
         rset = RadioSetting("aprs.aprs_symbol_table", "Symbol Table", rs)
+        rset.set_doc(_("Selects the primary or the alternate APRS symbol "
+                       "table. Together with Symbol, it sets the icon that "
+                       "other stations show for this radio."))
         group.append(rset)
 
         # APRS Symbol
         rs = RadioSettingValueList(
             LIST_APRSSYMBOLS, current_index=_aprs.aprs_symbol)
         rset = RadioSetting("aprs.aprs_symbol", "Symbol", rs)
+        rset.set_doc(_("Selects the APRS symbol, the icon that other stations "
+                       "show for this radio."))
         group.append(rset)
 
         # APRS Comment
@@ -2037,18 +2616,23 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 128, _code, True)
         rset = RadioSetting("aprs.aprs_comment", "Comment", rs)
+        rset.set_doc(_("Sets the comment sent with this radio's APRS data, up "
+                       "to 128 characters."))
         rset.set_apply_callback(self.apply_string, _aprs)
         group.append(rset)
 
         # APRS MIC-E Enable
         rs = RadioSettingValueBoolean(_aprs.aprs_mice_enable)
         rset = RadioSetting("aprs.aprs_mice_enable", "MIC-E Enable", rs)
+        rset.set_doc(_("Sends APRS data in the compressed MIC-E format."))
         group.append(rset)
 
         # APRS MIC-E Mode
         rs = RadioSettingValueList(
             LIST_APRESMICEMODE, current_index=_aprs.aprs_mice_mode)
         rset = RadioSetting("aprs.aprs_mice_mode", "MIC-E Mode", rs)
+        rset.set_doc(_("Selects the MIC-E message type sent with the "
+                       "compressed data, such as En Route or Emergency."))
         group.append(rset)
 
         # APRS Path 1
@@ -2056,13 +2640,17 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_path_1", "Path 1", rs)
+        rset.set_doc(_("Sets APRS forwarding path %d, the alias, such as "
+                       "WIDE1 or WIDE2, that digipeaters use to decide "
+                       "whether to forward this radio's APRS data.") % 1)
         rset.set_apply_callback(self.apply_string, _aprs)
         group.append(rset)
 
         # APRS Path 1 Count
         rs = RadioSettingValueInteger(0, 9, _aprs.aprs_path_1_count)
         rset = RadioSetting("aprs.aprs_path_1_count", "Path 1 Count", rs)
-        rset.set_doc('Value between 0-9')
+        rset.set_doc(_("Sets how many times this radio's APRS data may be "
+                       "forwarded on path %d, from 0 to 9.") % 1)
         group.append(rset)
 
         # APRS Path 2
@@ -2070,115 +2658,154 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_path_2", "Path 2", rs)
+        rset.set_doc(_("Sets APRS forwarding path %d, the alias, such as "
+                       "WIDE1 or WIDE2, that digipeaters use to decide "
+                       "whether to forward this radio's APRS data.") % 2)
         rset.set_apply_callback(self.apply_string, _aprs)
         group.append(rset)
 
         # APRS Path 2 Count
         rs = RadioSettingValueInteger(0, 9, _aprs.aprs_path_2_count)
         rset = RadioSetting("aprs.aprs_path_2_count", "Path 2 Count", rs)
-        rset.set_doc('Value between 0-9')
+        rset.set_doc(_("Sets how many times this radio's APRS data may be "
+                       "forwarded on path %d, from 0 to 9.") % 2)
         group.append(rset)
 
         # APRS Tx Voltage
         rs = RadioSettingValueBoolean(_aprs.aprs_tx_voltage)
         rset = RadioSetting("aprs.aprs_tx_voltage", "Tx Voltage", rs)
+        rset.set_doc(_("Adds this radio's battery voltage to the APRS data it "
+                       "sends."))
         group.append(rset)
 
         # APRS Tx Star
         rs = RadioSettingValueBoolean(_aprs.aprs_tx_star)
         rset = RadioSetting("aprs.aprs_tx_star", "Tx Star", rs)
+        rset.set_doc(_("Adds the number of satellites the GPS receiver has "
+                       "found to the APRS data it sends."))
         group.append(rset)
 
         # APRS Tx Mileage
         rs = RadioSettingValueBoolean(_aprs.aprs_tx_mileage)
         rset = RadioSetting("aprs.aprs_tx_mileage", "Tx Mileage", rs)
+        rset.set_doc(_("Adds this radio's mileage count to the APRS data it "
+                       "sends."))
         group.append(rset)
 
         # APRS Rx Channel
         rs = RadioSettingValueList(
             LIST_APRSCHANNEL, current_index=_aprs.aprs_rx_ch)
         rset = RadioSetting("aprs.aprs_rx_ch", "Rx Channel", rs)
+        rset.set_doc(_("Selects the area, A, B or C, on which APRS receives "
+                       "and decodes data."))
         group.append(rset)
 
         # APRS Tx Channel
         rs = RadioSettingValueList(
             LIST_APRSCHANNELCOMBOS, current_index=_aprs.aprs_tx_ch)
         rset = RadioSetting("aprs.aprs_tx_ch", "Tx Channel", rs)
+        rset.set_doc(_("Selects the area or areas on which APRS data is "
+                       "transmitted."))
         group.append(rset)
 
         # APRS PTT Priority
         rs = RadioSettingValueList(
             LIST_APRSPTTPRIORITY, current_index=_aprs.aprs_ptt_priority)
         rset = RadioSetting("aprs.aprs_ptt_priority", "PTT Priority", rs)
+        rset.set_doc(_("Chooses what pressing PTT does: Call starts a voice "
+                       "call, and APRS sends APRS data."))
         group.append(rset)
 
         # APRS PTT Delay
         rs = RadioSettingValueList(
             LIST_APRSPTTDELAY, current_index=_aprs.aprs_ptt_delay)
         rset = RadioSetting("aprs.aprs_ptt_delay", "PTT Delay", rs)
+        rset.set_doc(_("Sets how long the radio waits after keying the "
+                       "transmitter before it sends APRS data."))
         group.append(rset)
 
         # APRS Beacon Popup
         rs = RadioSettingValueBoolean(_aprs.aprs_beacon_popup)
         rset = RadioSetting("aprs.aprs_beacon_popup", "Beacon Popup", rs)
+        rset.set_doc(_("Opens the beacon data screen automatically when the "
+                       "radio decodes an APRS beacon."))
         group.append(rset)
 
         # APRS Beacon After
         rs = RadioSettingValueList(
             LIST_APRSBEACONAFTER, current_index=_aprs.aprs_beacon_ptt_after)
         rset = RadioSetting("aprs.aprs_beacon_ptt_after", "Beacon After", rs)
+        rset.set_doc(_("Sends APRS data each time you release PTT at the end "
+                       "of a transmission. Off turns this off. The manual "
+                       "does not explain the Area Match and All Area "
+                       "choices."))
         group.append(rset)
 
         # APRS Smart Beacon
         rs = RadioSettingValueList(
             LIST_APRSSMARTBEACON, current_index=_aprs.aprs_smart_beacon)
         rset = RadioSetting("aprs.aprs_smart_beacon", "Smart Beacon", rs)
+        rset.set_doc(_("Selects smart beaconing. Off turns it off. The manual "
+                       "does not explain the Type 1 to Type 3 choices."))
         group.append(rset)
 
         # APRS Beacon Time Mode
         rs = RadioSettingValueBoolean(_aprs.aprs_beacon_time_mode)
         rset = RadioSetting("aprs.aprs_beacon_time_mode",
                             "Beacon Time Mode", rs)
+        rset.set_doc(_("Sends APRS data at the regular interval set by Beacon "
+                       "Time."))
         group.append(rset)
 
         # APRS Beacon Time
         rs = RadioSettingValueInteger(10, 99999999, _aprs.aprs_beacon_time)
         rset = RadioSetting("aprs.aprs_beacon_time", "Beacon Time", rs)
-        rset.set_doc('Value between 10-99999999')
+        rset.set_doc(_("Sets the interval between timed beacons, in seconds."))
         group.append(rset)
 
         # APRS Queue Beacon
         rs = RadioSettingValueBoolean(_aprs.aprs_queue_beacon)
         rset = RadioSetting("aprs.aprs_queue_beacon", "Queue Beacon", rs)
+        rset.set_doc(_("Turns on queue beaconing, with the interval set by "
+                       "Queue Interval. The manual names this mode without "
+                       "explaining it."))
         group.append(rset)
 
         # APRS Queue Interval
         rs = RadioSettingValueInteger(0, 59, _aprs.aprs_queue_interval)
         rset = RadioSetting("aprs.aprs_queue_interval", "Queue Interval", rs)
-        rset.set_doc('Value between 0-59')
+        rset.set_doc(_("Sets the interval for queue beaconing, from 0 to "
+                       "59.") + " " +
+                     _("The manual does not give the unit."))
         group.append(rset)
 
         # APRS Demod Tone
         rs = RadioSettingValueBoolean(_aprs.aprs_demod_tone)
         rset = RadioSetting("aprs.aprs_demod_tone", "Demod Tone", rs)
+        rset.set_doc(_("Sounds a tone when the radio has decoded APRS data."))
         group.append(rset)
 
         # APRS Tx Level
         rs = RadioSettingValueList(
             LIST_APRSLEVEL, current_index=_aprs.aprs_tx_level)
         rset = RadioSetting("aprs.aprs_tx_level", "Tx Level", rs)
+        rset.set_doc(_("Sets the level of the transmitted APRS signal."))
         group.append(rset)
 
         # APRS Rx Level
         rs = RadioSettingValueList(
             LIST_APRSLEVEL, current_index=_aprs.aprs_rx_level)
         rset = RadioSetting("aprs.aprs_rx_level", "Rx Level", rs)
+        rset.set_doc(_("Sets the gain applied to received APRS signals."))
         group.append(rset)
 
         # APRS Beacon Save
         rs = RadioSettingValueList(
             LIST_APRSBEACONSAVE, current_index=_aprs.aprs_beacon_save)
         rset = RadioSetting("aprs.aprs_beacon_save", "Beacon Save", rs)
+        rset.set_doc(_("Chooses which received beacons the radio stores in "
+                       "its beacon list: none, only those that pass the frame "
+                       "check (FCS Check OK), or all of them."))
         group.append(rset)
 
         # APRS Beacon After Channel
@@ -2187,11 +2814,17 @@ class RT880G(chirp_common.CloneModeRadio):
             current_index=_aprs.aprs_beacon_ptt_after_ch)
         rset = RadioSetting("aprs.aprs_beacon_ptt_after_ch",
                             "Beacon After Channel", rs)
+        rset.set_doc(_("Selects the area or areas used for the APRS data that "
+                       "is sent when PTT is released.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         # APRS Rx Channel Mute
         rs = RadioSettingValueBoolean(_aprs.aprs_rx_ch_mute)
         rset = RadioSetting("aprs.aprs_rx_ch_mute", "Rx Channel Mute", rs)
+        rset.set_doc(_("Mutes the audio of the area that APRS receives "
+                       "on.") + " " +
+                     _("The manual does not describe this setting."))
         group.append(rset)
 
         digi_group = RadioSettingGroup("aprs_digi", "Digipeater")
@@ -2201,12 +2834,18 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueList(
             LIST_APRSCHANNELCOMBOS, current_index=_aprs.aprs_digi_rep_ch)
         rset = RadioSetting("aprs.aprs_digi_rep_ch", "Channel", rs)
+        rset.set_doc(_("Selects the area or areas on which the radio forwards "
+                       "received APRS data whose path matches a digipeater "
+                       "name."))
         digi_group.append(rset)
 
         # APRS Digipeater 1 Enable
         rs = RadioSettingValueBoolean(_aprs.aprs_digi_1_enable)
         rset = RadioSetting("aprs.aprs_digi_1_enable",
                             "Digipeater 1 Enable", rs)
+        rset.set_doc(_("Turns on digipeater %d. When the path in received "
+                       "APRS data matches Digipeater %d Name, the radio "
+                       "forwards the data.") % (1, 1))
         digi_group.append(rset)
 
         # APRS Digipeater 1 Name
@@ -2214,6 +2853,9 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_digi_1_name", "Digipeater 1 Name", rs)
+        rset.set_doc(_("Sets the name of digipeater %d, which the path in "
+                       "received APRS data must match for the radio to "
+                       "forward it.") % 1)
         rset.set_apply_callback(self.apply_string, _aprs)
         digi_group.append(rset)
 
@@ -2221,6 +2863,9 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueBoolean(_aprs.aprs_digi_2_enable)
         rset = RadioSetting("aprs.aprs_digi_2_enable",
                             "Digipeater 2 Enable", rs)
+        rset.set_doc(_("Turns on digipeater %d. When the path in received "
+                       "APRS data matches Digipeater %d Name, the radio "
+                       "forwards the data.") % (2, 2))
         digi_group.append(rset)
 
         # APRS Digipeater 2 Name
@@ -2228,6 +2873,9 @@ class RT880G(chirp_common.CloneModeRadio):
         _code = str(_codeobj).rstrip('\xFF')
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_digi_2_name", "Digipeater 2 Name", rs)
+        rset.set_doc(_("Sets the name of digipeater %d, which the path in "
+                       "received APRS data must match for the radio to "
+                       "forward it.") % 2)
         rset.set_apply_callback(self.apply_string, _aprs)
         digi_group.append(rset)
 
@@ -2235,7 +2883,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueInteger(0, 9, _aprs.aprs_digi_wait_before_rep)
         rset = RadioSetting("aprs.aprs_digi_wait_before_rep",
                             "Wait Before Repeat", rs)
-        rset.set_doc('Value between 0-9')
+        rset.set_doc(_("Sets how many seconds the radio waits before it "
+                       "forwards received APRS data, from 0 to 9."))
         digi_group.append(rset)
 
         # APRS Digipeater Remote Password
@@ -2244,6 +2893,8 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueString(0, 6, _code, True)
         rset = RadioSetting("aprs.aprs_digi_remote_password",
                             "Remote Password", rs)
+        rset.set_doc(_("Sets the remote password for forwarding. The manual "
+                       "does not explain how it is used."))
         digi_group.append(rset)
 
     def get_time_settings(self, group):
@@ -2253,26 +2904,36 @@ class RT880G(chirp_common.CloneModeRadio):
         rs = RadioSettingValueBoolean(_settings.auto_power_off)
         rset = RadioSetting("auto_power_off",
                             "Automatic Power Off", rs)
+        rset.set_doc(_("Puts the radio into a low-power sleep mode when it "
+                       "has not been operated for the Auto Power Off Time. "
+                       "The radio is not fully turned off, so the battery "
+                       "keeps draining slowly."))
         group.append(rset)
 
         # Automatic Power Off Time
         rs = RadioSettingValueInteger(0, 235929599,
                                       _settings.auto_power_off_time)
         rset = RadioSetting("auto_power_off_time", "Auto Power Off Time", rs)
-        rset.set_doc('Value between 0-235929599')
+        rset.set_doc(_("Sets how long the radio waits without being operated "
+                       "before Automatic Power Off puts it to sleep.") + " " +
+                     _("The manual does not give the unit."))
         group.append(rset)
 
         # Automatic Wake Up
         rs = RadioSettingValueBoolean(_settings.auto_wake_up)
         rset = RadioSetting("auto_wake_up",
                             "Automatic Wake Up", rs)
+        rset.set_doc(_("Ends the sleep mode after the Auto Wake Up Time and "
+                       "returns the radio to normal operation."))
         group.append(rset)
 
         # Automatic Wake Up Time
         rs = RadioSettingValueInteger(0, 235929599,
                                       _settings.auto_wake_up_time)
         rset = RadioSetting("auto_wake_up_time", "Auto Wake Up Time", rs)
-        rset.set_doc('Value between 0-235929599')
+        rset.set_doc(_("Sets how long the radio sleeps before Automatic Wake "
+                       "Up returns it to normal operation.") + " " +
+                     _("The manual does not give the unit."))
         group.append(rset)
 
     def set_settings(self, settings):

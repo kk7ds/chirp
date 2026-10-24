@@ -4,3 +4,4 @@
 # radio class IDs, as in driver_xfails.yaml; keep them sorted.
 - Baofeng_UV-5G_Mini
 - Baofeng_UV-5R_Mini
+- Radtel_RT-880G
