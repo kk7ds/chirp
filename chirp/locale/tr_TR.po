@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2026-04-08 20:20+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1534,7 +1534,7 @@ msgstr "%s için tekrar sorma"
 msgid "Do you accept the risk?"
 msgstr "Riski kabul ediyor musun?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Banka adını değiştirmek için çift tıklayın"
 
@@ -1621,7 +1621,7 @@ msgstr "Ofset girin (MHz)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "TX Frekansını girin (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
@@ -2239,7 +2239,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "Dizin"
 
@@ -2446,6 +2446,11 @@ msgstr "Kayıtlar"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Desteklenmeyen aygıt yazılımı sürümü nedeniyle kayıtlar salt okunurdur"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2464,7 +2469,7 @@ msgstr "Kayıt alanı adı (%s'den biri)"
 msgid "Memory label (stored in radio)"
 msgstr "Kayıt etiketi (telsizde saklanır)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "Hafızanın düzenlenebilmesi için bir bankada olması gerekir"
 
@@ -2992,7 +2997,7 @@ msgstr "Kaldır"
 msgid "Remove selected model from list"
 msgstr "Seçili modeli listeden kaldır"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Bankayı yeniden adlandır"
 

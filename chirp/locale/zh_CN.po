@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2024-11-11 02:28+0800\n"
 "Last-Translator: DuckSoft, BH2UEP <realducksoft@gmail.com>\n"
 "Language-Team: \n"
@@ -1508,7 +1508,7 @@ msgstr "不再对 %s 提示"
 msgid "Do you accept the risk?"
 msgstr "您接受风险吗？"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "双击以更改存储区名称"
 
@@ -1595,7 +1595,7 @@ msgstr "输入频差（MHz）"
 msgid "Enter TX Frequency (MHz)"
 msgstr "输入发射频率（MHz）"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "输入存储区 %s 的新名称："
@@ -2212,7 +2212,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "索引"
 
@@ -2421,6 +2421,11 @@ msgstr "存储"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "由于不支持的固件版本，存储是只读的"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2439,7 +2444,7 @@ msgstr ""
 msgid "Memory label (stored in radio)"
 msgstr "存储标签（存储在电台中）"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "存储必须在一个存储区中才能编辑"
 
@@ -2972,7 +2977,7 @@ msgstr "删除"
 msgid "Remove selected model from list"
 msgstr "从列表中删除所选的型号"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "重命名存储区"
 

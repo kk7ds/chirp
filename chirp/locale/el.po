@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2023-02-11 15:12+0200\n"
 "Last-Translator: Sokratis Alichanidis <sv2hzs@posteo.net>\n"
 "Language-Team: Greek\n"
@@ -1217,7 +1217,7 @@ msgstr "Να μην ερωτηθώ ξανά για %s"
 msgid "Do you accept the risk?"
 msgstr ""
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Κάντε διπλό κλικ για μετονομασία της ομάδας μνημών"
 
@@ -1307,7 +1307,7 @@ msgstr ""
 msgid "Enter TX Frequency (MHz)"
 msgstr "Εισάγετε συχνότητα εκπομπής (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Εισάγετε ένα νέο όνομα για την ομάδα μνημών %s:"
@@ -1842,7 +1842,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr ""
 
@@ -2061,6 +2061,11 @@ msgstr "Μνήμες"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr ""
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2079,7 +2084,7 @@ msgstr ""
 msgid "Memory label (stored in radio)"
 msgstr ""
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "Η μνήμη πρέπει να βρίσκεται σε ομάδα για να γίνει επεξεργασία"
 
@@ -2618,7 +2623,7 @@ msgstr ""
 msgid "Remove selected model from list"
 msgstr ""
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Μετονομασία ομάδας μνημών"
 

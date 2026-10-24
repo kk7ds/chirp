@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:06-0400\n"
+"POT-Creation-Date: 2026-10-24 13:10-0500\n"
 "PO-Revision-Date: 2025-08-22 15:43+0300\n"
 "Last-Translator: Olesya Gerasimenko <goa@altlinux.org>\n"
 "Language-Team: Basealt Translation Team\n"
@@ -1559,7 +1559,7 @@ msgstr "Не запрашивать снова для %s"
 msgid "Do you accept the risk?"
 msgstr "Вы принимаете этот риск?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Сделайте двойной щелчок, чтобы изменить имя банка"
 
@@ -1646,7 +1646,7 @@ msgstr "Введите смещение (МГц)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "Введите частоту TX (МГц)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Введите новое имя банка %s:"
@@ -2271,7 +2271,7 @@ msgstr ""
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../wxui/bankedit.py:62
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "Индекс"
 
@@ -2478,6 +2478,11 @@ msgstr "Ячейки памяти"
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Ячейки памяти доступны только для чтения из-за неподдерживаемой версии микропрограммы"
 
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr ""
+
 #: ../wxui/memedit.py:2090
 #, python-format
 msgid "Memory %i is not deletable"
@@ -2496,7 +2501,7 @@ msgstr "Название поля памяти (одно из следующих
 msgid "Memory label (stored in radio)"
 msgstr "Подпись ячейки памяти (хранится на станции)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "Чтобы редактировать ячейку памяти, необходимо поместить её в банк"
 
@@ -3025,7 +3030,7 @@ msgstr "Удалить"
 msgid "Remove selected model from list"
 msgstr "Удалить выбранную модель из списка"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Переименовать банк"
 
