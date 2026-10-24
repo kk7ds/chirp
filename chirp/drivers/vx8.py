@@ -17,7 +17,7 @@ import re
 import logging
 
 from chirp.drivers import yaesu_clone
-from chirp import chirp_common, directory, bitwise
+from chirp import chirp_common, directory, bitwise, errors
 from chirp.settings import RadioSettingGroup, RadioSetting, RadioSettings
 from chirp.settings import RadioSettingValueInteger, RadioSettingValueString
 from chirp.settings import RadioSettingValueList, RadioSettingValueBoolean
@@ -655,8 +655,19 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         mem.tmode = TMODES[_mem.tone_mode]
         mem.duplex = DUPLEX[_mem.duplex]
         if mem.duplex == "split":
-            mem.offset = chirp_common.fix_rounded_step(mem.offset)
-        mem.mode = MODES[_mem.mode]
+            try:
+                mem.offset = chirp_common.fix_rounded_step(mem.offset)
+            except errors.InvalidDataError:
+                # The radio may store a split offset that does not align to
+                # any step we can correct for (i.e. one entered from the
+                # keypad that the radio itself rounded to 1kHz resolution).
+                # Pass the raw value through so the memory is still loadable.
+                pass
+        # A mode of 3 is the radio's "AUTO" RX mode, which is what gets
+        # stored for memories programmed from the keypad. It resolves to
+        # NFM (i.e. FM) everywhere except the broadcast and air bands, so
+        # coerce it to FM since we have no way to represent it.
+        mem.mode = MODES[_mem.mode] if _mem.mode < len(MODES) else MODES[0]
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.power = POWER_LEVELS[3 - _mem.power]
