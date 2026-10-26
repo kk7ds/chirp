@@ -15,6 +15,7 @@
 
 from chirp.drivers import icf
 from chirp import chirp_common, directory, bitwise
+from chirp import errors
 
 # memory number:
 # 000 -  999	regular memory channels (supported, others not)
@@ -171,6 +172,8 @@ class ICP7Radio(icf.IcomCloneModeRadio):
         mem.tmode = TMODES[_mem.tmode]
         mem.duplex = DUPLEX[_mem.duplex]
         mem.tuning_step = TUNING_STEPS[_mem.tuning_step]
+        if mem.tuning_step == 0:
+            mem.tuning_step = self._valid_tuning_step(mem)
         mem.rtone = chirp_common.TONES[_mem.rtone]
         mem.ctone = chirp_common.TONES[_mem.ctone]
         mem.mode = MODES[_mem.mode]
@@ -184,6 +187,13 @@ class ICP7Radio(icf.IcomCloneModeRadio):
             mem.skip = ""
 
         return mem
+
+    def _valid_tuning_step(self, mem):
+        try:
+            return chirp_common.required_step(
+                mem.freq, self.get_features().valid_tuning_steps)
+        except errors.InvalidDataError:
+            return self.get_features().valid_tuning_steps[0]
 
     def set_memory(self, mem):
         bit = 1 << (mem.number % 8)
@@ -227,7 +237,10 @@ class ICP7Radio(icf.IcomCloneModeRadio):
             _mem.tmode = TMODES.index(mem.tmode)
             _mem.duplex = DUPLEX.index(mem.duplex)
             _mem.train_tone = 228  # Train SQL Tone (x10 Hz)
-            _mem.tuning_step = TUNING_STEPS.index(mem.tuning_step)
+            tuning_step = mem.tuning_step
+            if tuning_step == 0:
+                tuning_step = self._valid_tuning_step(mem)
+            _mem.tuning_step = TUNING_STEPS.index(tuning_step)
             _mem.rtone = chirp_common.TONES.index(mem.rtone)
             _mem.ctone = chirp_common.TONES.index(mem.ctone)
             _mem.unknown0 = 0  # unknown (always zero)

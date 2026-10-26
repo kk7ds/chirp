@@ -23,7 +23,8 @@ from chirp import chirp_common, directory, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueList, \
-    RadioSettingValueBoolean, RadioSettings
+    RadioSettingValueBoolean, RadioSettingValueMap, \
+    RadioSettingValueString, RadioSettings
 
 LOG = logging.getLogger(__name__)
 
@@ -227,6 +228,8 @@ def do_download(radio):
         LOG.debug('Already in programming mode for %s',
                   radio.__class__.__name__)
 
+    radio._pre_download()
+
     data = b""
 
     status = chirp_common.Status()
@@ -394,7 +397,15 @@ class H777Radio(chirp_common.CloneModeRadio):
         elif is_dtcs:
             return 'DTCS', int(memval), 'R' if is_rev else 'N'
         else:
-            return 'Tone', int(memval) / 10.0, None
+            tone = int(memval) / 10.0
+            valid_tones = self.get_features().valid_tones
+            if tone not in valid_tones:
+                closest = min(valid_tones, key=lambda value: abs(value - tone))
+                LOG.error(
+                    "Radio reports unsupported tone %.1f Hz; using %.1f Hz",
+                    tone, closest)
+                tone = closest
+            return 'Tone', tone, None
 
     def _encode_tone(self, memval, mode, value, pol):
         memval[1].ignore_bits(DTCS_FLAG | DTCS_REV_FLAG)
@@ -495,15 +506,22 @@ class H777Radio(chirp_common.CloneModeRadio):
         _mem.skip = mem.skip == "S"
 
         for setting in mem.extra:
-            # NOTE: Only two settings right now, both are inverted
+            # All channel extras are stored inverted
             setattr(_mem, setting.get_name(), not int(setting.value))
 
+        self._clear_unknown_bits(_mem)
+
+    def _clear_unknown_bits(self, _mem):
         # When set to one, official programming software (BF-480) shows always
         # "WFM", even if we choose "NFM". Therefore, for compatibility
         # purposes, we will set these to zero.
         _mem.unknown1 = 0
         _mem.unknown2 = 0
         _mem.unknown3 = 0
+
+    def _pre_download(self):
+        """Called in programming mode, before the memory is read"""
+        pass
 
     def get_settings(self):
         _settings = self._memobj.settings
@@ -974,3 +992,285 @@ class MAVERICKRA425Radio(BF1904Radio):
     def match_model(cls, filedata, filename):
         # This model is only ever matched via metadata
         return False
+
+
+ZA758_MEM_FORMAT = """
+#seekto 0x0010;
+struct {
+    lbcd rxfreq[4];
+    lbcd txfreq[4];
+    lbcd rxtone[2];
+    lbcd txtone[2];
+    u8 pttid:1,
+       compander:1,
+       scramble:1,
+       skip:1,
+       highpower:1,
+       narrow:1,
+       unknown1:1,
+       bcl:1;
+    u8 unknown2[3];
+} memory[16];
+
+#seekto 0x03A0;
+u8 bot_code[15];
+
+#seekto 0x03C0;
+struct {
+    u8 unknown0:1,
+       scanmode:1,
+       pttid:2,
+       voice:2,
+       batterysaver:1,
+       beep:1;
+    u8 squelch;
+    u8 sk1short;
+    u8 tot;
+    u8 vox;
+    u8 sk2short;
+    u8 priority;
+    u8 voxdelay;
+    u8 sk1long;
+    u8 sk2long;
+} settings;
+
+#seekto 0x03E0;
+u8 eot_code[15];
+"""
+
+ZA758_SIDEKEY_LIST = ["Off", "Monitor Momentary", "High/Low Power", "Scan",
+                      "VOX", "Talkaround", "Reverse", "Show Power",
+                      "Show Battery", "Call Ring", "Emergency Alarm",
+                      "Channel Announce", "PTT ID", "Squelch Level",
+                      "Compander", "Scrambler"]
+# The factory software does not offer these functions on a short press
+ZA758_SHORTPRESS_EXCLUDE = (2, 5, 6, 7)
+ZA758_VOICE_LIST = ["Off", "Chinese", "English"]
+ZA758_PTTID_LIST = ["Off", "Begin of TX", "End of TX", "Both"]
+ZA758_VOX_LIST = ["Off"] + ["%i" % x for x in range(1, 10)]
+ZA758_VOXDELAY_LIST = ["%.1f seconds" % (x / 10) for x in range(5, 31, 5)]
+ZA758_DTMF_CHARS = "0123456789ABCD"
+# Flags byte for a new channel: busy lock, scramble, compander and PTT ID
+# off; narrow, low power. Scan add is then set from the memory, so a new
+# scanned channel matches the factory channels (0xE7).
+ZA758_NEW_FLAGS = 0xF7
+
+
+@directory.register
+class ZartekZA758Radio(H777Radio):
+    """Zartek ZA-758"""
+    VENDOR = "Zartek"
+    MODEL = "ZA-758"
+    PROGRAM_CMD = b"LROGRAM"
+    IDENT = [b"SMP558\x00\x00"]
+    ALIASES = []
+
+    # Low is the 500 mW licence-free limit the radio ships with.
+    # TODO: High has not been measured; 2 W is the rating of the ZA-748.
+    POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=0.50),
+                    chirp_common.PowerLevel("High", watts=2.00)]
+    VALID_BANDS = (400000000, 470000000)
+
+    # Do not upload the unmapped 0x0110-0x039F and 0x03F0-0x03FF or the
+    # model fingerprint at 0x03D0
+    _ranges = [
+        (0x0000, 0x0110),
+        (0x03A0, 0x03D0),
+        (0x03E0, 0x03F0),
+    ]
+    _memsize = 0x0400
+    _has_scramble = False
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        # This model is only ever matched via metadata
+        return False
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(ZA758_MEM_FORMAT, self._mmap)
+
+    def _pre_download(self):
+        # Before reading, the factory software requests the 6-byte read
+        # password and acknowledges it. The password is only checked by
+        # the software, so it is not compared here.
+        try:
+            self.pipe.write(b"\x05")
+            password = self.pipe.read(6)
+            if len(password) != 6:
+                raise errors.RadioError(
+                    "Radio did not send its password block")
+            self.pipe.write(CMD_ACK)
+            ack = self.pipe.read(1)
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            LOG.warning('Failed to read password block: %s', e)
+            raise errors.RadioError("Error communicating with radio")
+        if ack != CMD_ACK:
+            raise errors.RadioError("No ACK after reading password block")
+
+    def _clear_unknown_bits(self, _mem):
+        # Bits the BF-888 clears hold scramble, compander and PTT ID here
+        pass
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if mem.empty:
+            return mem
+
+        _mem = self._memobj.memory[number - 1]
+        rs = RadioSetting("scramble", "Scramble",
+                          RadioSettingValueBoolean(not _mem.scramble))
+        rs.set_doc('Inverts the audio so only radios with scramble enabled '
+                   'on the same channel can understand it.')
+        mem.extra.append(rs)
+        rs = RadioSetting("compander", "Compander",
+                          RadioSettingValueBoolean(not _mem.compander))
+        rs.set_doc('Compresses audio on transmit and expands it on receive '
+                   'to reduce noise. Radios on the channel should match.')
+        mem.extra.append(rs)
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueBoolean(not _mem.pttid))
+        rs.set_doc('Sends the PTT ID DTMF codes on this channel, at the '
+                   'times chosen by the PTT ID setting.')
+        mem.extra.append(rs)
+        return mem
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number - 1]
+        if (not mem.empty and
+                _mem.rxfreq.get_raw() in (b"\xFF" * 4, b"\x00" * 4)):
+            # A blank channel's flags are not usable defaults; erased ones
+            # are all set, which means high power
+            _mem.set_raw(b"\xFF" * 12 + bytes([ZA758_NEW_FLAGS]) +
+                         b"\xFF" * 3)
+        super().set_memory(mem)
+
+    def _get_dtmf_code(self, code):
+        # Digits are stored one per byte; the first non-digit ends the code
+        digits = ""
+        for value in code:
+            if int(value) >= len(ZA758_DTMF_CHARS):
+                break
+            digits += ZA758_DTMF_CHARS[int(value)]
+        return digits
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        keys = RadioSettingGroup("keys", "Side Keys")
+        dtmf = RadioSettingGroup("dtmf", "PTT ID")
+        top = RadioSettings(basic, keys, dtmf)
+
+        rs = RadioSetting("squelch", "Squelch level",
+                          RadioSettingValueInteger(
+                              0, 9, int(_settings.squelch)))
+        rs.set_doc('Signal strength needed to open the speaker. Higher '
+                   'levels block weak signals and noise; 0 leaves the '
+                   'squelch open.')
+        basic.append(rs)
+
+        rs = RadioSetting("tot", "Time-out timer",
+                          RadioSettingValueList(
+                              TIMEOUTTIMER_LIST,
+                              current_index=int(_settings.tot)))
+        rs.set_doc('Limits how long one transmission can last. When the '
+                   'time runs out the radio stops transmitting until PTT '
+                   'is released.')
+        basic.append(rs)
+
+        rs = RadioSetting("vox", "VOX level",
+                          RadioSettingValueList(
+                              ZA758_VOX_LIST,
+                              current_index=int(_settings.vox)))
+        rs.set_doc('Voice-operated transmit. 9 is the most sensitive and '
+                   '1 needs the loudest voice to start transmitting.')
+        basic.append(rs)
+
+        rs = RadioSetting("voxdelay", "VOX delay",
+                          RadioSettingValueList(
+                              ZA758_VOXDELAY_LIST,
+                              current_index=int(_settings.voxdelay)))
+        rs.set_doc('How long the radio keeps transmitting after you stop '
+                   'speaking in VOX mode.')
+        basic.append(rs)
+
+        rs = RadioSetting("voice", "Voice announcement",
+                          RadioSettingValueList(
+                              ZA758_VOICE_LIST,
+                              current_index=int(_settings.voice)))
+        rs.set_doc('Announces the channel number and battery level out '
+                   'loud in the chosen language.')
+        basic.append(rs)
+
+        rs = RadioSetting("beep", "Beep tone",
+                          RadioSettingValueBoolean(_settings.beep))
+        rs.set_doc('Sounds a beep when keys are pressed.')
+        basic.append(rs)
+
+        rs = RadioSetting("batterysaver", "Battery saver",
+                          RadioSettingValueBoolean(_settings.batterysaver))
+        rs.set_doc('Periodically turns the receiver off while the channel '
+                   'is quiet to extend battery life.')
+        basic.append(rs)
+
+        rs = RadioSetting("scanmode", "Scan mode",
+                          RadioSettingValueList(
+                              self.SCANMODE_LIST,
+                              current_index=_settings.scanmode))
+        rs.set_doc('Carrier resumes scanning when the signal stops; Time '
+                   'resumes after a few seconds even if it continues.')
+        basic.append(rs)
+
+        rs = RadioSetting("priority", "Priority channel",
+                          RadioSettingValueMap(
+                              [("Off", 0xFF)] +
+                              [("%i" % (x + 1), x) for x in range(16)],
+                              int(_settings.priority)))
+        rs.set_doc('Channel that is checked more often while scanning.')
+        basic.append(rs)
+
+        short_keys = [(name, i) for i, name in enumerate(ZA758_SIDEKEY_LIST)
+                      if i not in ZA758_SHORTPRESS_EXCLUDE]
+        long_keys = [(name, i) for i, name in enumerate(ZA758_SIDEKEY_LIST)]
+        for name, label, options in (
+                ("sk1short", "Side key 1 (short press)", short_keys),
+                ("sk1long", "Side key 1 (long press)", long_keys),
+                ("sk2short", "Side key 2 (short press)", short_keys),
+                ("sk2long", "Side key 2 (long press)", long_keys)):
+            rs = RadioSetting(name, label,
+                              RadioSettingValueMap(
+                                  options, int(getattr(_settings, name))))
+            rs.set_doc('Function of the side key.')
+            keys.append(rs)
+
+        rs = RadioSetting("pttid", "PTT ID",
+                          RadioSettingValueList(
+                              ZA758_PTTID_LIST,
+                              current_index=_settings.pttid))
+        rs.set_doc('When to send the DTMF ID codes on channels that have '
+                   'PTT ID enabled.')
+        dtmf.append(rs)
+
+        def apply_code(setting, obj, name):
+            # The code is shown only up to its first non-digit byte, so
+            # leave it alone unless it was edited
+            if not setting.changed():
+                return
+            value = str(setting.value).strip()
+            code = [ZA758_DTMF_CHARS.index(c) for c in value]
+            setattr(obj, name, code + [0xFF] * (15 - len(code)))
+
+        for name, label in (("bot_code", "Begin of TX code"),
+                            ("eot_code", "End of TX code")):
+            rs = RadioSetting(name, label,
+                              RadioSettingValueString(
+                                  0, 15,
+                                  self._get_dtmf_code(
+                                      getattr(self._memobj, name)),
+                                  False, ZA758_DTMF_CHARS))
+            rs.set_doc('DTMF digits (0-9, A-D) sent as this radio\'s ID.')
+            rs.set_apply_callback(apply_code, self._memobj, name)
+            dtmf.append(rs)
+
+        return top

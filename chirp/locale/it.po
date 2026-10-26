@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-04 16:46+0200\n"
-"PO-Revision-Date: 2026-10-04 16:46+0200\n"
+"POT-Creation-Date: 2026-10-25 23:39+0000\n"
+"PO-Revision-Date: 2026-10-25 19:13+0100\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.10\n"
 
 #: ../wxui/query_sources.py:64
 #, python-format
@@ -81,7 +81,7 @@ msgstr "(nessuno)"
 msgid "...and %i more"
 msgstr "...ed altre %i"
 
-#: ../drivers/ft4.py:738
+#: ../drivers/ft4.py:754
 msgid ""
 "1. Connect programming cable to MIC jack.\n"
 "2. Press OK."
@@ -89,7 +89,7 @@ msgstr ""
 "1. Collega il cavo di programmazione alla presa MIC.\n"
 "2. Fai clic su OK."
 
-#: ../drivers/alinco.py:605 ../drivers/alinco.py:614
+#: ../drivers/alinco.py:609 ../drivers/alinco.py:618
 msgid ""
 "1. Ensure your firmware version is 4_10 or higher\n"
 "2. Turn radio off\n"
@@ -862,7 +862,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:237 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
+#: ../drivers/wouxun.py:222 ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:237
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -878,7 +878,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/tg_uv2p.py:245 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
+#: ../drivers/wouxun.py:230 ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:245
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1078,7 +1078,7 @@ msgstr ""
 "\n"
 "Potrebbe non funzionare, se accendi la radio con il cavo già collegato"
 
-#: ../wxui/main.py:2164
+#: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "È disponibile una nuova versione di CHIRP. Visita il sito per scaricarla!"
 
@@ -1114,6 +1114,14 @@ msgstr "Tutti i file"
 msgid "All supported formats"
 msgstr "Tutti i formati supportati"
 
+#: ../drivers/ft450d.py:1647
+msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
+msgstr "Consente di variare la frequenza tramite la MANOPOLA PRINCIPALE (MAIN DIAL) partendo da un canale di memoria richiamato o dal canale Home, come in modalità VFO. Il canale memorizzato rimane invariato, a meno che non vi vengano salvate le nuove impostazioni."
+
+#: ../drivers/baofeng_uv17Pro.py:743
+msgid "Always On keeps it lit all the time."
+msgstr "Sempre acceso mantiene la retroilluminazione accesa in modo continuo."
+
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
 msgstr "Inizia sempre con un elenco recente"
@@ -1126,19 +1134,47 @@ msgstr "Radioamatore"
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
+#: ../drivers/baofeng_uv17Pro.py:728
+msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
+msgstr "Annuncia vocalmente il numero del canale e le altre operazioni durante l'utilizzo della radio. Può risultare fastidioso negli ambienti silenziosi."
+
 #: ../wxui/clone.py:145
 msgid "Applying settings"
 msgstr "Applicazione delle impostazioni"
+
+#: ../drivers/ft450d.py:1849
+msgid "Assigns one of the radio's functions to the DWN key of the microphone. DOWN, its normal function, steps the frequency or memory channel down."
+msgstr "Assegna una delle funzioni della radio al tasto DWN del microfono. DOWN, la sua funzione predefinita, diminuisce la frequenza o passa al canale di memoria precedente."
+
+#: ../drivers/ft450d.py:1857
+msgid "Assigns one of the radio's functions to the FST key of the microphone. FAST, its normal function, speeds up tuning like the front panel FAST button."
+msgstr "Assegna una delle funzioni della radio al tasto FST del microfono. FAST, la sua funzione predefinita, accelera la sintonia, come il tasto FAST sul pannello frontale."
+
+#: ../drivers/ft450d.py:1865
+msgid "Assigns one of the radio's functions to the UP key of the microphone. UP, its normal function, steps the frequency or memory channel up."
+msgstr "Assegna una delle funzioni della radio al tasto UP del microfono. UP, la sua funzione predefinita, aumenta la frequenza o passa al canale di memoria successivo."
+
+#: ../drivers/ft450d.py:1677
+msgid "Assigns one of the radio's functions to the front panel C.S/VOICE button, for example MONI to listen to your own transmission, SWR to transmit a 10 W carrier and measure the antenna SWR, or PLAY1 to send CW beacon message 1. Choices named after a front panel button act like that button."
+msgstr "Assegna una delle funzioni della radio al tasto C.S/VOICE del pannello frontale. Ad esempio, MONI per ascoltare la propria trasmissione, SWR per trasmettere una portante a 10 W e misurare il rapporto di onde stazionarie (ROS) dell'antenna, oppure PLAY1 per trasmettere il messaggio beacon CW 1. Le opzioni che riportano il nome di un tasto del pannello frontale ne riproducono la funzione."
+
+#: ../drivers/ft450d.py:1664
+msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
+msgstr "Assegna la seconda funzione della manopola DSP/SEL, attivata premendola brevemente: regolazione del volume del tono laterale CW, della velocità del keyer CW, del guadagno del microfono o della potenza RF, oppure variazione della frequenza a passi di 100 kHz o 1 MHz."
 
 #: ../wxui/main.py:1630
 msgid "Automatic from system"
 msgstr "Automatico dal sistema"
 
+#: ../drivers/baofeng_uv17Pro.py:748
+msgid "Automatically locks the keypad to prevent accidental changes."
+msgstr "Blocca automaticamente la tastiera per evitare modifiche accidentali."
+
 #: ../wxui/developer.py:665
 msgid "Available modules"
 msgstr "Moduli disponibili"
 
-#: ../wxui/main.py:2088
+#: ../wxui/main.py:2094
 msgid "Bandplan"
 msgstr "Bandplan"
 
@@ -1154,6 +1190,10 @@ msgstr "Banchi"
 #: ../wxui/developer.py:282
 msgid "Bin"
 msgstr "Bin"
+
+#: ../drivers/baofeng_uv17Pro.py:1089
+msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
+msgstr "Disabilita il ricevitore radio FM commerciale. Quando questa opzione è disattivata, la radio FM può essere utilizzata normalmente."
 
 #: ../wxui/main.py:222
 msgid "Browser"
@@ -1183,6 +1223,18 @@ msgstr "Creazione del browser della radio"
 #: ../wxui/main.py:1659
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "Per rendere effettiva la nuova selezione, è necessario riavviare CHIRP"
+
+#: ../drivers/ft450d.py:1512
+msgid "CW beacon message 1, up to 40 characters, sent in CW mode by the PLAY1 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
+msgstr "Messaggio beacon CW 1, composto da un massimo di 40 caratteri, trasmesso in modalità CW tramite la funzione PLAY1 di un tasto programmabile. La radio può trasmettere le lettere dalla A alla Z, le cifre da 0 a 9, il carattere /, lo spazio e il simbolo @."
+
+#: ../drivers/ft450d.py:1521
+msgid "CW beacon message 2, up to 40 characters, sent in CW mode by the PLAY2 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
+msgstr "Messaggio beacon CW 2, composto da un massimo di 40 caratteri, trasmesso in modalità CW tramite la funzione PLAY2 di un tasto programmabile. La radio può trasmettere le lettere dalla A alla Z, le cifre da 0 a 9, il carattere /, lo spazio e il simbolo @."
+
+#: ../drivers/ft450d.py:1530
+msgid "CW beacon message 3, up to 40 characters, sent in CW mode by the PLAY3 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
+msgstr "Messaggio beacon CW 3, composto da un massimo di 40 caratteri, trasmesso in modalità CW tramite la funzione PLAY3 di un tasto programmabile. La radio può trasmettere le lettere dalla A alla Z, le cifre da 0 a 9, il carattere /, lo spazio e il simbolo @."
 
 #: ../wxui/query_sources.py:178
 #, python-format
@@ -1245,6 +1297,44 @@ msgstr "Scegli duplex"
 msgid "Choose the module to load from issue %i:"
 msgstr "Scegli il modulo da caricare dal sito %i:"
 
+#: ../drivers/baofeng_uv17Pro.py:710
+msgid "Chooses the startup display, such as a logo or the battery voltage."
+msgstr "Consente di scegliere la schermata visualizzata all'accensione della radio, ad esempio un logo o la tensione della batteria."
+
+#: ../drivers/baofeng_uv17Pro.py:952
+#, python-format
+msgid "Chooses what a long press of side key %i does."
+msgstr "Definisce la funzione eseguita tenendo premuto a lungo il tasto laterale %i."
+
+#: ../drivers/baofeng_uv17Pro.py:951
+#, python-format
+msgid "Chooses what a short press of side key %i does."
+msgstr "Definisce la funzione eseguita con una breve pressione del tasto laterale %i."
+
+#: ../drivers/ft450d.py:1595
+msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
+msgstr "Determina la funzione della manopola SQL/RF GAIN. RF-GAIN regola il guadagno degli stadi a radiofrequenza (RF) e a frequenza intermedia (IF) del ricevitore, mentre Squelch silenzia il ricevitore in assenza di segnale. Per utilizzare la scansione è necessario selezionare Squelch, poiché la scansione si arresta sui segnali sufficientemente forti da aprire lo squelch."
+
+#: ../drivers/baofeng_uv17Pro.py:858
+msgid "Chooses what the emergency alarm does. Local sounds the alarm on this radio only, Send Tone transmits a repeating alarm tone, and Send Code transmits the digits 119 followed by the ANI code."
+msgstr "Definisce il comportamento dell'allarme di emergenza. Local attiva l'allarme acustico solo su questa radio; Send Tone trasmette un tono di allarme ripetuto; Send Code trasmette le cifre 119 seguite dal codice ANI."
+
+#: ../drivers/baofeng_uv17Pro.py:900
+msgid "Chooses where a CTCSS or DCS code found by scanning in Frequency (VFO) mode is saved: Both saves it as the receive and transmit code, RX only as the receive code, and TX only as the transmit code."
+msgstr "Specifica dove viene salvato un codice CTCSS o DCS rilevato durante la scansione in modalità Frequenza (VFO): Both lo salva sia come codice di ricezione sia come codice di trasmissione; RX only lo salva solo come codice di ricezione; TX only lo salva solo come codice di trasmissione."
+
+#: ../drivers/ft450d.py:987
+msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
+msgstr "Determina se il filtro Contour amplifica (Peak) o attenua (Null) la porzione della banda passante su cui è impostato."
+
+#: ../drivers/ft450d.py:1618
+msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
+msgstr "Seleziona la manopola utilizzata per regolare lo scostamento del chiarificatore dopo aver premuto CLAR: la manopola principale (MAIN DIAL) oppure la manopola DSP/SEL. Il chiarificatore modifica la frequenza di ricezione senza variare quella di trasmissione."
+
+#: ../drivers/baofeng_uv17Pro.py:830
+msgid "Chooses which transmitted DTMF tones are also heard through the radio speaker. Off mutes all; KB Side Tone sounds manually keyed tones; ANI Side Tone sounds automatic ANI/PTT-ID tones; KB + ANI Side Tone sounds both."
+msgstr "Seleziona quali toni DTMF trasmessi vengono riprodotti anche dall'altoparlante della radio. Off disattiva tutti i toni; KB Side Tone riproduce i toni generati manualmente dalla tastiera; ANI Side Tone riproduce i toni automatici ANI/PTT-ID; KB + ANI Side Tone riproduce entrambi i tipi di toni."
+
 #: ../wxui/query_sources.py:563
 msgid "City"
 msgstr "Città"
@@ -1281,12 +1371,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/ft4.py:327 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
+#: ../drivers/ft450d.py:517 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/ft4.py:328 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
+#: ../drivers/ft450d.py:546 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1338,6 +1428,22 @@ msgstr ""
 "Collega il cavo dell'interfaccia alla porta del PC\n"
 "situata sul retro dell'unita 'TX/RX'. NON alla porta COM del pannello frontale.\n"
 
+#: ../drivers/baofeng_uv17Pro.py:848
+msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
+msgstr "Determina il comportamento della scansione dopo il rilevamento di un segnale. Time riprende la scansione dopo un intervallo di tempo prestabilito; Carrier la riprende quando il segnale scompare; Search interrompe la scansione sulla frequenza o sul canale rilevato."
+
+#: ../drivers/baofeng_uv17Pro.py:642
+msgid "Controls when the ANI code is sent: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
+msgstr "Determina quando viene trasmesso il codice ANI: BOT quando si preme il PTT; EOT quando si rilascia il PTT; Both in entrambi i momenti; Off per disattivare la trasmissione del codice."
+
+#: ../drivers/baofeng_uv17Pro.py:1576
+msgid "Controls when this channel sends the selected DTMF PTT-ID: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
+msgstr "Determina quando questo canale trasmette il codice DTMF PTT-ID selezionato: BOT quando si preme il PTT; EOT quando si rilascia il PTT; Both in entrambi i momenti; Off per disattivare la trasmissione del codice."
+
+#: ../drivers/baofeng_uv17Pro.py:1024
+msgid "Controls whether the radio's front-panel RESET menu is available. This does not reset the radio by itself."
+msgstr "Determina se il menu RESET del pannello frontale della radio è disponibile. Questa opzione non esegue il ripristino della radio, ma si limita ad abilitare o disabilitare l'accesso al menu."
+
 #: ../wxui/query_sources.py:407
 msgid "Convert to FM"
 msgstr "Converti in FM"
@@ -1376,6 +1482,10 @@ msgstr "Taglia"
 msgid "Cut %i memories"
 msgstr "Taglia %i memorie"
 
+#: ../drivers/baofeng_uv17Pro.py:800
+msgid "Cuts standby power consumption by switching the receiver off and on in a repeating cycle once no signal has been received for a few seconds. It considerably extends battery life, at the cost of occasionally clipping the first moment of an incoming transmission."
+msgstr "Riduce il consumo energetico in standby spegnendo e riaccendendo ciclicamente il ricevitore quando non viene ricevuto alcun segnale per alcuni secondi. Aumenta notevolmente l'autonomia della batteria, ma può comportare la perdita dei primi istanti di una trasmissione in arrivo."
+
 #: ../wxui/memedit.py:620
 msgid "DTCS"
 msgstr "DTCS"
@@ -1396,13 +1506,17 @@ msgstr "Decodifica DTMF"
 msgid "DV Memory"
 msgstr "Memoria DV"
 
-#: ../wxui/main.py:2001
+#: ../wxui/main.py:2003
 msgid "Danger Ahead"
 msgstr "Pericolo in vista"
 
 #: ../wxui/developer.py:281
 msgid "Dec"
 msgstr "Dec"
+
+#: ../drivers/baofeng_uv17Pro.py:891
+msgid "Delays transmission of the automatic ANI/PTT-ID code after PTT is pressed, allowing the receiving path time to open before the code is sent."
+msgstr "Ritarda la trasmissione automatica del codice ANI/PTT-ID dopo la pressione del PTT, consentendo al percorso di ricezione della radio ricevente di attivarsi prima dell'invio del codice."
 
 #: ../wxui/memedit.py:2232
 msgid "Delete"
@@ -1420,7 +1534,7 @@ msgstr "Informazioni dettagliate"
 msgid "Developer Mode"
 msgstr "Modalità sviluppatore"
 
-#: ../wxui/main.py:2007
+#: ../wxui/main.py:2012
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "La modalità sviluppatore ora è %s. Per rendere effettiva questa modifica, CHIRP deve essere riavviato"
@@ -1441,7 +1555,7 @@ msgstr "Codice digitale"
 msgid "Digital Modes"
 msgstr "Modi digitali"
 
-#: ../wxui/main.py:2019
+#: ../wxui/main.py:2025
 msgid "Disable reporting"
 msgstr "Disabilita notifiche"
 
@@ -1458,6 +1572,10 @@ msgstr "Disabilitando la funzione di trasmissione, viene disabilitata la funzion
 msgid "Distance"
 msgstr "Distanza"
 
+#: ../drivers/ft450d.py:1313
+msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
+msgstr "Suddivide i 500 canali di memoria standard in dieci gruppi da 50 canali ciascuno, numerati da M-01-01 a M-10-50. I canali vengono quindi selezionati e sottoposti a scansione un gruppo alla volta."
+
 #: ../wxui/clone.py:207
 #, python-format
 msgid "Do not prompt again for %s"
@@ -1467,7 +1585,7 @@ msgstr "Non mostrarlo più per %s"
 msgid "Do you accept the risk?"
 msgstr "Accetti il rischio?"
 
-#: ../wxui/bankedit.py:190
+#: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr "Fai doppio clic per modificare il nome del banco"
 
@@ -1530,6 +1648,18 @@ msgstr "Abilita modifiche automatiche"
 msgid "Enabled"
 msgstr "Abilitato"
 
+#: ../drivers/baofeng_uv17Pro.py:866
+msgid "Enables or disables the alarm sound."
+msgstr "Attiva o disattiva il segnale acustico di allarme."
+
+#: ../drivers/ft450d.py:1284
+msgid "Enables the RTS line of the CAT jack. Turn it off when the computer or cable does not provide RTS. A radio that follows the frequency of another radio set to F-TRANS also needs it off."
+msgstr "Abilita la linea RTS del connettore CAT. Disattivala se il computer o il cavo non supportano il segnale RTS. Deve essere disattivata anche quando la radio segue la frequenza di un'altra radio impostata su F-TRANS."
+
+#: ../drivers/ft450d.py:1354
+msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
+msgstr "Abilita la trasmissione e la ricezione sul canale di emergenza dell'Alaska, a 5167,5 kHz, che in modalità Memoria viene visualizzato come MEM-EMG. Può essere utilizzato esclusivamente da stazioni situate in Alaska o entro 92,6 km dai suoi confini, e soltanto per comunicazioni di emergenza finalizzate alla protezione immediata di persone o beni."
+
 #: ../wxui/memedit.py:404
 msgid "Enter Frequency"
 msgstr "Inserisci una frequenza"
@@ -1542,7 +1672,7 @@ msgstr "Inserisci un offset (MHz)"
 msgid "Enter TX Frequency (MHz)"
 msgstr "Inserisci una frequenza TX (MHz)"
 
-#: ../wxui/bankedit.py:203
+#: ../wxui/bankedit.py:212
 #, python-format
 msgid "Enter a new name for bank %s:"
 msgstr "Inserisci un nuovo nome per il banco %s:"
@@ -1674,8 +1804,8 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
-#: ../sources/mapy73pl.py:61
+#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_eu.py:57
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
 
@@ -1802,11 +1932,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
-#: ../drivers/gmrsuv1.py:395 ../drivers/btech.py:636 ../drivers/uv6r.py:343
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:421
-#: ../drivers/gmrsv2.py:363
+#: ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
+#: ../drivers/uv6r.py:343 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:421
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:395
+#: ../drivers/btech.py:636
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1980,11 +2110,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
-#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:349
-#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:427
-#: ../drivers/gmrsv2.py:369
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
+#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:427
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
+#: ../drivers/vgc.py:592 ../drivers/gmrsuv1.py:401
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2030,9 +2160,9 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/tdh8.py:2540 ../drivers/baofeng_uv17Pro.py:1297
-#: ../drivers/retevis_ha1g.py:1439 ../drivers/mml_jc8810.py:1383
-#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:2249
+#: ../drivers/uv5r.py:2249 ../drivers/ga510.py:1094
+#: ../drivers/baofeng_uv17Pro.py:1478 ../drivers/mml_jc8810.py:1383
+#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
@@ -2040,10 +2170,10 @@ msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/tdh8.py:2537 ../drivers/baofeng_uv17Pro.py:1294
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
-#: ../drivers/uv5r.py:2245
+#: ../drivers/uv5r.py:2245 ../drivers/ga510.py:1087
+#: ../drivers/baofeng_uv17Pro.py:1475 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
+#: ../drivers/retevis_ha1g.py:1435
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2093,9 +2223,21 @@ msgstr "Hex"
 msgid "Hide empty memories"
 msgstr "Nascondi memorie vuote"
 
+#: ../drivers/baofeng_uv17Pro.py:874
+msgid "Hold the * key on the radio to lock or unlock the keypad."
+msgstr "Tieni premuto il tasto * sulla radio per bloccare o sbloccare la tastiera."
+
+#: ../drivers/ft450d.py:1655
+msgid "Holds the peak S-meter reading for one second, which makes the meter easier to read."
+msgstr "Mantiene visualizzato per un secondo il valore di picco dell'S-meter, facilitandone la lettura."
+
 #: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
 msgstr "Rispetta la configurazione dello squelch di ricezione CTCSS/DCS quando è abilitata, altrimenti solo lo squelch della portante"
+
+#: ../drivers/baofeng_uv17Pro.py:1057
+msgid "How long the transmitter stays keyed after you stop speaking. A longer delay avoids dropping the transmission during natural pauses in speech."
+msgstr "Determina per quanto tempo il trasmettitore rimane attivo dopo che si smette di parlare. Un ritardo più lungo evita che la trasmissione si interrompa durante le normali pause del parlato."
 
 #: ../wxui/memedit.py:165
 msgid "Human-readable comment (not stored in radio)"
@@ -2132,11 +2274,29 @@ msgstr "Importa messaggi"
 msgid "Import not recommended"
 msgstr "Importazione non consigliata"
 
+#: ../drivers/baofeng_uv17Pro.py:777
+msgid "In channel mode, chooses whether display line A shows the memory channel number, its programmed name, or its frequency."
+msgstr "In modalità Canale, determina se la riga A del display mostra il numero del canale di memoria, il nome assegnato al canale oppure la sua frequenza."
+
+#: ../drivers/baofeng_uv17Pro.py:786
+msgid "In channel mode, chooses whether display line B shows the memory channel number, its programmed name, or its frequency."
+msgstr "In modalità Canale, determina se la riga B del display mostra il numero del canale di memoria, il nome assegnato al canale oppure la sua frequenza."
+
 #: ../wxui/query_sources.py:424
 msgid "Include Cached"
 msgstr "Includi la cache"
 
-#: ../wxui/bankedit.py:62
+#: ../drivers/ft450d.py:1873
+#, python-format
+msgid "Includes %s in the modes the MODE buttons step through. Turn off the modes you never use to reach the others with fewer presses."
+msgstr "Include %s tra le modalità selezionabili con i tasti MODE. Disattiva le modalità che non utilizzi, così potrai raggiungere quelle desiderate con meno pressioni dei tasti."
+
+#: ../drivers/ft450d.py:1916
+#, python-format
+msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
+msgstr "Include la banda %s tra quelle selezionabili con i tasti BAND. Disattiva le bande che non utilizzi, così potrai raggiungere quelle desiderate con meno pressioni dei tasti."
+
+#: ../wxui/bankedit.py:64
 msgid "Index"
 msgstr "Indice"
 
@@ -2160,6 +2320,10 @@ msgstr "Vuoi installare un'icona sul desktop?"
 msgid "Interact with driver"
 msgstr "Interagisci con il driver"
 
+#: ../drivers/ft450d.py:959
+msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
+msgstr "Ottimizzazione del punto di intercetta. Esclude il preamplificatore RF del ricevitore, inviando il segnale in ingresso direttamente al primo mixer. Si sacrifica parte della sensibilità per migliorare la gestione dei segnali forti e dei livelli elevati di rumore."
+
 #: ../wxui/clone.py:813
 msgid "Internal driver error"
 msgstr "Errore interno del driver"
@@ -2173,8 +2337,8 @@ msgstr "Errore interno del driver: tentativo di modifica di memoria bloccata; se
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
-#: ../wxui/query_sources.py:124
+#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
+#: ../wxui/memedit.py:2049
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2213,7 +2377,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
 msgid "Language"
 msgstr "Lingua"
 
@@ -2226,6 +2390,14 @@ msgstr "Latitudine"
 #, python-format
 msgid "Length must be %i"
 msgstr "La lunghezza deve essere %i"
+
+#: ../drivers/ft450d.py:1483
+msgid "Lets the KEY jack send CW while the radio is in SSB mode, so you can answer a station in CW without changing mode. When off, the KEY jack only works in CW mode."
+msgstr "Consente alla presa KEY di trasmettere in CW mentre la radio è in modalità SSB, permettendo di rispondere in CW a una stazione senza cambiare modalità. Se disattivata, la presa KEY funziona solo in modalità CW."
+
+#: ../drivers/ft450d.py:1542
+msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
+msgstr "Consente alla manopola MAIN DIAL di variare la frequenza nelle modalità AM e FM. Se disattivata, la manopola MAIN DIAL non modifica la frequenza in queste modalità."
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
 #: ../wxui/query_sources.py:787
@@ -2253,6 +2425,10 @@ msgstr "Limita i risultati a questa distanza (km) dalle coordinate"
 msgid "Limit use"
 msgstr "Limita uso"
 
+#: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
+msgstr "Limita la durata massima di una singola trasmissione. Allo scadere del tempo, la radio interrompe la trasmissione finché non viene rilasciato il PTT. In questo modo si evita il surriscaldamento e si impedisce che un PTT bloccato occupi il canale impedendo agli altri di comunicare."
+
 #: ../wxui/main.py:1746
 msgid "Live Radio"
 msgstr "Radio in diretta live"
@@ -2269,7 +2445,7 @@ msgstr "Carica modulo dal sito"
 msgid "Load module from issue..."
 msgstr "Carica modulo dal sito..."
 
-#: ../wxui/main.py:2055
+#: ../wxui/main.py:2061
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "Il caricamento di un modulo non influisce sulle schede aperte. Si consiglia (salvo istruzioni diverse) di chiudere tutte le schede, prima di caricare un modulo."
 
@@ -2284,6 +2460,10 @@ msgstr "Caricamento delle impostazioni"
 #: ../wxui/query_sources.py:110
 msgid "Locator"
 msgstr "Locator"
+
+#: ../drivers/ft450d.py:1730
+msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
+msgstr "Blocca i comandi selezionati in Modalità di blocco per evitare modifiche accidentali, come avviene premendo il tasto LOCK."
 
 #: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
@@ -2302,6 +2482,14 @@ msgstr "Stringa del logo 2 (12 caratteri)"
 msgid "Longitude"
 msgstr "Longitudine"
 
+#: ../drivers/ft450d.py:1448
+msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
+msgstr "Fa sì che il volume del tono laterale CW segua la manopola AF GAIN, con lo scostamento impostato tramite il volume collegato del tono laterale CW. Se disattivata, il tono laterale viene riprodotto al volume fisso impostato, indipendentemente dalla regolazione di AF GAIN."
+
+#: ../drivers/ft450d.py:1557
+msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
+msgstr "Fa sì che il volume dei segnali acustici segua la manopola AF GAIN, con lo scostamento impostato tramite il volume dei segnali acustici collegato. Se disattivata, i segnali acustici vengono riprodotti al volume fisso, indipendentemente dalla regolazione di AF GAIN."
+
 #: ../wxui/memedit.py:2061
 #, python-format
 msgid "Manual edit of memory %i"
@@ -2314,6 +2502,11 @@ msgstr "Memorie"
 #: ../drivers/uvk5.py:2088
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "Le memorie sono di sola lettura a causa della versione del firmware non supportata"
+
+#: ../wxui/bankedit.py:263
+#, python-format
+msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
+msgstr "Impossibile caricare la memoria %i, quindi non è possibile modificarne l'appartenenza ai banchi."
 
 #: ../wxui/memedit.py:2090
 #, python-format
@@ -2333,7 +2526,7 @@ msgstr "Nome del campo di memoria (uno di %s)"
 msgid "Memory label (stored in radio)"
 msgstr "Etichetta di memoria (memorizzata nella radio)"
 
-#: ../wxui/bankedit.py:242
+#: ../wxui/bankedit.py:251
 msgid "Memory must be in a bank to be edited"
 msgstr "La memoria deve trovarsi in un banco per essere modificata"
 
@@ -2342,8 +2535,8 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
-#: ../wxui/query_sources.py:779
+#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
+#: ../wxui/memedit.py:675
 msgid "Mode"
 msgstr "Modo"
 
@@ -2363,7 +2556,7 @@ msgstr "Modulo"
 msgid "Module Loaded"
 msgstr "Modulo caricato"
 
-#: ../wxui/main.py:2066
+#: ../wxui/main.py:2072
 msgid "Module loaded successfully"
 msgstr "Modulo caricato con successo"
 
@@ -2393,11 +2586,15 @@ msgstr "Sposta su"
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Le operazioni di spostamento sono disabilitate quando la visualizzazione è ordinata"
 
+#: ../drivers/ft450d.py:1003
+msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
+msgstr "Sposta la porzione della banda passante su cui agisce il filtro Contour: da -2, nella parte più bassa, passando per Center, fino a +2, nella parte più alta."
+
 #: ../wxui/main.py:692
 msgid "New Window"
 msgstr "Nuova finestra"
 
-#: ../wxui/main.py:2166
+#: ../wxui/main.py:2172
 msgid "New version available"
 msgstr "Nuova versione disponibile"
 
@@ -2423,8 +2620,8 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
-#: ../sources/mapy73pl.py:57
+#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_eu.py:53
 msgid "No results"
 msgstr "Nessun risultato"
 
@@ -2432,13 +2629,25 @@ msgstr "Nessun risultato"
 msgid "No results!"
 msgstr "Nessun risultato!"
 
-#: ../wxui/main.py:2076
+#: ../wxui/main.py:2082
 msgid "No traces stored"
 msgstr "Nessuna traccia memorizzata"
 
-#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
+#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
 msgid "Number"
 msgstr "Numero"
+
+#: ../drivers/baofeng_uv17Pro.py:672
+msgid "Off is level 0."
+msgstr "Off corrisponde al livello 0."
+
+#: ../drivers/baofeng_uv17Pro.py:867
+msgid "Off keeps the alarm silent on this radio's own speaker."
+msgstr "Off mantiene disattivato l'allarme sull'altoparlante della radio stessa."
+
+#: ../drivers/baofeng_uv17Pro.py:687
+msgid "Off places no limit on the length of a transmission."
+msgstr "Off non impone alcun limite alla durata della trasmissione."
 
 #: ../wxui/memedit.py:346
 msgid "Offset"
@@ -2569,8 +2778,8 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
-#: ../sources/mapy73pl.py:52
+#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_eu.py:48
 msgid "Parsing"
 msgstr "Elaborazione"
 
@@ -2610,7 +2819,15 @@ msgstr "Le memorie incollate sovrascriveranno la memoria %s"
 msgid "Pasted memory will overwrite memory %s"
 msgstr "La memoria incollata sovrascriverà la memoria %s"
 
-#: ../wxui/main.py:2170
+#: ../drivers/baofeng_uv17Pro.py:697
+msgid "Periodically checks both the A and B displayed frequencies. When either receives a signal, the radio stays on it until that signal disappears."
+msgstr "Controlla periodicamente entrambe le frequenze visualizzate, A e B. Quando viene ricevuto un segnale su una delle due, la radio rimane su quella frequenza finché il segnale non scompare."
+
+#: ../drivers/ft450d.py:1023
+msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
+msgstr "Posiziona il filtro notch IF al di sotto del centro della banda passante, al centro oppure al di sopra. La frequenza esatta del notch può essere regolata finemente sulla radio tramite la manopola DSP/SEL."
+
+#: ../wxui/main.py:2176
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Chiudere CHIRP prima di installare la nuova versione!"
 
@@ -2618,7 +2835,7 @@ msgstr "Chiudere CHIRP prima di installare la nuova versione!"
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr "Controlla il numero del bug e riprova. Se vuoi effettivamente segnalare questo bug, commentalo tramite il sito web e chiedi che venga riaperto."
 
-#: ../wxui/main.py:1995
+#: ../wxui/main.py:1997
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "La modalità sviluppatore è destinata all'uso degli sviluppatori del progetto CHIRP o sotto la direzione di uno sviluppatore. Essa abilita comportamenti e funzioni che possono danneggiare il computer e la radio, se non vengono utilizzati con ESTREMA attenzione. Sei stato avvisato! Vuoi procedere comunque?"
 
@@ -2650,6 +2867,10 @@ msgstr "Prefissi"
 msgid "Press enter to set this in memory"
 msgstr "Premi invio per impostarlo in memoria"
 
+#: ../drivers/baofeng_uv17Pro.py:1568
+msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
+msgstr "Impedisce la trasmissione su un canale già occupato. Se si preme il PTT mentre il canale è occupato, viene emesso un tono di avviso invece di attivare il trasmettitore."
+
 #: ../wxui/main.py:757
 msgid "Print Preview"
 msgstr "Anteprima di stampa"
@@ -2657,6 +2878,23 @@ msgstr "Anteprima di stampa"
 #: ../wxui/printing.py:29
 msgid "Printing"
 msgstr "Stampa in corso"
+
+#: ../drivers/baofeng_uv17Pro.py:572
+#, python-format
+msgid "Programs DTMF code %i. A channel or VFO can select this code as its PTT-ID and send it when PTT is pressed, released, or both."
+msgstr "Programma il codice DTMF %i. Un canale o un VFO può selezionare questo codice come PTT-ID e trasmetterlo quando si preme o si rilascia il PTT, oppure in entrambi i momenti."
+
+#: ../drivers/baofeng_uv17Pro.py:2697
+msgid "Programs the DTMF code sent at the beginning of a transmission (BOT)."
+msgstr "Programma il codice DTMF trasmesso all'inizio di una trasmissione (BOT)."
+
+#: ../drivers/baofeng_uv17Pro.py:2708
+msgid "Programs the DTMF code sent at the end of a transmission (EOT)."
+msgstr "Programma il codice DTMF trasmesso al termine di una trasmissione (EOT)."
+
+#: ../drivers/baofeng_uv17Pro.py:602
+msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
+msgstr "Programma il codice numerico ANI (Automatic Number Identification) della radio. L'ANI è un codice DTMF PTT-ID che può identificare questa radio presso una centrale operativa o altre apparecchiature compatibili."
 
 #: ../wxui/clone.py:526
 msgid "Prolific USB device"
@@ -2678,7 +2916,7 @@ msgstr "Valore della proprietà"
 msgid "QTH Locator"
 msgstr "QTH Locator"
 
-#: ../wxui/main.py:2104
+#: ../wxui/main.py:2110
 #, python-format
 msgid "Query %s"
 msgstr "Interroga %s"
@@ -2699,8 +2937,8 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
@@ -2728,7 +2966,7 @@ msgstr "Informazioni sulla radio: Icom"
 msgid "Radio Info: Image Metadata"
 msgstr "Informazioni sulla radio: metadati dell'immagine"
 
-#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
+#: ../drivers/ft450d.py:582 ../drivers/ft60.py:89 ../drivers/ft60.py:91
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2784,6 +3022,10 @@ msgstr "Si consiglia di utilizzare 55.2"
 msgid "Redo"
 msgstr "Rifai"
 
+#: ../drivers/ft450d.py:968
+msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
+msgstr "Attenua di 20 dB tutti i segnali ricevuti. È utile quando stazioni molto vicine con segnali estremamente forti o livelli elevati di rumore peggiorano la ricezione. Tra 30 kHz e 1,7 MHz la radio applica sempre l'attenuazione, indipendentemente da questa impostazione."
+
 #: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr "Aggiornamento necessario"
@@ -2813,7 +3055,7 @@ msgstr "Elimina"
 msgid "Remove selected model from list"
 msgstr "Elimina il modello selezionato dall'elenco"
 
-#: ../wxui/bankedit.py:205
+#: ../wxui/bankedit.py:214
 msgid "Rename bank"
 msgstr "Rinomina banco"
 
@@ -2838,11 +3080,11 @@ msgstr "Segnalazione di un nuovo bug: %r"
 msgid "Reporting enabled"
 msgstr "Reporting abilitato"
 
-#: ../wxui/main.py:2015
+#: ../wxui/main.py:2021
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "Le segnalazioni aiutano il progetto CHIRP a sapere su quali modelli di radio e piattaforme OS spendere i nostri limitati sforzi. Vi saremmo grati se le lasciaste abilitate. Vuoi davvero disabilitare le segnalazioni?"
 
-#: ../wxui/main.py:1661 ../wxui/main.py:2009
+#: ../wxui/main.py:1661 ../wxui/main.py:2014
 msgid "Restart Required"
 msgstr "Riavvio richiesto"
 
@@ -2901,7 +3143,7 @@ msgstr "Controllo della scansione (salto, inclusione, priorità, ecc.)"
 msgid "Scanlists"
 msgstr "Elenco delle scansioni"
 
-#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:855
+#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
 msgid "Scrambler"
 msgstr "Scrambler"
 
@@ -2930,7 +3172,7 @@ msgstr "Seleziona modi"
 msgid "Select Modes to Import"
 msgstr "Seleziona le modalità da importare"
 
-#: ../wxui/main.py:2087
+#: ../wxui/main.py:2093
 msgid "Select a bandplan"
 msgstr "Seleziona un blandplan"
 
@@ -2942,9 +3184,293 @@ msgstr "Seleziona una scheda e la memoria per diff"
 msgid "Select prefixes"
 msgstr "Seleziona i prefissi"
 
+#: ../drivers/baofeng_uv17Pro.py:990
+msgid "Selects Frequency (VFO) mode for direct tuning or Channel (MR) mode for programmed memories on display A."
+msgstr "Seleziona la modalità Frequenza (VFO) per la sintonia diretta oppure la modalità Canale (MR) per utilizzare le memorie programmate sul display A."
+
+#: ../drivers/baofeng_uv17Pro.py:999
+msgid "Selects Frequency (VFO) mode for direct tuning or Channel (MR) mode for programmed memories on display B."
+msgstr "Seleziona la modalità Frequenza (VFO) per la sintonia diretta oppure la modalità Canale (MR) per utilizzare le memorie programmate sul display B."
+
+#: ../drivers/baofeng_uv17Pro.py:1211
+msgid "Selects VFO A's transmitter power. Use the lowest power that provides reliable communication."
+msgstr "Seleziona la potenza di trasmissione del VFO A. Utilizza la potenza più bassa che consenta comunicazioni affidabili."
+
+#: ../drivers/baofeng_uv17Pro.py:1222
+msgid "Selects VFO B's transmitter power. Use the lowest power that provides reliable communication."
+msgstr "Seleziona la potenza di trasmissione del VFO B. Utilizza la potenza più bassa che consenta comunicazioni affidabili."
+
+#: ../drivers/ft450d.py:1707
+msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
+msgstr "Determina la rapidità con cui il controllo automatico del guadagno (AGC) consente al ricevitore di recuperare dopo un segnale forte. Fast è adatto a CW e dati, Slow a SSB e AM; Auto seleziona Slow per SSB e AM e Fast per le altre modalità. Con AGC disattivato, l'S-meter non si muove più ed è probabile che i segnali forti risultino distorti."
+
+#: ../drivers/ft450d.py:1819
+msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
+msgstr "Seleziona una delle dieci curve dell'equalizzatore DSP per la voce trasmessa. 0 è una risposta piatta; da 1 a 3 attenuano rispettivamente le frequenze basse, medie o alte; da 4 a 6 amplificano rispettivamente le frequenze alte, medie o basse. 7 amplifica le basse e attenua le alte; 8 attenua le basse e amplifica le medie; 9 attenua le basse e amplifica le alte."
+
+#: ../drivers/ft450d.py:1475
+msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
+msgstr "Seleziona i caratteri trasmessi dalla funzione di esercitazione CW: solo cifre, solo lettere oppure entrambi mescolati. L'esercitazione riproduce gruppi casuali di cinque caratteri in codice Morse tramite il tono laterale alla velocità CW impostata, senza trasmettere."
+
+#: ../drivers/ft450d.py:949
+msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
+msgstr "Seleziona la modalità dati utilizzata da un canale DIG. RTTY è la telescrivente radio in FSK comandata da un'unità terminale o da un software RTTY; USER-L e USER-U consentono modalità dati basate sull'audio, come il packet, rispettivamente sulla banda laterale inferiore o superiore. N/A si applica ai canali non impostati in modalità DIG."
+
+#: ../drivers/baofeng_uv17Pro.py:722
+msgid "Selects the language of the menus and the spoken voice prompts."
+msgstr "Seleziona la lingua dei menu e dei messaggi vocali."
+
+#: ../drivers/ft450d.py:1793
+msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
+msgstr "Seleziona la frequenza del tono mark per RTTY: 2125 Hz per il funzionamento con tono alto oppure 1275 Hz per il tono basso."
+
+#: ../drivers/baofeng_uv17Pro.py:2686
+msgid "Selects the special DTMF digit interpreted as a group-call wildcard by the decoder. Off assigns no group-call digit."
+msgstr "Seleziona la cifra DTMF speciale che il decodificatore interpreta come carattere jolly per le chiamate di gruppo. Off non assegna alcuna cifra alle chiamate di gruppo."
+
+#: ../drivers/baofeng_uv17Pro.py:2678
+msgid "Selects the special DTMF digit interpreted as a separator by the decoder."
+msgstr "Seleziona la cifra DTMF speciale che il decodificatore interpreta come separatore."
+
+#: ../drivers/baofeng_uv17Pro.py:1008
+msgid "Selects the squelch-tail elimination setting used for communication through a compatible repeater. Use 0 ms when the repeater does not support this feature."
+msgstr "Seleziona l'impostazione per l'eliminazione della coda di squelch utilizzata nelle comunicazioni tramite un ripetitore compatibile. Usa 0 ms se il ripetitore non supporta questa funzione."
+
+#: ../drivers/baofeng_uv17Pro.py:822
+msgid "Selects the tone-burst frequency sent for repeater access."
+msgstr "Seleziona la frequenza del tono burst trasmesso per accedere ai ripetitori."
+
+#: ../drivers/ft450d.py:1606
+msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
+msgstr "Seleziona quali comandi vengono bloccati dal tasto LOCK. Frequencies blocca i comandi che modificano la frequenza, inclusi i tasti UP, DWN e FAST del microfono. Panel blocca tutti i tasti e le manopole del pannello frontale; All blocca sia il pannello frontale sia i tasti del microfono. POWER e LOCK restano sempre utilizzabili."
+
+#: ../drivers/ft450d.py:1373
+msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
+msgstr "Seleziona la funzione controllata dal tasto TUNE. ATAS indica l'antenna a sintonia attiva opzionale ATAS-100/-120; EXT ATU il sintonizzatore esterno opzionale FC-40; INT ATU il sintonizzatore integrato, che agisce solo sul segnale trasmesso; INTRATU inserisce il sintonizzatore integrato anche nel percorso di ricezione. F-TRANS invia invece la frequenza di questa radio a una seconda radio dello stesso modello ogni volta che si preme TUNE, per l'operatività SO2R (un solo operatore, due radio)."
+
+#: ../drivers/ft450d.py:1738
+msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
+msgstr "Seleziona ciò che lo strumento indica durante la trasmissione: PO mostra la potenza media in uscita, ALC la tensione relativa del controllo automatico del livello, oppure SWR il rapporto di onde stazionarie dell'antenna (ROS). Durante la ricezione mostra sempre l'intensità del segnale."
+
+#: ../drivers/baofeng_uv17Pro.py:1611
+msgid "Selects whether the radio uses DTMF codes, together with CTCSS or DCS, to decide when to unmute the speaker on this channel. Off unmutes it on the correct CTCSS or DCS alone."
+msgstr "Determina se la radio utilizza codici DTMF, insieme a CTCSS o DCS, per decidere quando aprire l'audio dell'altoparlante su questo canale. Off apre l'audio in presenza del solo codice CTCSS o DCS corretto."
+
+#: ../drivers/baofeng_uv17Pro.py:1257
+#, python-format
+msgid "Selects which of the %i programmed DTMF PTT-ID codes VFO A uses. Edit the code itself under DTMF Encode Settings."
+msgstr "Seleziona quale dei %i codici DTMF PTT-ID programmati viene utilizzato dal VFO A. Modifica il codice nella sezione Impostazioni codifica DTMF."
+
+#: ../drivers/baofeng_uv17Pro.py:1269
+#, python-format
+msgid "Selects which of the %i programmed DTMF PTT-ID codes VFO B uses. Edit the code itself under DTMF Encode Settings."
+msgstr "Seleziona quale dei %i codici DTMF PTT-ID programmati viene utilizzato dal VFO B. Modifica il codice nella sezione Impostazioni codifica DTMF."
+
+#: ../drivers/baofeng_uv17Pro.py:1585
+#, python-format
+msgid "Selects which of the %i programmed DTMF PTT-ID codes this channel transmits. Edit the code itself under DTMF Encode Settings."
+msgstr "Seleziona quale dei %i codici DTMF PTT-ID programmati viene trasmesso da questo canale. Modifica il codice nella sezione Impostazioni codifica DTMF."
+
+#: ../drivers/ft450d.py:1055
+msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
+msgstr "Seleziona quale degli undici algoritmi di riduzione del rumore viene utilizzato. Ogni algoritmo è progettato per un tipo di rumore diverso: provali uno alla volta per trovare quello più efficace contro il rumore presente. Off disattiva anche la riduzione del rumore DSP."
+
+#: ../drivers/baofeng_uv17Pro.py:1233
+msgid "Selects wide or narrow FM for VFO A. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr "Seleziona la modulazione FM larga o stretta per il VFO A. Usa Narrow quando previsto dal piano di canalizzazione, per ridurre le interferenze sui canali adiacenti."
+
+#: ../drivers/baofeng_uv17Pro.py:1245
+msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr "Seleziona la modulazione FM larga o stretta per il VFO B. Usa Narrow quando previsto dal piano di canalizzazione, per ridurre le interferenze sui canali adiacenti."
+
+#: ../drivers/baofeng_uv17Pro.py:769
+msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
+msgstr "Trasmette un breve tono al termine di ogni comunicazione, per segnalare alle altre stazioni che hai rilasciato il PTT."
+
 #: ../wxui/query_sources.py:357
 msgid "Service"
 msgstr "Servizio"
+
+#: ../drivers/baofeng_uv17Pro.py:1150
+msgid "Sets VFO A's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
+msgstr "Imposta la direzione dello shift del ripetitore per il VFO A. + trasmette su una frequenza superiore a quella di ricezione, - su una frequenza inferiore; Off utilizza la stessa frequenza per trasmissione e ricezione."
+
+#: ../drivers/baofeng_uv17Pro.py:1163
+msgid "Sets VFO B's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
+msgstr "Imposta la direzione dello shift del ripetitore per il VFO B. + trasmette su una frequenza superiore a quella di ricezione, - su una frequenza inferiore; Off utilizza la stessa frequenza per trasmissione e ricezione."
+
+#: ../drivers/baofeng_uv17Pro.py:1281
+msgid "Sets how far VFO A moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
+msgstr "Imposta l'ampiezza di ogni passo del VFO A durante la sintonia e la scansione in modalità Frequenza. Scegli il passo adatto alle frequenze che intendi sintonizzare."
+
+#: ../drivers/baofeng_uv17Pro.py:1294
+msgid "Sets how far VFO B moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
+msgstr "Imposta l'ampiezza di ogni passo del VFO B durante la sintonia e la scansione in modalità Frequenza. Scegli il passo adatto alle frequenze che intendi sintonizzare."
+
+#: ../drivers/ft450d.py:1631
+msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
+msgstr "Imposta lo spostamento di frequenza a ogni passo della manopola MAIN DIAL: 1, 10 o 20 Hz in SSB e CW; 100 o 200 Hz in AM e FM."
+
+#: ../drivers/ft450d.py:1640
+msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
+msgstr "Imposta per quanto tempo è necessario tenere premuto un tasto per attivarne la funzione di pressione prolungata. Una pressione più breve attiva la funzione normale del tasto."
+
+#: ../drivers/baofeng_uv17Pro.py:620
+msgid "Sets how long each DTMF tone is transmitted. Increase this if the receiving system does not reliably decode the digits."
+msgstr "Imposta la durata di trasmissione di ciascun tono DTMF. Aumenta questo valore se il sistema ricevente non decodifica correttamente le cifre."
+
+#: ../drivers/baofeng_uv17Pro.py:654
+msgid "Sets how long the DTMF decoder remains active after a valid code before returning to its normal state."
+msgstr "Imposta per quanto tempo il decodificatore DTMF rimane attivo dopo aver ricevuto un codice valido, prima di tornare allo stato normale."
+
+#: ../drivers/baofeng_uv17Pro.py:882
+msgid "Sets how long the menu stays open without a key press before the radio leaves it."
+msgstr "Imposta per quanto tempo il menu rimane aperto in assenza di pressioni dei tasti, prima che la radio lo chiuda."
+
+#: ../drivers/ft450d.py:1398
+msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
+msgstr "Imposta, a incrementi di 10 ms, per quanto tempo il trasmettitore resta attivo dopo aver smesso di inviare in CW con semibreak-in; ad esempio, 25 corrisponde a 250 ms. Un ritardo più lungo è adatto a chi fa spesso pause durante la trasmissione. È possibile impostare anche FULL, cioè il full break-in, che consente di ascoltare negli intervalli tra i caratteri trasmessi."
+
+#: ../drivers/ft450d.py:1750
+msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
+msgstr "Imposta, a incrementi di 100 ms, per quanto tempo il trasmettitore resta attivo dopo che si smette di parlare durante il funzionamento VOX; ad esempio, 5 corrisponde a 500 ms. Un ritardo più lungo impedisce che brevi pause nel parlato riportino la radio in ricezione."
+
+#: ../drivers/baofeng_uv17Pro.py:741
+msgid "Sets how many seconds the display backlight remains on after a key press or radio activity."
+msgstr "Imposta per quanti secondi la retroilluminazione del display rimane accesa dopo la pressione di un tasto o un'attività della radio."
+
+#: ../drivers/baofeng_uv17Pro.py:666
+msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
+msgstr "Imposta l'intensità minima del segnale ricevuto necessaria per aprire lo squelch. 0 mantiene lo squelch aperto, rendendo sempre udibile il rumore; valori più alti escludono più segnali deboli e rumore. Aumenta il valore se l'altoparlante si apre continuamente a causa delle interferenze, oppure riducilo se vengono tagliate le stazioni lontane."
+
+#: ../drivers/ft450d.py:995
+msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
+msgstr "Imposta l'intensità dell'effetto del filtro Contour. Low produce un effetto lieve, High un effetto più marcato."
+
+#: ../drivers/ft450d.py:1467
+msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
+msgstr "Imposta il volume del tono laterale CW da 0 a 100, utilizzato quando l'opzione di collegamento del volume del tono laterale CW è disattivata."
+
+#: ../drivers/ft450d.py:1768
+msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
+msgstr "Imposta la sensibilità VOX utilizzata in modalità DIG, in modo che l'audio dell'apparecchiatura dati attivi il trasmettitore senza una linea PTT. 0 disattiva il VOX in modalità DIG."
+
+#: ../drivers/baofeng_uv17Pro.py:1041
+msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
+msgstr "Imposta la sensibilità VOX. Se è troppo elevata, il rumore circostante può attivare il trasmettitore; se è troppo bassa, la radio potrebbe non rilevare la voce."
+
+#: ../drivers/ft450d.py:1759
+msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
+msgstr "Imposta la sensibilità VOX. Se è troppo elevata, il rumore circostante può attivare il trasmettitore; se è troppo bassa, la radio potrebbe non rilevare la voce. 1 indica la sensibilità minima e 100 quella massima."
+
+#: ../drivers/ft450d.py:1304
+msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
+msgstr "Imposta la velocità di comunicazione della presa CAT, che deve corrispondere a quella del software di controllo del computer. Data trasforma invece la presa CAT in un'interfaccia RTTY: il software RTTY comanda lo shift FSK tramite l'ingresso dati seriale e utilizza RTS come PTT."
+
+#: ../drivers/ft450d.py:1565
+msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
+msgstr "Imposta il volume dei segnali acustici rispetto al livello audio di ricezione regolato tramite AF GAIN, quando è attiva l'opzione di collegamento del volume dei segnali acustici. 0 rende il segnale acustico forte quanto l'audio ricevuto; valori negativi lo attenuano, mentre valori positivi lo aumentano."
+
+#: ../drivers/ft450d.py:1574
+msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
+msgstr "Imposta il volume dei segnali acustici da 0 a 100, utilizzato quando l'opzione di collegamento del volume dei segnali acustici è disattivata."
+
+#: ../drivers/ft450d.py:1587
+msgid "Sets the brightness of the display illumination, from 1 to 8."
+msgstr "Imposta la luminosità dell'illuminazione del display, da 1 a 8."
+
+#: ../drivers/baofeng_uv17Pro.py:592
+#, python-format
+msgid "Sets the call name for DTMF code %i, up to 10 characters long."
+msgstr "Imposta il nominativo associato al codice DTMF %i, con una lunghezza massima di 10 caratteri."
+
+#: ../drivers/ft450d.py:1580
+msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
+msgstr "Imposta il contrasto del display, da 1 a 24. Finora non è stato osservato alcun effetto visibile sulla radio modificando questo parametro."
+
+#: ../drivers/baofeng_uv17Pro.py:873
+msgid "Sets the current keypad-lock state."
+msgstr "Imposta lo stato corrente del blocco della tastiera."
+
+#: ../drivers/baofeng_uv17Pro.py:1017
+msgid "Sets the delay before repeater squelch-tail elimination is applied. Match this timing to the repeater; use 0 ms when the feature is not required."
+msgstr "Imposta il ritardo prima dell'attivazione dell'eliminazione della coda di squelch del ripetitore. Regola questo intervallo in base al ripetitore; usa 0 ms se la funzione non è necessaria."
+
+#: ../drivers/ft450d.py:1439
+msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
+msgstr "Imposta il ritardo tra la chiusura del tasto e la trasmissione della portante durante il funzionamento QSK con il keyer integrato. Con un ritardo di 25 ms, mantieni la velocità CW a 50 parole al minuto o meno; con 30 ms, a 42 parole al minuto o meno, altrimenti la radio non riesce a trasmettere."
+
+#: ../drivers/baofeng_uv17Pro.py:1186
+msgid "Sets the difference in MHz between VFO A's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
+msgstr "Imposta la differenza in MHz tra le frequenze di ricezione e trasmissione del VFO A. L'impostazione Shift determina se questo scostamento viene aggiunto o sottratto."
+
+#: ../drivers/baofeng_uv17Pro.py:1197
+msgid "Sets the difference in MHz between VFO B's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
+msgstr "Imposta la differenza in MHz tra le frequenze di ricezione e trasmissione del VFO B. L'impostazione Shift determina se questo scostamento viene aggiunto o sottratto."
+
+#: ../drivers/ft450d.py:1430
+msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
+msgstr "Imposta il rapporto tra punti e linee del keyer elettronico integrato. Con un rapporto di 1:3,0, quello standard, una linea dura tre volte quanto un punto."
+
+#: ../drivers/ft450d.py:1785
+msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
+msgstr "Imposta lo shift di frequenza tra i toni mark e space in RTTY FSK. La maggior parte delle comunicazioni RTTY amatoriali utilizza uno shift di 170 Hz."
+
+#: ../drivers/ft450d.py:1831
+msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
+msgstr "Imposta il guadagno del microfono per SSB, AM e FM. Usa Low con un microfono ad alta uscita, Normal con il microfono palmare fornito e High con un microfono a bassa uscita. Il processore vocale è disattivato su Low e attivato sulle altre impostazioni."
+
+#: ../drivers/ft450d.py:1346
+msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
+msgstr "Imposta lo scostamento applicato da Quick Split. Tenendo premuto SPLIT/STEP per un secondo, la frequenza del VFO di trasmissione viene impostata sulla frequenza di ricezione più questo scostamento, nella stessa modalità del VFO di ricezione, e viene attivato il funzionamento split."
+
+#: ../drivers/ft450d.py:1502
+msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
+msgstr "Imposta la pausa, in secondi, tra le ripetizioni di un messaggio beacon CW. 0 disattiva la ripetizione, per cui ogni pressione del tasto trasmette il messaggio una sola volta, come con un tasto per messaggi CW."
+
+#: ../drivers/ft450d.py:1410
+msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
+msgstr "Imposta l'intonazione del tono laterale CW, che corrisponde anche allo scostamento della portante trasmessa e al centro del filtro di ricezione CW. Sintonizzando una stazione finché il suo tono coincide con quello laterale, ci si porta sulla sua frequenza."
+
+#: ../drivers/ft450d.py:1551
+msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
+msgstr "Imposta l'intonazione del segnale acustico emesso dalla radio per confermare la pressione dei tasti."
+
+#: ../drivers/baofeng_uv17Pro.py:1130
+msgid "Sets the receive frequency shown on display line A in Frequency (VFO) mode."
+msgstr "Imposta la frequenza di ricezione visualizzata sulla riga A del display in modalità Frequenza (VFO)."
+
+#: ../drivers/baofeng_uv17Pro.py:1139
+msgid "Sets the receive frequency shown on display line B in Frequency (VFO) mode."
+msgstr "Imposta la frequenza di ricezione visualizzata sulla riga B del display in modalità Frequenza (VFO)."
+
+#: ../drivers/ft450d.py:1418
+msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
+msgstr "Imposta la velocità di trasmissione del keyer elettronico integrato, espressa in parole al minuto. La radio può visualizzarla anche in caratteri al minuto, pari a cinque volte il valore in parole al minuto. Con un ritardo QSK CW di 25 ms, mantieni la velocità a 50 parole al minuto o meno; con 30 ms, a 42 parole al minuto o meno, altrimenti la radio non riesce a trasmettere."
+
+#: ../drivers/ft450d.py:1457
+msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
+msgstr "Imposta il volume del tono laterale rispetto al livello audio di ricezione regolato tramite AF GAIN, quando è attiva l'opzione di collegamento del volume del tono laterale CW. 0 rende il tono laterale forte quanto l'audio ricevuto; valori negativi lo attenuano, mentre valori positivi lo aumentano."
+
+#: ../drivers/baofeng_uv17Pro.py:632
+msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the receiving system cannot separate adjacent digits."
+msgstr "Imposta l'intervallo di silenzio tra i toni DTMF trasmessi. Aumenta questo valore se il sistema ricevente non riesce a distinguere le cifre consecutive."
+
+#: ../drivers/ft450d.py:1294
+msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off. The radio shows the shortest setting as 10 ms."
+msgstr "Imposta il timer di timeout per i comandi di controllo del computer ricevuti tramite la presa CAT. I comandi che continuano oltre questo intervallo vengono interrotti. La radio indica 10 ms come impostazione minima."
+
+#: ../drivers/ft450d.py:1386
+msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
+msgstr "Imposta la potenza di trasmissione in watt. Utilizza la potenza più bassa che consenta comunicazioni affidabili e, per trasmissioni dati di durata superiore a pochi minuti, una potenza compresa tra metà e un terzo di quella massima."
+
+#: ../drivers/ft450d.py:1033
+msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
+msgstr "Imposta la larghezza del filtro IF DSP. Un filtro più stretto attenua le interferenze vicine al segnale; uno più largo offre un suono più naturale quando la banda è poco disturbata. Le larghezze disponibili dipendono dalla modalità: 1,8, 2,4 o 3,0 kHz per SSB; 300 Hz, 500 Hz o 2,4 kHz per CW; 300 Hz, 2,4 o 3,0 kHz per DIG; 3,0, 6,0 o 9,0 kHz per AM; 2,5 o 5,0 kHz per FM. Se una larghezza non è disponibile nella modalità selezionata, viene sostituita con quella disponibile più vicina."
+
+#: ../drivers/ft450d.py:1320
+msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
+msgstr "Imposta quando riprende la scansione dopo una pausa su un segnale. Da 1 a 10, la scansione riprende dopo il numero di secondi selezionato; 0 seleziona BUSY, che attende la scomparsa del segnale. In SSB, CW e nelle modalità dati basate su SSB, la scansione procede invece lentamente attraverso il segnale, lasciando il tempo di interromperla."
 
 #: ../wxui/main.py:216
 msgid "Settings"
@@ -2963,6 +3489,14 @@ msgstr "Impostazioni: %s"
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Shift (o frequenza di trasmissione) controllato dal duplex"
 
+#: ../drivers/ft450d.py:1330
+msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
+msgstr "Sposta leggermente la frequenza dell'orologio della CPU della radio. Utilizza questa impostazione solo per spostare una frequenza spuria generata internamente, detta birdie, al di fuori di una frequenza che desideri ascoltare."
+
+#: ../drivers/ft450d.py:1776
+msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
+msgstr "Sposta della quantità di hertz impostata la frequenza visualizzata nelle modalità dati USER-L e USER-U. La radio accetta valori da -3000 a +3000 Hz."
+
 #: ../wxui/memedit.py:2335 ../wxui/developer.py:101
 msgid "Show Raw Memory"
 msgstr "Mostra memoria raw"
@@ -2978,6 +3512,10 @@ msgstr "Mostra campi aggiuntivi"
 #: ../wxui/main.py:1014
 msgid "Show image backup location"
 msgstr "Mostra posizione del backup dell'immagine"
+
+#: ../drivers/ft450d.py:1254
+msgid "Shows all 62 items of the radio's Menu Mode. When off, the menu on the radio offers only the 16 most often used items."
+msgstr "Visualizza tutte le 62 voci del menu della radio. Se disattivata, la radio mostra nel menu soltanto le 16 voci utilizzate più frequentemente."
 
 #: ../wxui/memedit.py:697
 msgid "Skip"
@@ -3025,10 +3563,18 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
-#: ../sources/mapy73pl.py:64
+#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_eu.py:60
 msgid "Sorting"
 msgstr "Ordinamento"
+
+#: ../drivers/baofeng_uv17Pro.py:762
+msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
+msgstr "Emette un breve tono di conferma durante l'utilizzo della radio. Disattivalo quando è necessario usare la radio in modo discreto."
+
+#: ../drivers/ft450d.py:1724
+msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
+msgstr "Accelera la sintonia: la manopola MAIN DIAL sintonizza dieci volte più velocemente e la manopola DSP/SEL due volte più velocemente."
 
 #: ../wxui/query_sources.py:566
 msgid "State"
@@ -3038,13 +3584,25 @@ msgstr "Stato"
 msgid "State/Province"
 msgstr "Stato/Provincia"
 
-#: ../wxui/main.py:2067
+#: ../wxui/main.py:2073
 msgid "Success"
 msgstr "Successo"
 
 #: ../wxui/bugreport.py:734
 msgid "Successfully sent bug report:"
 msgstr "Segnalazione del bug inviata con successo:"
+
+#: ../drivers/ft450d.py:1493
+msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
+msgstr "Inverte i lati dei punti e delle linee della paletta del keyer senza doverla ricablare, ad esempio per un operatore mancino. Normal invia i punti dalla punta del connettore e le linee dall'anello; Reverse inverte questa disposizione."
+
+#: ../drivers/ft450d.py:1809
+msgid "Swaps the mark and space tones of your transmitted RTTY signal."
+msgstr "Inverte i toni mark e space del segnale RTTY trasmesso."
+
+#: ../drivers/ft450d.py:1801
+msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
+msgstr "Inverte i toni mark e space durante la ricezione RTTY. Prova Reverse se non riesci a decodificare una stazione con segnale forte."
 
 #: ../wxui/memedit.py:348
 msgid "TX Frequency"
@@ -3054,7 +3612,7 @@ msgstr "Frequenza TX"
 msgid "TX-RX DTCS polarity (normal or reversed)"
 msgstr "Polarità DTCS TX-RX (normale o invertita)"
 
-#: ../drivers/ft4.py:732
+#: ../drivers/ft4.py:748
 msgid ""
 "Tested and mostly works, but may give you issues\n"
 "when using lesser common radio variants.\n"
@@ -3138,6 +3696,10 @@ msgstr "Questa memoria"
 #: ../drivers/id5100.py:332
 msgid "This driver has been tested with v3 of the ID-5100. If your radio is not fully updated please help by opening a bug report with a debug log so we can add support for the other revisions."
 msgstr "Questo driver è stato testato con la versione 3 dell'ID-5100. Se la tua radio non è completamente aggiornata, ti chiediamo di aiutarci, aprendo una segnalazione di bug con un log di debug, in modo da poter aggiungere il supporto per le altre revisioni."
+
+#: ../drivers/tyt_uvl15w.py:575
+msgid "This driver is built from TYT's published protocol and memory layout and has not yet been tested widely. Save a copy of a fresh download from your radio before uploading. The radio restarts at the end of every download and upload."
+msgstr ""
 
 #: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
 #: ../drivers/radtel_rt490.py:1360
@@ -3266,6 +3828,10 @@ msgstr "Modalità squelch a tono"
 msgid "Transmit Power"
 msgstr "Potenza di trasmissione"
 
+#: ../drivers/tyt_uvl15w.py:967
+msgid "Transmit frequency is outside the radio's transmit bands and may be refused by the radio"
+msgstr ""
+
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
 msgstr "Shift della trasmissione, modalità split o inibizione della trasmissione"
@@ -3286,9 +3852,53 @@ msgstr "Trasmissione/ricezione di modulazione (FM, AM, SSB, ecc.)"
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr "Tono di trasmissione/ricezione per la modalità TSQL, altrimenti tono di ricezione"
 
+#: ../drivers/ft450d.py:1364
+msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
+msgstr "Trasmette un breve segnale acustico quando viene rilasciato il PTT, prima che la radio torni in ricezione, per segnalare alle altre stazioni la fine della trasmissione."
+
+#: ../drivers/baofeng_uv17Pro.py:839
+msgid "Transmits a special end-of-transmission signal intended to reduce the squelch burst heard by another compatible handheld."
+msgstr "Trasmette un segnale speciale di fine trasmissione, progettato per ridurre il rumore di apertura dello squelch udito da un'altra radio portatile compatibile."
+
 #: ../wxui/memedit.py:462 ../wxui/memedit.py:1464
 msgid "Tuning Step"
 msgstr "Passo sintonia"
+
+#: ../drivers/baofeng_uv17Pro.py:1083
+msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
+msgstr "Attiva il Bluetooth per consentire la programmazione wireless della radio tramite un'app sul telefono."
+
+#: ../drivers/ft450d.py:1338
+msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
+msgstr "Attiva il funzionamento a frequenze separate (split): la radio riceve sul VFO A e trasmette sul VFO B, o viceversa. I due VFO possono utilizzare modalità e persino bande diverse."
+
+#: ../drivers/ft450d.py:976
+msgid "Turns on the DSP contour filter, which gently cuts or boosts one part of the receive passband. Cutting suppresses interference or excessive components of a signal, boosting brings out the components that make it easier to understand."
+msgstr "Attiva il filtro Contour DSP, che attenua o amplifica delicatamente una porzione della banda passante di ricezione. L'attenuazione sopprime le interferenze o le componenti eccessive di un segnale; l'amplificazione mette in risalto le componenti che ne facilitano la comprensione."
+
+#: ../drivers/ft450d.py:1045
+msgid "Turns on the DSP digital noise reduction, which reduces random background noise on the HF and 50 MHz bands. It is especially effective on SSB."
+msgstr "Attiva la riduzione digitale del rumore DSP, che riduce il rumore di fondo casuale sulle bande HF e dei 50 MHz. È particolarmente efficace in SSB."
+
+#: ../drivers/ft450d.py:1687
+msgid "Turns on the IF noise blanker, which reduces short pulses of noise such as those from vehicle ignition systems."
+msgstr "Attiva il noise blanker IF, che riduce gli impulsi brevi di rumore, ad esempio quelli generati dagli impianti di accensione dei veicoli."
+
+#: ../drivers/ft450d.py:1010
+msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
+msgstr "Attiva il filtro notch IF, un filtro stretto e profondo che elimina una singola portante interferente o un fischio all'interno della banda passante di ricezione."
+
+#: ../drivers/ft450d.py:1717
+msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
+msgstr "Attiva il keyer elettronico CW integrato per una paletta collegata alla presa KEY. Disattivalo per utilizzare un tasto telegrafico semplice o un keyer esterno."
+
+#: ../drivers/baofeng_uv17Pro.py:1619
+msgid "Turns on the privacy function the manual calls Encryption for this channel. Other radios can only understand the conversation if they have it turned on as well and use the same DCS code."
+msgstr "Attiva la funzione di riservatezza che il manuale chiama Encryption per questo canale. Le altre radio possono decodificare la conversazione solo se attivano la stessa funzione e utilizzano lo stesso codice DCS."
+
+#: ../drivers/ft450d.py:1261
+msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
+msgstr "Spegne automaticamente la radio se, per il numero di ore selezionato, non vengono utilizzati tasti, manopole o comandi del microfono e non viene effettuata alcuna trasmissione. Nell'ultimo minuto prima dello spegnimento, sul display lampeggia APO e viene emesso un tono. 0 disattiva lo spegnimento automatico."
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
@@ -3320,8 +3930,8 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
-#: ../sources/mapy73pl.py:50
+#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_eu.py:46
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
@@ -3394,6 +4004,10 @@ msgstr "Memoria caricata %s"
 msgid "Use TX Frequency Workflow"
 msgstr "Utilizza il flusso di lavoro della frequenza TX"
 
+#: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
+msgid "Use at most 3 digits."
+msgstr "Utilizza al massimo 3 cifre."
+
 #: ../wxui/main.py:832
 msgid "Use fixed-width font"
 msgstr "Usa carattere a larghezza fissa"
@@ -3446,12 +4060,16 @@ msgstr "Produttore"
 msgid "View"
 msgstr "Visualizza"
 
+#: ../drivers/baofeng_uv17Pro.py:1031
+msgid "Voice operated transmit. The radio starts transmitting when you speak towards the microphone, so hands-free conversation is possible without pressing PTT."
+msgstr "Trasmissione attivata dalla voce. La radio inizia a trasmettere quando si parla verso il microfono, consentendo comunicazioni a mani libere senza premere il PTT."
+
 #: ../wxui/common.py:707
 msgid "WARNING!"
 msgstr "ATTENZIONE!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2059
+#: ../wxui/main.py:1907 ../wxui/main.py:2065 ../wxui/bugreport.py:235
+#: ../wxui/memedit.py:2055
 msgid "Warning"
 msgstr "Attenzione"
 
@@ -3460,9 +4078,21 @@ msgstr "Attenzione"
 msgid "Warning: %s"
 msgstr "Attenzione: %s"
 
+#: ../drivers/baofeng_uv17Pro.py:812
+msgid "Warns you the selected number of seconds before the time-out timer ends a transmission. Off turns the warning off."
+msgstr "Avvisa con il numero di secondi selezionato prima che il timer di timeout interrompa la trasmissione. Off disattiva l'avviso."
+
 #: ../wxui/main.py:462
 msgid "Welcome"
 msgstr "Benvenuto"
+
+#: ../drivers/baofeng_uv17Pro.py:750
+msgid "When it is off, the keypad can still be locked by hand."
+msgstr "Quando questa opzione è disattivata, è comunque possibile bloccare manualmente la tastiera."
+
+#: ../drivers/ft450d.py:1840
+msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
+msgstr "Quando è attiva, tenendo premuto per circa un secondo il tasto UP o DWN del microfono si avvia una scansione che continua anche dopo il rilascio del tasto. Quando è disattivata, la scansione prosegue solo finché il tasto rimane premuto."
 
 #: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
@@ -3508,7 +4138,7 @@ msgstr "casella di controllo"
 msgid "checked"
 msgstr "selezionato"
 
-#: ../wxui/main.py:1992
+#: ../wxui/main.py:1994
 msgid "disabled"
 msgstr "disabilitato"
 
@@ -3516,7 +4146,7 @@ msgstr "disabilitato"
 msgid "empty"
 msgstr "vuoto"
 
-#: ../wxui/main.py:1992
+#: ../wxui/main.py:1994
 msgid "enabled"
 msgstr "abilitato"
 

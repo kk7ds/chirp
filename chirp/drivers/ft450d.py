@@ -946,47 +946,70 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("data_modes", "DATA MODE",
                           RadioSettingValueList(options,
                                                 current_index=vx_data))
-        rs.set_doc("Extended Data Modes")
+        rs.set_doc(_("Selects the data mode a DIG channel uses. RTTY is FSK "
+                     "radioteletype keyed by a terminal unit or RTTY "
+                     "software, while USER-L and USER-U carry audio based "
+                     "data modes such as packet on the lower or upper "
+                     "sideband. N/A is for channels that are not in DIG "
+                     "mode."))
         mem.extra.append(rs)
 
         rs = RadioSetting("ipo", "IPO",
                           RadioSettingValueBoolean(bool(_mem.ipo)))
-        rs.set_doc("Bypass preamp")
+        rs.set_doc(_("Intercept point optimization. Bypasses the receiver's "
+                     "RF preamplifier so that the incoming signal goes "
+                     "straight to the first mixer. This gives up some "
+                     "sensitivity in exchange for better handling of strong "
+                     "signals and high noise levels."))
         mem.extra.append(rs)
 
         rs = RadioSetting("att", "ATT",
                           RadioSettingValueBoolean(bool(_mem.att)))
-        rs.set_doc("10dB front end attenuator")
+        rs.set_doc(_("Reduces all incoming signals by 20 dB, for use when "
+                     "extremely strong nearby stations or high noise levels "
+                     "degrade reception. Between 30 kHz and 1.7 MHz the radio "
+                     "always attenuates, whatever this setting."))
         mem.extra.append(rs)
 
         rs = RadioSetting("cnturon", "Contour Filter",
                           RadioSettingValueBoolean(_mem.cnturon))
-        rs.set_doc("Contour filter on/off")
+        rs.set_doc(_("Turns on the DSP contour filter, which gently cuts or "
+                     "boosts one part of the receive passband. Cutting "
+                     "suppresses interference or excessive components of a "
+                     "signal, boosting brings out the components that make it "
+                     "easier to understand."))
         mem.extra.append(rs)
 
         options = ["Peak", "Null"]
         rs = RadioSetting("cnturpk", "Contour Filter Mode",
                           RadioSettingValueList(options,
                                                 current_index=_mem.cnturpk))
+        rs.set_doc(_("Chooses whether the contour filter boosts (Peak) or "
+                     "cuts (Null) the part of the passband it is set to."))
         mem.extra.append(rs)
 
         options = ["Low", "High"]
         rs = RadioSetting("cnturgn", "Contour Filter Gain",
                           RadioSettingValueList(options,
                                                 current_index=_mem.cnturgn))
-        rs.set_doc("Filter gain/attenuation")
+        rs.set_doc(_("Sets how strongly the contour filter boosts or cuts. "
+                     "Low gives a gentle effect, High a stronger one."))
         mem.extra.append(rs)
 
         options = ["-2", "-1", "Center", "+1", "+2"]
         rs = RadioSetting("cnturmd", "Contour Filter Notch",
                           RadioSettingValueList(options,
                                                 current_index=_mem.cnturmd))
-        rs.set_doc("Filter notch offset")
+        rs.set_doc(_("Moves the part of the passband the contour filter acts "
+                     "on, from -2 at the low end through Center to +2 at the "
+                     "high end."))
         mem.extra.append(rs)
 
         rs = RadioSetting("notch", "Notch Filter",
                           RadioSettingValueBoolean(_mem.notch))
-        rs.set_doc("IF bandpass filter")
+        rs.set_doc(_("Turns on the IF notch filter, a narrow and deep filter "
+                     "that removes a single interfering carrier or whistle "
+                     "from inside the receive passband."))
         mem.extra.append(rs)
 
         vx = 1
@@ -997,19 +1020,31 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             vx = 2
         rs = RadioSetting("notch_pos", "Notch Position",
                           RadioSettingValueList(options, current_index=vx))
-        rs.set_doc("IF bandpass filter shift")
+        rs.set_doc(_("Places the IF notch filter below the center of the "
+                     "passband, at the center or above it. The exact notch "
+                     "frequency is fine tuned on the radio with the DSP/SEL "
+                     "knob."))
         mem.extra.append(rs)
 
         stx, options = filters_for_mode(mem.mode)
         vx = getattr(_mem, stx)
         rs = RadioSetting("bpfilter", "IF Bandpass Filter Width",
                           RadioSettingValueList(all_filters(), options[vx]))
-        rs.set_doc("DSP IF bandpass Notch width (Hz)")
+        rs.set_doc(_("Sets the width of the DSP IF filter. A narrower filter "
+                     "rejects interference close to the signal, a wider one "
+                     "sounds more natural when the band is quiet. The widths "
+                     "depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 "
+                     "Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz "
+                     "for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz "
+                     "for FM. A width the mode does not offer is replaced "
+                     "with the closest one it does."))
         mem.extra.append(rs)
 
         rs = RadioSetting("dnr_on", "DSP Noise Reduction",
                           RadioSettingValueBoolean(bool(_mem.dnr_on)))
-        rs.set_doc("Digital noise processing")
+        rs.set_doc(_("Turns on the DSP digital noise reduction, which reduces "
+                     "random background noise on the HF and 50 MHz bands. It "
+                     "is especially effective on SSB."))
         mem.extra.append(rs)
 
         options = ["Off", "1", "2", "3", "4", "5", "6", "7",
@@ -1017,7 +1052,11 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("dnr_val", "DSP Noise Reduction Alg",
                           RadioSettingValueList(options,
                                                 current_index=_mem.dnr_val))
-        rs.set_doc("Digital noise reduction algorithm number (1-11)")
+        rs.set_doc(_("Selects which of the eleven noise reduction algorithms "
+                     "is used. Each one is designed for a different kind of "
+                     "noise, so try them in turn to find the one that best "
+                     "suppresses the noise currently heard. Off also turns "
+                     "DSP Noise Reduction off."))
         mem.extra.append(rs)
 
         return mem          # end get_memory
@@ -1212,11 +1251,19 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("ext_mnu", "Extended menu",
                           RadioSettingValueBoolean(_settings.ext_mnu))
-        rs.set_doc("Enables access to extended settings in the radio")
+        rs.set_doc(_("Shows all 62 items of the radio's Menu Mode. When off, "
+                     "the menu on the radio offers only the 16 most often "
+                     "used items."))
         tab.append(rs)
         # Issue #8183 bugfix
         rs = RadioSetting("apo", "APO time (Hrs)",
                           RadioSettingValueInteger(0, 12, _settings.apo))
+        rs.set_doc(_("Turns the radio off automatically once no button, knob "
+                     "or microphone key has been used and nothing has been "
+                     "transmitted for the selected number of hours. APO "
+                     "flashes on the display and a tone sounds in the last "
+                     "minute before the radio switches off. 0 disables "
+                     "automatic power off."))
         tab.append(rs)
 
         options = ["%i" % i for i in range(0, 21)]
@@ -1224,62 +1271,122 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("tot", "TX 'TOT' time-out (mins)",
                           RadioSettingValueList(options,
                                                 current_index=_settings.tot))
+        rs.set_doc(_("Limits how long a single transmission may last. When "
+                     "the time runs out the radio stops transmitting until "
+                     "PTT is released, which prevents overheating and stops a "
+                     "stuck PTT from blocking the channel for everyone else."))
         tab.append(rs)
 
         bx = not _settings.cat_rts     # Convert from Enable=0
         rs = RadioSetting("cat_rts", "CAT RTS flow control",
                           RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "cat_rts")
+        rs.set_doc(_("Enables the RTS line of the CAT jack. Turn it off when "
+                     "the computer or cable does not provide RTS. A radio "
+                     "that follows the frequency of another radio set to "
+                     "F-TRANS also needs it off."))
         tab.append(rs)
 
         options = ["0", "100ms", "1000ms", "3000ms"]
         rs = RadioSetting("cat_tot", "CAT Timeout",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cat_tot))
+        rs.set_doc(_("Sets the time-out timer for computer control commands "
+                     "arriving on the CAT jack. Command input that continues "
+                     "for longer than this time is cut off. The radio shows "
+                     "the shortest setting as 10 ms."))
         tab.append(rs)
 
         options = ["4800", "9600", "19200", "38400", "Data"]
         rs = RadioSetting("catrate", "CAT rate",
                           RadioSettingValueList(options,
                                                 current_index=_settings.catrate))
+        rs.set_doc(_("Sets the baud rate of the CAT jack, which must match "
+                     "the computer control software. Data turns the CAT jack "
+                     "into an RTTY interface instead: RTTY software keys the "
+                     "FSK shift through the serial data input and uses RTS as "
+                     "PTT."))
         tab.append(rs)
 
         rs = RadioSetting("mem_grp", "Mem groups",
                           RadioSettingValueBoolean(_settings.mem_grp))
+        rs.set_doc(_("Divides the 500 regular memory channels into ten groups "
+                     "of 50, numbered M-01-01 to M-10-50. Channels are then "
+                     "selected and scanned one group at a time."))
         tab.append(rs)
 
         rs = RadioSetting("scn_res", "Resume scan (secs)",
                           RadioSettingValueInteger(0, 10, _settings.scn_res))
+        rs.set_doc(_("Sets when the scan resumes after it has paused on a "
+                     "signal. 1 to 10 resumes after that many seconds, 0 "
+                     "selects BUSY, which waits until the signal has gone. In "
+                     "SSB, CW and SSB based data modes the scanner instead "
+                     "steps slowly across a signal, giving you time to stop "
+                     "it."))
         tab.append(rs)
 
         rs = RadioSetting("clk_sft", "CPU clock shift",
                           RadioSettingValueBoolean(_settings.clk_sft))
+        rs.set_doc(_("Shifts the frequency of the radio's CPU clock slightly. "
+                     "Only use it to move an internally generated spurious "
+                     "signal, or birdie, off a frequency you want to listen "
+                     "on."))
         tab.append(rs)
 
         rs = RadioSetting("split", "TX/RX Frequency Split",
                           RadioSettingValueBoolean(_settings.split))
+        rs.set_doc(_("Turns on split frequency operation: the radio receives "
+                     "on VFO-A and transmits on VFO-B, or the other way "
+                     "round. The two VFOs may use different modes and even "
+                     "different bands."))
         tab.append(rs)
 
         rs = RadioSetting("qspl_f", "Quick-Split freq offset (kHz)",
                           RadioSettingValueInteger(-20, 20, _settings.qspl_f))
+        rs.set_doc(_("Sets the offset Quick Split applies. Holding SPLIT/STEP "
+                     "for a second sets the transmit VFO to the receive "
+                     "frequency plus this offset, in the same mode as the "
+                     "receive VFO, and turns split operation on."))
         tab.append(rs)
 
         rs = RadioSetting("emergen", "Alaska Emergency Mem 5167.5 kHz",
                           RadioSettingValueBoolean(_settings.emergen))
+        rs.set_doc(_("Enables transmit and receive on the Alaska emergency "
+                     "channel, 5167.5 kHz, which then appears as MEM-EMG in "
+                     "Memory mode. It may only be used by stations in or "
+                     "within 92.6 km of Alaska, and only for emergency "
+                     "communications involving the immediate protection of "
+                     "life or property."))
         tab.append(rs)
 
         rs = RadioSetting("stby_beep", "PTT release 'Standby' beep",
                           RadioSettingValueBoolean(_settings.stby_beep))
+        rs.set_doc(_("Transmits a short beep when PTT is released, before the "
+                     "radio returns to receive, to tell other stations that "
+                     "your transmission has ended."))
         tab.append(rs)
 
         options = ["ATAS", "EXT ATU", "INT ATU", "INTRATU", "F-TRANS"]
         rs = RadioSetting("tuner", "Antenna Tuner",
                           RadioSettingValueList(options,
                                                 current_index=_settings.tuner))
+        rs.set_doc(_("Selects what the TUNE button controls. ATAS is the "
+                     "optional ATAS-100/-120 active-tuning antenna, EXT ATU "
+                     "the optional FC-40 external tuner, and INT ATU the "
+                     "built-in tuner acting on the transmit signal only, "
+                     "while INTRATU puts the built-in tuner in the receive "
+                     "path as well. F-TRANS instead sends this radio's "
+                     "frequency to a second radio of the same model whenever "
+                     "TUNE is pressed, for single operator two radio (SO2R) "
+                     "operation."))
         tab.append(rs)
 
         rs = RadioSetting("rfpower", "RF power (watts)",
                           RadioSettingValueInteger(5, 100, _settings.rfpower))
+        rs.set_doc(_("Sets the transmit power in watts. Use the lowest power "
+                     "that provides reliable communication, and a half to a "
+                     "third of full power for data transmissions longer than "
+                     "a few minutes."))
         tab.append(rs)      # End of _do_general_settings
 
     def _do_cw_settings(self, cw):        # - - - CW - - -
@@ -1288,84 +1395,141 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("cw_dly", "CW break-in delay (ms * 10)",
                           RadioSettingValueInteger(0, 300, _settings.cw_dly))
+        rs.set_doc(_("Sets how long the transmitter stays on after you stop "
+                     "sending in semi break-in CW, in steps of 10 ms, so 25 "
+                     "means 250 ms. A longer delay suits operators who pause "
+                     "often while sending. The radio can also be set to FULL, "
+                     "full break-in, which lets you hear between the "
+                     "characters you send."))
         cw.append(rs)
 
         options = ["%i Hz" % i for i in range(400, 801, 100)]
         rs = RadioSetting("cwpitch", "CW pitch",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cwpitch))
+        rs.set_doc(_("Sets the pitch of the CW sidetone, which is also the "
+                     "offset of the transmitted carrier and the center of the "
+                     "CW receive filter. Tuning a station in until its tone "
+                     "matches the sidetone puts you on its frequency."))
         cw.append(rs)
 
         rs = RadioSetting("cwspeed", "CW speed (wpm)",
                           RadioSettingValueInteger(4, 60, _settings.cwspeed))
-        rs.set_doc("Cpm is Wpm * 5")
+        rs.set_doc(_("Sets the sending speed of the built-in electronic keyer "
+                     "in words per minute. The radio can also show it in "
+                     "characters per minute, five times the wpm value. With a "
+                     "CW QSK delay of 25 ms keep it at 50 wpm or below, and "
+                     "with 30 ms at 42 wpm or below, or the radio cannot "
+                     "transmit."))
         cw.append(rs)
 
         options = ["1:%1.1f" % (i / 10) for i in range(25, 46, 1)]
         rs = RadioSetting("cwweigt", "CW weight",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cwweigt))
+        rs.set_doc(_("Sets the dot to dash ratio of the built-in electronic "
+                     "keyer. At 1:3.0, the standard weighting, a dash lasts "
+                     "three times as long as a dot."))
         cw.append(rs)
 
         options = ["15ms", "20ms", "25ms", "30ms"]
         rs = RadioSetting("cw_qsk", "CW delay before TX in QSK mode",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cw_qsk))
+        rs.set_doc(_("Sets the delay between closing the key and the carrier "
+                     "being transmitted in QSK operation with the built-in "
+                     "keyer. At 25 ms keep the CW speed at 50 wpm or below, "
+                     "and at 30 ms at 42 wpm or below, or the radio cannot "
+                     "transmit."))
         cw.append(rs)
 
         rs = RadioSetting("cwstone_sgn", "CW sidetone volume Linked",
                           RadioSettingValueBoolean(_settings.cwstone_sgn))
-        rs.set_doc("If set; volume is relative to AF Gain knob.")
+        rs.set_doc(_("Makes the CW sidetone volume follow the AF GAIN knob, "
+                     "offset by the CW sidetone linked volume. When off, the "
+                     "sidetone plays at the CW sidetone fixed volume whatever "
+                     "the AF GAIN setting."))
         cw.append(rs)
 
         rs = RadioSetting("cwstone_lnk", "CW sidetone linked volume",
                           RadioSettingValueInteger(-50, 50,
                                                    _settings.cwstone_lnk))
+        rs.set_doc(_("Sets the sidetone volume relative to the receive audio "
+                     "level set by AF GAIN, when CW sidetone volume Linked is "
+                     "on. 0 makes the sidetone as loud as the received audio, "
+                     "negative values make it quieter and positive values "
+                     "louder."))
         cw.append(rs)
 
         rs = RadioSetting("cwstone_fix", "CW sidetone fixed volume",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.cwstone_fix))
+        rs.set_doc(_("Sets the CW sidetone volume, from 0 to 100, used when "
+                     "CW sidetone volume Linked is off."))
         cw.append(rs)
 
         options = ["Numeric", "Alpha", "Mixed"]
         rs = RadioSetting("cwtrain", "CW Training mode",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cwtrain))
+        rs.set_doc(_("Selects the characters the CW training feature sends: "
+                     "digits only, letters only, or both mixed. Training "
+                     "plays random five character Morse groups through the "
+                     "sidetone at the CW speed, without transmitting."))
         cw.append(rs)
 
         rs = RadioSetting("cw_auto", "CW key jack- auto CW mode",
                           RadioSettingValueBoolean(_settings.cw_auto))
-        rs.set_doc("Enable for CW mode auto-set when keyer pluuged in.")
+        rs.set_doc(_("Lets the KEY jack send CW while the radio is in SSB "
+                     "mode, so you can answer a station in CW without "
+                     "changing mode. When off, the KEY jack only works in CW "
+                     "mode."))
         cw.append(rs)
 
         options = ["Normal", "Reverse"]
         rs = RadioSetting("cw_key", "CW paddle wiring",
                           RadioSettingValueList(options,
                                                 current_index=_settings.cw_key))
+        rs.set_doc(_("Swaps the dot and dash sides of a keyer paddle without "
+                     "rewiring it, for example for a left-handed operator. "
+                     "Normal sends dots from the plug tip and dashes from the "
+                     "ring, Reverse the other way round."))
         cw.append(rs)
 
         rs = RadioSetting("beacon_time", "CW beacon Tx interval (secs)",
                           RadioSettingValueInteger(0, 255,
                                                    _settings.beacon_time))
+        rs.set_doc(_("Sets the pause in seconds between repeats of a CW "
+                     "beacon message. 0 turns the repeat off, so that each "
+                     "message is sent once per button press, as with a CW "
+                     "message keyer."))
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t1, 40)
         rs = RadioSetting("t1", "CW Beacon Line 1",
                           RadioSettingValueString(0, 40, tmp))
         rs.set_apply_callback(self._my_str2ary, _beacon, "t1", 40)
+        rs.set_doc(_("CW beacon message 1, up to 40 characters, sent in CW "
+                     "mode by the PLAY1 function of a programmable button. "
+                     "The radio can send A to Z, 0 to 9, /, space and @."))
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t2, 40)
         rs = RadioSetting("t2", "CW Beacon Line 2",
                           RadioSettingValueString(0, 40, tmp))
         rs.set_apply_callback(self._my_str2ary, _beacon, "t2", 40)
+        rs.set_doc(_("CW beacon message 2, up to 40 characters, sent in CW "
+                     "mode by the PLAY2 function of a programmable button. "
+                     "The radio can send A to Z, 0 to 9, /, space and @."))
         cw.append(rs)
 
         tmp = self._chars2str(_beacon.t3, 40)
         rs = RadioSetting("t3", "CW Beacon Line 3",
                           RadioSettingValueString(0, 40, tmp))
         rs.set_apply_callback(self._my_str2ary, _beacon, "t3", 40)
+        rs.set_doc(_("CW beacon message 3, up to 40 characters, sent in CW "
+                     "mode by the PLAY3 function of a programmable button. "
+                     "The radio can send A to Z, 0 to 9, /, space and @."))
         cw.append(rs)       # END _do_cw_settings
 
     def _do_panel_settings(self, pnlset):    # - - - Panel settings
@@ -1375,56 +1539,86 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("amfmdial", "AM&FM Dial",
                           RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "amfmdial")
+        rs.set_doc(_("Lets the MAIN DIAL knob change the frequency in AM and "
+                     "FM modes. When off, the MAIN DIAL does not tune in "
+                     "these modes."))
         pnlset.append(rs)
 
         options = ["440 Hz", "880 Hz", "1760 Hz"]
         rs = RadioSetting("beepton", "Beep frequency",
                           RadioSettingValueList(options,
                                                 current_index=_settings.beepton))
+        rs.set_doc(_("Sets the pitch of the beep the radio sounds to confirm "
+                     "button presses."))
         pnlset.append(rs)
 
         rs = RadioSetting("beepvol_sgn", "Beep volume Linked",
                           RadioSettingValueBoolean(_settings.beepvol_sgn))
-        rs.set_doc("If set; volume is relative to AF Gain knob.")
+        rs.set_doc(_("Makes the beep volume follow the AF GAIN knob, offset "
+                     "by the Linked beep volume. When off, the beep plays at "
+                     "the Fixed beep volume whatever the AF GAIN setting."))
         pnlset.append(rs)
 
         rs = RadioSetting("beepvol_lnk", "Linked beep volume",
                           RadioSettingValueInteger(-50, 50,
                                                    _settings.beepvol_lnk))
-        rs.set_doc("Relative to AF-Gain setting.")
+        rs.set_doc(_("Sets the beep volume relative to the receive audio "
+                     "level set by AF GAIN, when Beep volume Linked is on. 0 "
+                     "makes the beep as loud as the received audio, negative "
+                     "values make it quieter and positive values louder."))
         pnlset.append(rs)
 
         rs = RadioSetting("beepvol_fix", "Fixed beep volume",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.beepvol_fix))
-        rs.set_doc("When Linked setting is unchecked.")
+        rs.set_doc(_("Sets the beep volume, from 0 to 100, used when Beep "
+                     "volume Linked is off."))
         pnlset.append(rs)
 
         rs = RadioSetting("cont", "LCD Contrast",
                           RadioSettingValueInteger(1, 24, _settings.cont))
-        rs.set_doc("This setting does not appear to do anything...")
+        rs.set_doc(_("Sets the contrast of the display, from 1 to 24. "
+                     "Changing it here has not been seen to have a visible "
+                     "effect on the radio."))
         pnlset.append(rs)
 
         rs = RadioSetting("dimmer", "LCD Dimmer",
                           RadioSettingValueInteger(1, 8,  _settings.dimmer))
+        rs.set_doc(_("Sets the brightness of the display illumination, from 1 "
+                     "to 8."))
         pnlset.append(rs)
 
         options = ["RF-Gain", "Squelch"]
         rs = RadioSetting("sql_rfg", "Squelch/RF-Gain",
                           RadioSettingValueList(options,
                                                 current_index=_settings.sql_rfg))
+        rs.set_doc(_("Chooses what the SQL/RF GAIN knob controls. RF-Gain "
+                     "sets the gain of the receiver's RF and IF stages, "
+                     "Squelch mutes the receiver while no signal is present. "
+                     "Scanning needs Squelch, because the scanner stops on "
+                     "signals strong enough to open the squelch."))
         pnlset.append(rs)
 
         options = ["Frequencies", "Panel", "All"]
         rs = RadioSetting("lockmod", "Lock Mode",
                           RadioSettingValueList(options,
                                                 current_index=_settings.lockmod))
+        rs.set_doc(_("Selects what the LOCK button locks. Frequencies locks "
+                     "the controls that change the frequency, including the "
+                     "microphone UP, DWN and FAST keys. Panel locks all front "
+                     "panel keys and knobs, and All locks both the front "
+                     "panel and the microphone keys. POWER and LOCK always "
+                     "remain usable."))
         pnlset.append(rs)
 
         options = ["Dial", "SEL"]
         rs = RadioSetting("clar_btn", "CLAR button control",
                           RadioSettingValueList(options,
                                                 current_index=_settings.clar_btn))
+        rs.set_doc(_("Chooses which knob sets the clarifier offset after CLAR "
+                     "is pressed: the MAIN DIAL or the DSP/SEL knob. The "
+                     "clarifier shifts the receive frequency without changing "
+                     "the transmit frequency."))
         pnlset.append(rs)
 
         if _settings.dialstp_mode == 0:             # AM/FM
@@ -1434,20 +1628,32 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("dialstp", "Dial tuning step",
                           RadioSettingValueList(options,
                                                 current_index=_settings.dialstp))
+        rs.set_doc(_("Sets how far the frequency moves for each step of the "
+                     "MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or "
+                     "200 Hz in AM and FM."))
         pnlset.append(rs)
 
         options = ["0.5secs", "1.0secs", "1.5secs", "2.0secs"]
         rs = RadioSetting("keyhold", "Buttons hold-to-activate time",
                           RadioSettingValueList(options,
                                                 current_index=_settings.keyhold))
+        rs.set_doc(_("Sets how long a button has to be held to activate its "
+                     "press and hold function. A shorter press activates the "
+                     "button's normal function."))
         pnlset.append(rs)
 
         rs = RadioSetting("m_tune", "Memory tune",
                           RadioSettingValueBoolean(_settings.m_tune))
+        rs.set_doc(_("Allows tuning away from a recalled memory or Home "
+                     "channel with the MAIN DIAL, as with a VFO. The stored "
+                     "channel does not change unless you write the new "
+                     "settings to it."))
         pnlset.append(rs)
 
         rs = RadioSetting("peakhold", "S-Meter display hold (1sec)",
                           RadioSettingValueBoolean(_settings.peakhold))
+        rs.set_doc(_("Holds the peak S-meter reading for one second, which "
+                     "makes the meter easier to read."))
         pnlset.append(rs)
 
         options = ["CW Sidetone", "CW Speed", "100 kHz step", "1 MHz Step",
@@ -1455,6 +1661,10 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("seldial", "SEL dial 2nd function (push)",
                           RadioSettingValueList(options,
                                                 current_index=_settings.seldial))
+        rs.set_doc(_("Assigns the second function the DSP/SEL knob takes on "
+                     "after it is pressed briefly: adjusting the CW sidetone "
+                     "volume, the CW keyer speed, the microphone gain or the "
+                     "RF power, or tuning in 100 kHz or 1 MHz steps."))
         pnlset.append(rs)
     # End _do_panel_settings
 
@@ -1464,10 +1674,19 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
         rs = RadioSetting("pnl_cs", "C.S. Function",
                           RadioSettingValueList(self.FUNC_LIST,
                                                 current_index=_settings.pnl_cs))
+        rs.set_doc(_("Assigns one of the radio's functions to the front panel "
+                     "C.S/VOICE button, for example MONI to listen to your "
+                     "own transmission, SWR to transmit a 10 W carrier and "
+                     "measure the antenna SWR, or PLAY1 to send CW beacon "
+                     "message 1. Choices named after a front panel button act "
+                     "like that button."))
         pnlcfg.append(rs)
 
         rs = RadioSetting("nb", "Noise blanker",
                           RadioSettingValueBoolean(_settings.nb))
+        rs.set_doc(_("Turns on the IF noise blanker, which reduces short "
+                     "pulses of noise such as those from vehicle ignition "
+                     "systems."))
         pnlcfg.append(rs)
 
         # The old FT450 uses different codes for the AGC setting, and only uses the
@@ -1485,24 +1704,41 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             rs = RadioSetting("agc", "AGC",
                               RadioSettingValueList(options,
                                                     current_index=_settings.agc))
+        rs.set_doc(_("Selects how quickly the automatic gain control lets the "
+                     "receiver recover after a strong signal. Fast suits CW "
+                     "and data, Slow suits SSB and AM, and Auto picks Slow "
+                     "for SSB and AM and Fast for the other modes. With AGC "
+                     "off the S-meter no longer moves and strong signals are "
+                     "likely to distort."))
         pnlcfg.append(rs)
 
         rs = RadioSetting("keyer", "Keyer",
                           RadioSettingValueBoolean(_settings.keyer))
+        rs.set_doc(_("Turns on the built-in electronic CW keyer, for a keyer "
+                     "paddle plugged into the KEY jack. Turn it off to use a "
+                     "straight key or an external keyer."))
         pnlcfg.append(rs)
 
         rs = RadioSetting("fast", "Fast step",
                           RadioSettingValueBoolean(_settings.fast))
+        rs.set_doc(_("Speeds up tuning: the MAIN DIAL knob tunes ten times "
+                     "faster and the DSP/SEL knob twice as fast."))
         pnlcfg.append(rs)
 
         rs = RadioSetting("lock", "Lock (per Lock Mode)",
                           RadioSettingValueBoolean(_settings.lock))
+        rs.set_doc(_("Locks the controls selected by Lock Mode against "
+                     "accidental changes, as the LOCK button does."))
         pnlcfg.append(rs)
 
         options = ["PO",  "ALC", "SWR"]
         rs = RadioSetting("mtr_mode", "S-Meter mode",
                           RadioSettingValueList(options,
                                                 current_index=_settings.mtr_mode))
+        rs.set_doc(_("Selects what the meter shows while transmitting: PO the "
+                     "average power output, ALC the relative ALC voltage, or "
+                     "SWR the standing wave ratio of the antenna. While "
+                     "receiving it always shows the signal strength."))
         pnlcfg.append(rs)
         # End _do_panel_Buttons
 
@@ -1511,44 +1747,67 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("vox_dly", "VOX delay (x 100 ms)",
                           RadioSettingValueInteger(1, 30, _settings.vox_dly))
+        rs.set_doc(_("Sets how long the transmitter stays on after you stop "
+                     "speaking in VOX operation, in steps of 100 ms, so 5 "
+                     "means 500 ms. A longer delay keeps short pauses in your "
+                     "speech from switching the radio back to receive."))
         voxdat.append(rs)
 
         rs = RadioSetting("vox_gain", "VOX Gain",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.vox_gain))
+        rs.set_doc(_("Sets the VOX sensitivity. Too sensitive a setting keys "
+                     "the transmitter on the noise around the radio, too "
+                     "insensitive a setting fails to pick up your voice. 1 is "
+                     "the least sensitive setting and 100 the most."))
         voxdat.append(rs)
 
         rs = RadioSetting("dig_vox", "Digital VOX Gain",
                           RadioSettingValueInteger(0, 100,
                                                    _settings.dig_vox))
+        rs.set_doc(_("Sets the VOX sensitivity used in DIG mode, so that the "
+                     "audio from the data equipment switches the transmitter "
+                     "on without a PTT line. 0 turns VOX off in DIG mode."))
         voxdat.append(rs)
 
         rs = RadioSetting("d_disp", "User-L/U freq offset (Hz)",
                           RadioSettingValueInteger(-3000, 30000,
                                                    _settings.d_disp, 10))
+        rs.set_doc(_("Shifts the frequency shown on the display in the USER-L "
+                     "and USER-U data modes by this many hertz. The radio "
+                     "accepts -3000 to +3000 Hz."))
         voxdat.append(rs)
 
         options = ["170 Hz", "200 Hz", "425 Hz", "850 Hz"]
         rs = RadioSetting("rty_sft", "RTTY FSK Freq Shift",
                           RadioSettingValueList(options,
                                                 current_index=_settings.rty_sft))
+        rs.set_doc(_("Sets the frequency shift between the mark and space "
+                     "tones in FSK RTTY. Most amateur RTTY uses 170 Hz."))
         voxdat.append(rs)
 
         options = ["1275 Hz", "2125 Hz"]
         rs = RadioSetting("rty_ton", "RTTY FSK Mark tone",
                           RadioSettingValueList(options,
                                                 current_index=_settings.rty_ton))
+        rs.set_doc(_("Selects the mark tone for RTTY: 2125 Hz for high tone "
+                     "operation or 1275 Hz for low tone operation."))
         voxdat.append(rs)
 
         options = ["Normal", "Reverse"]
         rs = RadioSetting("rtyrpol", "RTTY Mark/Space RX polarity",
                           RadioSettingValueList(options,
                                                 current_index=_settings.rtyrpol))
+        rs.set_doc(_("Swaps the mark and space tones when receiving RTTY. Try "
+                     "Reverse if a station with a good signal cannot be "
+                     "decoded."))
         voxdat.append(rs)
 
         rs = RadioSetting("rtytpol", "RTTY Mark/Space TX polarity",
                           RadioSettingValueList(options,
                                                 current_index=_settings.rtytpol))
+        rs.set_doc(_("Swaps the mark and space tones of your transmitted RTTY "
+                     "signal."))
         voxdat.append(rs)
         # End _do_vox_settings
 
@@ -1557,120 +1816,165 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
 
         rs = RadioSetting("mic_eq", "Mic Equalizer",
                           RadioSettingValueInteger(0, 9, _settings.mic_eq))
+        rs.set_doc(_("Selects one of ten DSP equalizer curves for your "
+                     "transmitted voice. 0 is flat, 1 to 3 reduce the low, "
+                     "middle or high frequencies, and 4 to 6 boost the high, "
+                     "middle or low frequencies. 7 boosts the lows and "
+                     "reduces the highs, 8 reduces the lows and boosts the "
+                     "middle, and 9 reduces the lows and boosts the highs."))
         mic.append(rs)
 
         options = ["Low", "Normal", "High"]
         rs = RadioSetting("micgain", "Mic Gain",
                           RadioSettingValueList(options,
                                                 current_index=_settings.micgain))
+        rs.set_doc(_("Sets the microphone gain for SSB, AM and FM. Use Low "
+                     "with a microphone that has a high output, Normal with "
+                     "the supplied hand microphone and High with a microphone "
+                     "that has a low output. The speech processor is off at "
+                     "Low and on at the other settings."))
         mic.append(rs)
 
         rs = RadioSetting("micscan", "Mic scan enabled",
                           RadioSettingValueBoolean(_settings.micscan))
-        rs.set_doc("Enables channel scanning via mic up/down buttons.")
+        rs.set_doc(_("When on, holding the microphone UP or DWN key for about "
+                     "a second starts a scan that continues after the key is "
+                     "released. When off, the radio only scans while the key "
+                     "is held down."))
         mic.append(rs)
 
         rs = RadioSetting("pm_dwn", "Mic Down button function",
                           RadioSettingValueList(self.FUNC_LIST,
                                                 current_index=_settings.pm_dwn))
+        rs.set_doc(_("Assigns one of the radio's functions to the DWN key of "
+                     "the microphone. DOWN, its normal function, steps the "
+                     "frequency or memory channel down."))
         mic.append(rs)
 
         rs = RadioSetting("pm_fst", "Mic Fast button function",
                           RadioSettingValueList(self.FUNC_LIST,
                                                 current_index=_settings.pm_fst))
+        rs.set_doc(_("Assigns one of the radio's functions to the FST key of "
+                     "the microphone. FAST, its normal function, speeds up "
+                     "tuning like the front panel FAST button."))
         mic.append(rs)
 
         rs = RadioSetting("pm_up", "Mic Up button function",
                           RadioSettingValueList(self.FUNC_LIST,
                                                 current_index=_settings.pm_up))
+        rs.set_doc(_("Assigns one of the radio's functions to the UP key of "
+                     "the microphone. UP, its normal function, steps the "
+                     "frequency or memory channel up."))
         mic.append(rs)
         # End _do_mic_settings
 
     def _do_mymodes_settings(self, mymodes):    # - - MYMODES
         _settings = self._memobj.settings  # Inverted Logic requires callback
+        doc = _("Includes %s in the modes the MODE buttons step through. Turn "
+                "off the modes you never use to reach the others with fewer "
+                "presses.")
 
         bx = not _settings.mym_lsb
         rs = RadioSetting("mym_lsb", "LSB", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_lsb")
+        rs.set_doc(doc % "LSB")
         mymodes.append(rs)
 
         bx = not _settings.mym_usb
         rs = RadioSetting("mym_usb", "USB", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_usb")
+        rs.set_doc(doc % "USB")
         mymodes.append(rs)
 
         bx = not _settings.mym_cw
         rs = RadioSetting("mym_cw", "CW", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_cw")
+        rs.set_doc(doc % "CW")
         mymodes.append(rs)
 
         bx = not _settings.mym_am
         rs = RadioSetting("mym_am", "AM", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_am")
+        rs.set_doc(doc % "AM")
         mymodes.append(rs)
 
         bx = not _settings.mym_fm
         rs = RadioSetting("mym_fm", "FM", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_fm")
+        rs.set_doc(doc % "FM")
         mymodes.append(rs)
 
         bx = not _settings.mym_data
         rs = RadioSetting("mym_data", "DATA", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "mym_data")
+        rs.set_doc(doc % "DATA")
         mymodes.append(rs)
         # End _do_mymodes_settings
 
     def _do_mybands_settings(self, mybands):    # - - MYBANDS Settings
         _settings = self._memobj.settings  # Inverted Logic requires callback
+        doc = _("Includes the %s band in the bands the BAND buttons step "
+                "through. Turn off the bands you never use to reach the "
+                "others with fewer presses.")
 
         bx = not _settings.myb_1_8
         rs = RadioSetting("myb_1_8", "1.8 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_1_8")
+        rs.set_doc(doc % "1.8 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_3_5
         rs = RadioSetting("myb_3_5", "3.5 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_3_5")
+        rs.set_doc(doc % "3.5 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_7
         rs = RadioSetting("myb_7", "7 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_7")
+        rs.set_doc(doc % "7 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_10
         rs = RadioSetting("myb_10", "10 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_10")
+        rs.set_doc(doc % "10 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_14
         rs = RadioSetting("myb_14", "14 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_14")
+        rs.set_doc(doc % "14 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_18
         rs = RadioSetting("myb_18", "18 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_18")
+        rs.set_doc(doc % "18 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_21
         rs = RadioSetting("myb_21", "21 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_21")
+        rs.set_doc(doc % "21 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_24
         rs = RadioSetting("myb_24", "24 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_24")
+        rs.set_doc(doc % "24 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_28
         rs = RadioSetting("myb_28", "28 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_28")
+        rs.set_doc(doc % "28 MHz")
         mybands.append(rs)
 
         bx = not _settings.myb_50
         rs = RadioSetting("myb_50", "50 MHz", RadioSettingValueBoolean(bx))
         rs.set_apply_callback(self._invert_me, _settings, "myb_50")
+        rs.set_doc(doc % "50 MHz")
         mybands.append(rs)
         # End _do_mybands_settings
 

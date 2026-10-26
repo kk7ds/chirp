@@ -550,6 +550,20 @@ VALID_STEPS = [x for x in STEP_CODE if x]
 US_LEGAL_STEPS = list(VALID_STEPS)  # copy to pass to UI on US radios
 US_LEGAL_STEPS.remove(6.25)       # euro radios just use STEP_CODE
 
+
+def _valid_tuning_step(radio, mem):
+    """Return an explicit legal step compatible with the memory frequency."""
+    if mem.tuning_step in radio.legal_steps:
+        return mem.tuning_step
+
+    try:
+        return chirp_common.required_step(mem.freq, radio.legal_steps)
+    except errors.InvalidDataError:
+        # Preserve an otherwise-invalid frequency without exposing Auto;
+        # memory validation reports that the frequency is unsupported.
+        return radio.legal_steps[0]
+
+
 # Map the radio image sql_type (0-6) to the CHIRP mem values.
 # Yaesu "TSQL" and "DCS" each map to different CHIRP values depending on the
 # radio values of the tx and rx tone codes. The table is a list of rows, one
@@ -1307,6 +1321,20 @@ class YaesuFT4GenericRadio(YaesuSC35GenericRadio):
         "w/n.dev", "wx.alert"                                   # 45-46
         ]
 
+    def _valid_tuning_step(self, mem):
+        """Return an explicit legal step compatible with the frequency."""
+        return _valid_tuning_step(self, mem)
+
+    def get_memory(self, memref):
+        mem = super().get_memory(memref)
+        mem.tuning_step = self._valid_tuning_step(mem)
+        return mem
+
+    def set_memory(self, mem):
+        mem = mem.dupe()
+        mem.tuning_step = self._valid_tuning_step(mem)
+        return super().set_memory(mem)
+
 
 class YaesuFT65GenericRadio(YaesuSC35GenericRadio):
     """
@@ -1333,6 +1361,22 @@ class YaesuFT65GenericRadio(YaesuSC35GenericRadio):
         "step", "tot", "tx pwr", "tx save", "vfo.spl",             # 30-34
         "vox", "wfm.rcv", "wide/nar", "wx alert", "scramble"       # 35-39
         ]
+
+    def _valid_tuning_step(self, mem):
+        """Return a legal explicit step for an FT-65-family memory."""
+        if mem.tuning_step in self.legal_steps:
+            return mem.tuning_step
+        return _valid_tuning_step(self, mem)
+
+    def get_memory(self, memref):
+        mem = super().get_memory(memref)
+        mem.tuning_step = self._valid_tuning_step(mem)
+        return mem
+
+    def set_memory(self, mem):
+        mem = mem.dupe()
+        mem.tuning_step = self._valid_tuning_step(mem)
+        return super().set_memory(mem)
 
 
 # Classes for each individual radio.

@@ -1988,7 +1988,9 @@ GNU General Public License for more details."""
             self.Close()
 
     def _menu_developer(self, menuitem, event):
-        developer.developer_mode(menuitem.IsChecked())
+        wx.CallAfter(self._menu_developer_deferred, menuitem)
+
+    def _menu_developer_deferred(self, menuitem):
         state = menuitem.IsChecked() and _('enabled') or _('disabled')
         if menuitem.IsChecked():
             msg = _(
@@ -2000,14 +2002,18 @@ GNU General Public License for more details."""
                 'warned! Proceed anyway?')
             d = wx.MessageDialog(self, msg, _('Danger Ahead'),
                                  style=wx.ICON_WARNING | wx.YES_NO)
-            if d.ShowModal() != wx.ID_YES:
-                menuitem.Check(False)
-                return
+            try:
+                if d.ShowModal() != wx.ID_YES:
+                    menuitem.Check(False)
+                    return
+            finally:
+                d.Destroy()
 
         wx.MessageBox(_('Developer state is now %s. '
                         'CHIRP must be restarted to take effect') % state,
                       _('Restart Required'), wx.OK)
         LOG.info('User set developer mode to %s', menuitem.IsChecked())
+        developer.developer_mode(menuitem.IsChecked())
 
     def _menu_reporting(self, menuitem, event):
         if not menuitem.IsChecked():

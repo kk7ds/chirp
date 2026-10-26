@@ -557,6 +557,43 @@ struct {
 } levels[30];
 """
 
+MEM_FORMAT_RT86A = MEM_FORMAT_RT86 + """
+#seekto 0x00BD;
+struct {
+  u8 micgain;           // MIC Gain
+  u8 txprompt;          // TX Prompt Tone
+  u8 removectdcs;       // Remove CT/DCS
+} rt86a_keys;
+
+#seekto 0x00CD;
+struct {
+  u8 pf1_short;         // PF1 Short Press
+  u8 pf1_long;          // PF1 Long Press
+  u8 pf2_short;         // PF2 Short Press
+} rt86a_pf;
+
+#seekto 0x00DD;
+struct {
+  u8 pf2_long;          // PF2 Long Press
+  u8 groupcall;         // Group Call Channel
+  u8 reverttime;        // Group Call Revert Time
+} rt86a_group;
+
+#seekto 0x00ED;
+struct {
+  u8 pttrevert;         // Group Call PTT Revert
+  u8 txendtone;         // TX End Tone
+  u8 wirelesscopy;      // Wireless Copy
+} rt86a_flags;
+
+#seekto 0x033D;
+struct {
+  u8 vox;               // VOX Function
+  u8 voxl;              // VOX Level
+  u8 voxd;              // VOX Delay
+} rt86a;
+"""
+
 CMD_ACK = b"\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
@@ -618,6 +655,11 @@ PFKEY_CHOICES = ["None", "Monitor", "Scan", "Scramble", "VOX", "Alarm"]
 PFKEY_VALUES = [0x0F, 0x04, 0x06, 0x08, 0x09, 0x0A]
 TOPKEY_CHOICES = ["None", "Alarming"]
 TOPKEY_VALUES = [0xFF, 0x0C]
+RT86A_PFKEY_SHORT_LIST = ["None", "Monitor", "Scan", "Warn",
+                          "Power Change", "VOX", "Channel Lock"]
+RT86A_PFKEY_LONG_LIST = RT86A_PFKEY_SHORT_LIST + ["Group Call", "Transmit"]
+RT86A_WARN_LIST = ["Off", "Local Alarm", "Remote Alarm"]
+RT86A_REVERT_LIST = ["%d seconds" % x for x in range(15, 615, 15)]
 
 GMRS_FREQS1 = [462562500, 462587500, 462612500, 462637500, 462662500,
                462687500, 462712500]
@@ -2621,3 +2663,127 @@ class RT86SRadio(RT21Radio):
         mem_params = {'memcnt': self._upper, 'settings_offset': '0x01F0',
                       'bytecnt': 4}
         self._memobj = bitwise.parse(MEM_FORMAT_RT86 % mem_params, self._mmap)
+
+
+@directory.register
+class RT86ARadio(RT86SRadio):
+    """RETEVIS RT86A"""
+    VENDOR = "Retevis"
+    MODEL = "RT86A"
+
+    # The RT86A shares the RT86S memory layout but uses a distinct
+    # programming magic and identification string.
+    _magic = b"PHOGR6" + b"\x83"
+    _fingerprint = [b"P32073" + b"\x02\xFF", ]
+
+    def process_mmap(self):
+        mem_params = {'memcnt': self._upper, 'settings_offset': '0x01F0',
+                      'bytecnt': 4}
+        self._memobj = bitwise.parse(MEM_FORMAT_RT86A % mem_params,
+                                     self._mmap)
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        _keys = self._memobj.rt86a_keys
+        _pf = self._memobj.rt86a_pf
+        _group = self._memobj.rt86a_group
+        _flags = self._memobj.rt86a_flags
+        _rt86a = self._memobj.rt86a
+
+        top = RadioSettings()
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        top.append(basic)
+
+        rs = RadioSettingValueInteger(0, 9, _settings.squelch)
+        basic.append(RadioSetting("squelch", "Squelch Level", rs))
+
+        rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
+                                   current_index=_settings.tot)
+        basic.append(RadioSetting("tot", "Time-out Timer", rs))
+
+        rs = RadioSettingValueList(VOICE_LIST2,
+                                   current_index=_settings.voice)
+        basic.append(RadioSetting("voice", "Voice Prompts", rs))
+
+        rs = RadioSettingValueBoolean(_settings.save)
+        basic.append(RadioSetting("save", "Battery Save", rs))
+
+        rs = RadioSettingValueBoolean(_settings.beep)
+        basic.append(RadioSetting("beep", "Beep", rs))
+
+        rs = RadioSettingValueList(SAVE_LIST,
+                                   current_index=_settings.savem)
+        basic.append(RadioSetting("savem", "Battery Save Mode", rs))
+
+        rs = RadioSettingValueList(RT86A_WARN_LIST,
+                                   current_index=_settings.warn)
+        basic.append(RadioSetting("warn", "Warn Mode", rs))
+
+        rs = RadioSettingValueList(MICGAIN_LIST,
+                                   current_index=_keys.micgain)
+        basic.append(RadioSetting("rt86a_keys.micgain", "MIC Gain", rs))
+
+        rs = RadioSettingValueList(SPECIAL_LIST,
+                                   current_index=_settings.tailmode)
+        basic.append(RadioSetting("tailmode", "QT/DQT Tail Mode", rs))
+
+        rs = RadioSettingValueBoolean(not _settings.tail)
+        basic.append(RadioSetting("tail", "QT/DQT Tail", rs))
+
+        rs = RadioSettingValueBoolean(_keys.txprompt)
+        basic.append(RadioSetting("rt86a_keys.txprompt",
+                                  "TX Prompt Tone", rs))
+
+        rs = RadioSettingValueBoolean(_keys.removectdcs)
+        basic.append(RadioSetting("rt86a_keys.removectdcs",
+                                  "Remove CT/DCS", rs))
+
+        rs = RadioSettingValueBoolean(_flags.txendtone)
+        basic.append(RadioSetting("rt86a_flags.txendtone",
+                                  "TX End Tone", rs))
+
+        rs = RadioSettingValueBoolean(_flags.wirelesscopy)
+        basic.append(RadioSetting("rt86a_flags.wirelesscopy",
+                                  "Wireless Copy", rs))
+
+        rs = RadioSettingValueBoolean(_rt86a.vox)
+        basic.append(RadioSetting("rt86a.vox", "VOX Function", rs))
+
+        rs = RadioSettingValueList(VOXL_LIST,
+                                   current_index=_rt86a.voxl)
+        basic.append(RadioSetting("rt86a.voxl", "VOX Level", rs))
+
+        rs = RadioSettingValueList(VOXD_LIST,
+                                   current_index=_rt86a.voxd)
+        basic.append(RadioSetting("rt86a.voxd", "VOX Delay", rs))
+
+        rs = RadioSettingValueList(GROUPCH_LIST,
+                                   current_index=_group.groupcall)
+        basic.append(RadioSetting("rt86a_group.groupcall",
+                                  "Group Call Channel", rs))
+
+        rs = RadioSettingValueList(RT86A_REVERT_LIST,
+                                   current_index=_group.reverttime)
+        basic.append(RadioSetting("rt86a_group.reverttime",
+                                  "Group Call Revert Time", rs))
+
+        rs = RadioSettingValueBoolean(_flags.pttrevert)
+        basic.append(RadioSetting("rt86a_flags.pttrevert",
+                                  "Group Call PTT Revert", rs))
+
+        for name, label, value in [
+                ("rt86a_pf.pf1_short", "PF1 Short Press", _pf.pf1_short),
+                ("rt86a_pf.pf1_long", "PF1 Long Press", _pf.pf1_long),
+                ("rt86a_pf.pf2_short", "PF2 Short Press", _pf.pf2_short),
+                ("rt86a_group.pf2_long", "PF2 Long Press",
+                 _group.pf2_long)]:
+            if name.endswith("_short"):
+                options = RT86A_PFKEY_SHORT_LIST
+            else:
+                options = RT86A_PFKEY_LONG_LIST
+            if value >= len(options):
+                value = 0
+            rs = RadioSettingValueList(options, current_index=value)
+            basic.append(RadioSetting(name, label, rs))
+
+        return top
