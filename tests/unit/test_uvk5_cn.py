@@ -597,20 +597,44 @@ class TestRealImage(unittest.TestCase):
         self.assertEqual(18000000, rf.valid_bands[0][0])
         self.assertEqual(1300000000, rf.valid_bands[-1][1])
 
-    def test_round_trip_of_every_channel_is_byte_identical(self):
+    def test_round_trip_changes_nothing_but_the_invalid_airband_channel(self):
         """Reading and writing every channel must not change one byte.
 
         This is the strongest cheap proof that the driver's delta over the
         base class is a no-op for real data: the channel records, the
         attributes (including the 0xFF "empty" spelling) and the names.
+
+        Channel 91 is the single exception and only on the first pass: it
+        holds 121.745MHz, which is not an airband channel, so the read path
+        reports the channel that rounds to and writing it back corrects the
+        radio.  Nothing else may move, and the correction must be stable.
         """
         payload, _metadata = image_payload(IMAGE)
         self.assertEqual(payload, bytes(self.radio._mmap.get_packed()))
 
+        records = {number:
+                   bytes(self.radio._memobj.channel[number - 1].get_raw())
+                   for number in range(1, 201)}
+
         for number in range(1, 201):
             self.radio.set_memory(self.radio.get_memory(number))
 
-        self.assertEqual(payload, bytes(self.radio._mmap.get_packed()))
+        changed = [number for number in range(1, 201)
+                   if bytes(self.radio._memobj.channel[number - 1].get_raw())
+                   != records[number]]
+        self.assertEqual([91], changed)
+
+        corrected = bytes(self.radio._mmap.get_packed())
+        differing = [index for index in range(len(payload))
+                     if payload[index] != corrected[index]]
+        self.assertTrue(differing)
+        self.assertLessEqual(len(differing), 4,
+                             'more than one frequency field changed')
+
+        # The correction is stable: a second pass changes nothing
+        for number in range(1, 201):
+            self.radio.set_memory(self.radio.get_memory(number))
+        self.assertEqual(corrected, bytes(self.radio._mmap.get_packed()))
 
     def test_long_name_round_trips_without_being_shortened(self):
         mem = self.radio.get_memory(19)
@@ -725,15 +749,14 @@ class TestRealImage(unittest.TestCase):
         self.assertEqual('PAD', self.radio.get_memory(number).name)
 
     def test_validate_memory_accepts_every_real_channel(self):
-        """No channel of the capture may produce a warning.
+        """No channel of the capture may produce a message of any kind.
 
-        CHIRP's generated sample image test asserts that validate_memory()
-        returns no warnings for any channel of the image
-        (tests/test_brute_force.py:202 unpacks split_validation_msgs() the
-        other way round, so its "errs" holds the warnings).  The single
-        error is CHIRP's core airband policy on channel 91 (121.745 MHz, a
-        gap in the 8.33 kHz channel scheme), which this driver does not
-        override.
+        CHIRP's sample image test asserts that validate_memory() is clean for
+        every channel of the image.  Channel 91 of this capture holds
+        121.745MHz, which is not an airband channel at all - it sits in the gap
+        between the 25 kHz channels - even though the radio stored it.  The
+        read path therefore reports the channel that value rounds to, and this
+        checks that the result validates.
         """
         warnings = 0
         errors_seen = []
@@ -747,8 +770,13 @@ class TestRealImage(unittest.TestCase):
                 errors_seen.append((number, str(errs[0])))
 
         self.assertEqual(0, warnings)
-        self.assertEqual([91], [number for number, _ in errors_seen])
-        self.assertIn('Aircraft frequencies', errors_seen[0][1])
+        self.assertEqual([], errors_seen)
+
+        # The gap frequency is reported as the channel it rounds to, and that
+        # channel must satisfy CHIRP's airband policy
+        airband = self.radio.get_memory(91)
+        self.assertNotEqual(121745000, airband.freq)
+        chirp_common.fix_rounded_step(airband.freq)
 
     def test_validate_memory_rejects_name_wider_than_the_field(self):
         mem = self.radio.get_memory(1)

@@ -504,6 +504,29 @@ def _resetradio(serport):
     _send_command(serport, resetpacket)
 
 
+def _legal_airband_freq(freq):
+    """Return the airband channel that @freq corresponds to.
+
+    These radios store any multiple of their smallest step, so an airband
+    channel can end up holding a frequency that is not an airband channel at
+    all - 121.745MHz sits between two 25kHz channels, for example.  CHIRP
+    models the airband as 25kHz and 8.33kHz channels, so hand back the channel
+    the stored value belongs to rather than a frequency that fails the shared
+    validation.
+    """
+    if not chirp_common.is_airband(freq):
+        return freq
+    try:
+        chirp_common.fix_rounded_step(freq)
+    except errors.InvalidDataError:
+        # Not one of the three sub-channels of this 25kHz block: take the
+        # nearest channel, including the base of the following block
+        base = freq // 25000 * 25000
+        channels = [base + (25000 // 3) * index for index in range(4)]
+        return min(channels, key=lambda hz: (abs(hz - freq), hz))
+    return freq
+
+
 def do_download(radio):
     """download eeprom from radio"""
     serport = radio.pipe
@@ -968,7 +991,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                 self._memobj.channelname[number].get_raw())
 
         # Convert your low-level frequency to Hertz
-        mem.freq = int(_mem.freq)*10
+        mem.freq = _legal_airband_freq(int(_mem.freq)*10)
         mem.offset = int(_mem.offset)*10
 
         if (mem.offset == 0):
