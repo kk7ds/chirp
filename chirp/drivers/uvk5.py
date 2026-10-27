@@ -47,9 +47,13 @@ DEBUG_SHOW_OBFUSCATED_COMMANDS = False
 # might be useful for someone debugging some obscure memory issue
 DEBUG_SHOW_MEMORY_ACTIONS = False
 
-MEM_FORMAT = """
-#seekto 0x0000;
-struct {
+# Shared structure definitions.  These are parsed together with the layout in
+# MEM_FORMAT below, but they can also be parsed on their own by a driver that
+# only needs a subset of the map; bitwise supports named struct definitions
+# used later as types.  Keep every struct that a sibling driver shares here so
+# that the layouts cannot drift apart.
+MEM_DEFS = """
+struct memory {
   ul32 freq;
   ul32 offset;
   u8 rxcode;
@@ -88,16 +92,27 @@ struct {
 
   u8 step;
   u8 scrambler;
-} channel[214];
+};
 
-#seekto 0xd60;
-struct {
+struct channel_attributes {
 u8 is_scanlist1:1,
 is_scanlist2:1,
 compander:2,
 is_free:1,
 band:3;
-} channel_attributes[200];
+};
+
+struct channelname {
+char name[16];
+};
+"""
+
+MEM_FORMAT = MEM_DEFS + """
+#seekto 0x0000;
+struct memory channel[214];
+
+#seekto 0xd60;
+struct channel_attributes channel_attributes[200];
 
 #seekto 0xe40;
 ul16 fmfreq[20];
@@ -194,9 +209,7 @@ u8 enscramble;
 } lock;
 
 #seekto 0xf50;
-struct {
-char name[16];
-} channelname[200];
+struct channelname channelname[200];
 
 #seekto 0x1c00;
 struct {
@@ -495,11 +508,6 @@ def do_download(radio):
     """download eeprom from radio"""
     serport = radio.pipe
     serport.timeout = 0.5
-    status = chirp_common.Status()
-    status.cur = 0
-    status.max = MEM_SIZE
-    status.msg = "Downloading from radio"
-    radio.status_fn(status)
 
     eeprom = b""
     f = _sayhello(serport)
@@ -512,17 +520,27 @@ def do_download(radio):
 
     radio.metadata = {'uvk5_firmware': f}
 
+    # The size is asked for after the handshake on purpose: a subclass may
+    # decide it from the firmware that just answered, which is what makes
+    # "no image loaded yet" work for radios bigger than the stock EEPROM.
+    size = radio.mem_size
+    radio._check_download_size(size)
+    status = chirp_common.Status()
+    status.cur = 0
+    status.max = size
+    status.msg = "Downloading from radio"
+    radio.status_fn(status)
+
+    block = radio.read_block
     addr = 0
-    while addr < MEM_SIZE:
-        data = _readmem(serport, addr, MEM_BLOCK)
+    while addr < size:
+        data = radio._read_mem_block(serport, addr, block)
+        if not data or len(data) != block:
+            raise errors.RadioError("Memory download incomplete")
+        eeprom += data
+        addr += block
         status.cur = addr
         radio.status_fn(status)
-
-        if data and len(data) == MEM_BLOCK:
-            eeprom += data
-            addr += MEM_BLOCK
-        else:
-            raise errors.RadioError("Memory download incomplete")
 
     return memmap.MemoryMapBytes(eeprom)
 
@@ -536,13 +554,13 @@ def do_upload(radio):
     status.msg = "Uploading to radio"
 
     if radio._upload_calibration:
-        status.max = MEM_SIZE - radio._cal_start
+        status.max = radio.mem_size - radio._cal_start
         start_addr = radio._cal_start
-        stop_addr = MEM_SIZE
+        stop_addr = radio.mem_size
     else:
-        status.max = PROG_SIZE
+        status.max = radio.prog_size
         start_addr = 0
-        stop_addr = PROG_SIZE
+        stop_addr = radio.prog_size
 
     radio.status_fn(status)
 
@@ -555,14 +573,18 @@ def do_upload(radio):
             'Firmware version is not supported by this driver')
     LOG.info('Uploading image from firmware %r to radio with %r',
              radio.metadata.get('uvk5_firmware', 'unknown'), f)
+
+    image = radio.get_mmap()
+    radio._check_upload_image(len(image), f)
+    block = radio.write_block
     addr = start_addr
     while addr < stop_addr:
-        dat = radio.get_mmap()[addr:addr+MEM_BLOCK]
-        _writemem(serport, dat, addr)
+        dat = image[addr:addr+block]
+        radio._write_mem_block(serport, dat, addr)
         status.cur = addr - start_addr
         radio.status_fn(status)
         if dat:
-            addr += MEM_BLOCK
+            addr += block
         else:
             raise errors.RadioError("Memory upload incomplete")
     status.msg = "Uploaded OK"
@@ -601,6 +623,42 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
     _steps = [2.5, 5.0, 6.25, 10.0, 12.5, 25.0]
     _langs = ["Chinese", "English"]
     _backlight = ["Off"] + ['%is' % (i + 1) for i in range(5)]
+
+    # Clone geometry.  The module level constants above are the stock
+    # defaults; a subclass whose EEPROM is larger, or that needs a different
+    # block size for reads than for writes, overrides these instead of
+    # replacing do_download() / do_upload() with a copy of the whole loop.
+    mem_size = MEM_SIZE
+    prog_size = PROG_SIZE
+    read_block = MEM_BLOCK
+    write_block = MEM_BLOCK
+
+    # Encoding of the name field.  Stock radios store bytes that decode as
+    # latin-1; a driver for firmware that stores Chinese text overrides this.
+    NAME_ENCODING = 'latin-1'
+
+    def _check_download_size(self, size):
+        """Hook: raise RadioError if @size bytes may not be read."""
+
+    def _check_upload_image(self, image_size, firmware):
+        """Hook: raise RadioError if this image may not be written."""
+
+    def _read_mem_block(self, serport, offset, length):
+        """Hook: transport used by do_download(); some firmware differs."""
+        return _readmem(serport, offset, length)
+
+    def _write_mem_block(self, serport, data, offset):
+        """Hook: transport used by do_upload(); some firmware differs."""
+        return _writemem(serport, data, offset)
+
+    def _decode_name(self, raw):
+        """Decode a name field that ends at NUL or 0xFF."""
+        end = len(raw)
+        for index, byte in enumerate(raw):
+            if byte in (0x00, 0xFF):
+                end = index
+                break
+        return raw[:end].decode(self.NAME_ENCODING, 'replace').rstrip()
 
     @classmethod
     def k5_approve_firmware(cls, firmware):
@@ -903,12 +961,11 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
         if number > 199:
             mem.immutable = ["name", "scanlists"]
         else:
-            _mem2 = self._memobj.channelname[number]
-            for char in _mem2.name:
-                if str(char) == "\xFF" or str(char) == "\x00":
-                    break
-                mem.name += str(char)
-            mem.name = mem.name.rstrip()
+            # The name field is bytes, not text: read it raw so that a
+            # driver with a different encoding can decode it itself, and so
+            # that no str is ever assigned to the char array.
+            mem.name = self._decode_name(
+                self._memobj.channelname[number].get_raw())
 
         # Convert your low-level frequency to Hertz
         mem.freq = int(_mem.freq)*10
@@ -1893,7 +1950,7 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
             return mem
 
         # clean the channel memory, restore some bits if it was used before
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xff:
             # this was an empty memory
             _mem.set_raw(b"\x00" * 16)
         else:
@@ -1944,9 +2001,14 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
 
         # channels >200 are the 14 VFO chanells and don't have names
         if number < 200:
-            _mem2 = self._memobj.channelname[number]
-            tag = mem.name.ljust(10) + "\x00"*6
-            _mem2.name = tag  # Store the alpha tag
+            # Byte-native, so that no str is assigned to the char array and
+            # a subclass with a different name encoding can rewrite it after
+            # calling super().  This is byte for byte what the previous
+            # str-based version produced: latin-1 bytes, space padded to 10,
+            # then six NULs.
+            tag = mem.name.encode('latin-1')
+            tag = tag[:10].ljust(10, b' ') + b'\x00' * 6
+            self._memobj.channelname[number].set_raw(tag)
 
         # tone data
         self._set_tone(mem, _mem)
@@ -1986,18 +2048,9 @@ class UVK5RadioBase(chirp_common.CloneModeRadio):
                     _mem.scrambler & 0xf0) | SCRAMBLER_LIST.index(svalue)
 
             if number < 200 and sname == "scanlists":
-                if svalue == "1":
-                    _mem4.channel_attributes[number].is_scanlist1 = 1
-                    _mem4.channel_attributes[number].is_scanlist2 = 0
-                elif svalue == "2":
-                    _mem4.channel_attributes[number].is_scanlist1 = 0
-                    _mem4.channel_attributes[number].is_scanlist2 = 1
-                elif svalue == "1+2":
-                    _mem4.channel_attributes[number].is_scanlist1 = 1
-                    _mem4.channel_attributes[number].is_scanlist2 = 1
-                else:
-                    _mem4.channel_attributes[number].is_scanlist1 = 0
-                    _mem4.channel_attributes[number].is_scanlist2 = 0
+                _attr = _mem4.channel_attributes[number]
+                _attr.is_scanlist1 = '1' in svalue
+                _attr.is_scanlist2 = '2' in svalue
 
         return mem
 
