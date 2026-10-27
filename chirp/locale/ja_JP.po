@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 23:39+0000\n"
+"POT-Creation-Date: 2026-10-26 18:24-0700\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -835,7 +835,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスへイメージをアップロード\n"
 
-#: ../drivers/wouxun.py:222 ../drivers/uvb5.py:293 ../drivers/tg_uv2p.py:237
+#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -851,7 +851,7 @@ msgstr ""
 "5. 通信のないチャンネルに合わせてあることを確認\n"
 "6. OKをクリックしてデバイスからイメージをダウンロード\n"
 
-#: ../drivers/wouxun.py:230 ../drivers/uvb5.py:301 ../drivers/tg_uv2p.py:245
+#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1005,7 +1005,7 @@ msgstr ""
 " (ディスプレイに \"ADMS\" と表示されます)。\n"
 "5. <b>OKをクリックした後</b>、[BAND] キーを押す\n"
 
-#: ../drivers/uvk5.py:621
+#: ../drivers/uvk5.py:679
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1021,7 +1021,7 @@ msgstr ""
 "\n"
 "ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。\n"
 
-#: ../drivers/uvk5.py:628
+#: ../drivers/uvk5.py:686
 msgid ""
 "1. Turn radio on.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1036,6 +1036,26 @@ msgstr ""
 "4. OKボタンを押して無線機へアップロードを開始\n"
 "\n"
 "ケーブルを接続した状態で電源オンにするとうまく動かない場合があります。"
+
+#: ../drivers/uvk5_cn.py:505
+msgid ""
+"1. Turn the radio on.\n"
+"2. Connect the cable to the mic/speaker connector.\n"
+"3. Make sure the connector is firmly seated.\n"
+"4. Click OK to download the image from the device.\n"
+"\n"
+"It may not work if you turn the radio on with the cable already attached."
+msgstr ""
+
+#: ../drivers/uvk5_cn.py:512
+msgid ""
+"1. Turn the radio on.\n"
+"2. Connect the cable to the mic/speaker connector.\n"
+"3. Make sure the connector is firmly seated.\n"
+"4. Click OK to upload the image to the device.\n"
+"\n"
+"It may not work if you turn the radio on with the cable already attached."
+msgstr ""
 
 #: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
@@ -1089,7 +1109,7 @@ msgstr "常に最近使用したリストで開始"
 msgid "Amateur"
 msgstr "アマチュア無線"
 
-#: ../wxui/common.py:849 ../wxui/bugreport.py:345 ../wxui/bugreport.py:480
+#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
 msgid "An error has occurred"
 msgstr "エラーが発生しました"
 
@@ -1327,12 +1347,12 @@ msgstr "クローン完了、不要なバイトを確認中"
 msgid "Cloning"
 msgstr "クローン中"
 
-#: ../drivers/ft450d.py:517 ../drivers/bj9900.py:133 ../drivers/ft4.py:327
+#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "無線機からクローン中"
 
-#: ../drivers/ft450d.py:546 ../drivers/bj9900.py:165 ../drivers/ft4.py:328
+#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "無線機へクローン中"
@@ -1449,7 +1469,7 @@ msgid ""
 "Polarity"
 msgstr "DTCS極性"
 
-#: ../drivers/uvk5.py:845
+#: ../drivers/uvk5.py:903
 msgid "DTMF decode"
 msgstr "DTMF デコード"
 
@@ -1560,7 +1580,7 @@ msgstr "ダウンロード手順"
 msgid "Driver"
 msgstr "ドライバ"
 
-#: ../drivers/uvk5.py:1263
+#: ../drivers/uvk5_cn.py:703 ../drivers/uvk5.py:1320
 msgid "Driver information"
 msgstr "ドライバ情報"
 
@@ -1575,6 +1595,10 @@ msgstr "アナログ対応のデュアルモードデジタルレピータはFM�
 #: ../wxui/memedit.py:559
 msgid "Duplex"
 msgstr "デュプレックス"
+
+#: ../drivers/uvk5_cn.py:719
+msgid "EEPROM size"
+msgstr ""
 
 #: ../wxui/memedit.py:2373
 #, python-format
@@ -1725,7 +1749,7 @@ msgstr "CSVにエクスポート..."
 msgid "Extra"
 msgstr "エクストラ"
 
-#: ../drivers/uvk5.py:1261
+#: ../drivers/uvk5.py:1318
 msgid "FM Radio"
 msgstr "FMラジオ"
 
@@ -1754,8 +1778,8 @@ msgstr "一部のメモリのエクスポートに失敗しました"
 msgid "Failed to load radio browser"
 msgstr "無線機ブラウザのロードに失敗しました"
 
-#: ../sources/mapy73pl.py:61 ../sources/przemienniki_net.py:59
-#: ../sources/przemienniki_eu.py:57
+#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "結果の解析に失敗しました"
 
@@ -1822,6 +1846,10 @@ msgstr "146.52 のような浮動小数点数値を入力"
 msgid "Finished radio job %s"
 msgstr "%s の処理が完了しました"
 
+#: ../drivers/uvk5_cn.py:712
+msgid "Firmware version"
+msgstr ""
+
 #: ../drivers/ts590.py:685
 msgid ""
 "Follow these instructions to download the radio memory:\n"
@@ -1879,11 +1907,11 @@ msgstr ""
 "4 - 無線機 > 無線機からダウンロード\n"
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/bf_t1.py:484
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/tdxone_tdq8a.py:444
-#: ../drivers/uv6r.py:343 ../drivers/gmrsv2.py:363 ../drivers/uv5x3.py:421
-#: ../drivers/baofeng_wp970i.py:327 ../drivers/gmrsuv1.py:395
-#: ../drivers/btech.py:636
+#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
+#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
+#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1984,7 +2012,7 @@ msgstr ""
 "5 - インターフェースケーブルを取り外してください！そうしないと右側のオーディオが出力されません！\n"
 "6 - 無線機の電源を入れ直してクローンモードを終了\n"
 
-#: ../drivers/bf_t1.py:490 ../drivers/btech.py:642
+#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2026,7 +2054,7 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - OKをクリックして開始\n"
 
-#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
+#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2054,11 +2082,11 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
 
-#: ../drivers/mursv1.py:347 ../drivers/baofeng_uv17Pro.py:520
-#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv6r.py:349
-#: ../drivers/gmrsv2.py:369 ../drivers/uv5x3.py:427
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/lt725uv.py:492
-#: ../drivers/vgc.py:592 ../drivers/gmrsuv1.py:401
+#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
+#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
+#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
+#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2104,9 +2132,9 @@ msgstr "周波数 %s はサポート範囲 %s 外です"
 msgid "Frequency granularity in kHz"
 msgstr "周波数ステップ (kHz)"
 
-#: ../drivers/uv5r.py:2249 ../drivers/ga510.py:1094
-#: ../drivers/baofeng_uv17Pro.py:1478 ../drivers/mml_jc8810.py:1383
+#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
 #: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
+#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
 msgid "Frequency in this range must not be AM mode"
 msgstr "この範囲の周波数ではAMモードは使用できません"
 
@@ -2114,10 +2142,10 @@ msgstr "この範囲の周波数ではAMモードは使用できません"
 msgid "Frequency in this range not supported by firmware"
 msgstr "この範囲の周波数はファームウェアでサポートされていません"
 
-#: ../drivers/uv5r.py:2245 ../drivers/ga510.py:1087
-#: ../drivers/baofeng_uv17Pro.py:1475 ../drivers/radtel_rt900.py:1623
+#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
 #: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
+#: ../drivers/baofeng_uv17Pro.py:1475
 msgid "Frequency in this range requires AM mode"
 msgstr "この範囲の周波数ではAMモードが必要です"
 
@@ -2196,6 +2224,18 @@ msgstr "私は"
 #: ../wxui/query_sources.py:818 ../wxui/query_sources.py:824
 msgid "If set, sort results by distance from these coordinates"
 msgstr "設定した場合、これらの座標からの距離で結果をソートします"
+
+#: ../drivers/uvk5_cn.py:592
+#, python-format
+msgid ""
+"Image is %(image)i bytes from firmware %(image_fw)r (profile %(image_profile)s). The radio reports firmware %(radio_fw)r (profile %(radio_profile)s), which suggests %(default)i bytes, and the EEPROM size setting is %(size)i bytes.\n"
+"Load an image of the right size, or set the EEPROM size to the real size."
+msgstr ""
+
+#: ../drivers/uvk5_cn.py:584
+#, python-format
+msgid "Image is %(image)i bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares and writing there can destroy the radio. Use an image that stops before it."
+msgstr ""
 
 #: ../wxui/main.py:1500
 msgid "Import"
@@ -2369,6 +2409,10 @@ msgstr "座標からこの距離 (km) 以内の結果に制限"
 msgid "Limit use"
 msgstr "用途を制限"
 
+#: ../drivers/uvk5_cn.py:737
+msgid "Limits disabled for modified firmware"
+msgstr ""
+
 #: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr ""
@@ -2413,11 +2457,11 @@ msgstr ""
 msgid "Login failed: Check your username and password"
 msgstr "ログイン失敗: ユーザ名とパスワードを確認してください"
 
-#: ../drivers/uvk5.py:1765
+#: ../drivers/uvk5.py:1822
 msgid "Logo string 1 (12 characters)"
 msgstr "起動メッセージ１（半角12文字）"
 
-#: ../drivers/uvk5.py:1772
+#: ../drivers/uvk5.py:1829
 msgid "Logo string 2 (12 characters)"
 msgstr "起動メッセージ２（半角12文字）"
 
@@ -2443,7 +2487,7 @@ msgstr "メモリ %i の手動編集"
 msgid "Memories"
 msgstr "メモリ"
 
-#: ../drivers/uvk5.py:2088
+#: ../drivers/uvk5.py:2141
 msgid "Memories are read-only due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのためメモリは読み取り専用です"
 
@@ -2564,8 +2608,8 @@ msgstr "Issue %i にモジュールが見つかりません"
 msgid "No more space available; some memories were not applied"
 msgstr "空き容量がありません。一部のメモリは適用されませんでした"
 
-#: ../sources/mapy73pl.py:57 ../sources/przemienniki_net.py:55
-#: ../sources/przemienniki_eu.py:53
+#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "結果なし"
 
@@ -2721,8 +2765,8 @@ msgstr ""
 "P-VFOチャンネル100-109は設定とみなされます。\n"
 "130以上の利用可能な無線機設定のうち、このリリースでは一部のみがサポートされています。\n"
 
-#: ../sources/mapy73pl.py:52 ../sources/przemienniki_net.py:50
-#: ../sources/przemienniki_eu.py:48
+#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "解析中"
 
@@ -2880,8 +2924,8 @@ msgstr "クエリ構文OK"
 msgid "Query syntax help"
 msgstr "クエリ構文ヘルプ"
 
-#: ../sources/mapy73pl.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "クエリ中"
 
@@ -2909,7 +2953,7 @@ msgstr ""
 msgid "Radio Info: Image Metadata"
 msgstr ""
 
-#: ../drivers/ft450d.py:582 ../drivers/ft60.py:89 ../drivers/ft60.py:91
+#: ../drivers/ft60.py:89 ../drivers/ft60.py:91 ../drivers/ft450d.py:582
 #: ../drivers/ft817.py:410
 #, python-format
 msgid "Radio did not ack block %i"
@@ -2977,6 +3021,16 @@ msgstr "更新が必要です"
 #, python-format
 msgid "Refreshed memory %s"
 msgstr "メモリ %s を更新しました"
+
+#: ../drivers/uvk5_cn.py:372
+#, python-format
+msgid "Refusing to read 0x%4.4x..0x%4.4x: this driver only reads below 0x%4.4x"
+msgstr ""
+
+#: ../drivers/uvk5_cn.py:399
+#, python-format
+msgid "Refusing to write 0x%4.4x..0x%4.4x: 0x%4.4x is the start of the multi-bootloader on this firmware and writing there can destroy the radio"
+msgstr ""
 
 #: ../wxui/main.py:943
 msgid "Reload Driver"
@@ -3080,11 +3134,11 @@ msgstr "設定を保存"
 msgid "Scan control (skip, include, priority, etc)"
 msgstr "スキャン制御 (スキップ、含める、優先など)"
 
-#: ../drivers/uvk5.py:859
+#: ../drivers/uvk5.py:917
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../drivers/uvk5.py:855 ../drivers/ksun_m6.py:418
+#: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:913
 msgid "Scrambler"
 msgstr "スクランブル"
 
@@ -3417,7 +3471,7 @@ msgstr ""
 msgid "Settings"
 msgstr "設定"
 
-#: ../drivers/uvk5.py:2092
+#: ../drivers/uvk5.py:2145
 msgid "Settings are read-only due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのため設定は読み取り専用です"
 
@@ -3501,8 +3555,8 @@ msgstr "カラムを選択"
 msgid "Sort memories"
 msgstr "並び替え"
 
-#: ../sources/mapy73pl.py:64 ../sources/przemienniki_net.py:62
-#: ../sources/przemienniki_eu.py:60
+#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "並び替え中"
 
@@ -3563,6 +3617,16 @@ msgstr ""
 msgid "The DMR-MARC Worldwide Network"
 msgstr "DMR-MARCワールドワイドネットワーク"
 
+#: ../drivers/uvk5_cn.py:568
+#, python-format
+msgid "The EEPROM size is set to 0x%(size)x bytes, but this driver only reads below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares. Correct the \"EEPROM size\" setting."
+msgstr ""
+
+#: ../drivers/uvk5_cn.py:577
+#, python-format
+msgid "The EEPROM size is set to 0x%(size)x bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares. Correct the \"EEPROM size\" setting."
+msgstr ""
+
 #: ../drivers/ft450d.py:422
 msgid ""
 "The FT-450D radio driver loads the 'Special Channels' tab\n"
@@ -3612,6 +3676,16 @@ msgstr "以下の情報が送信されます:"
 msgid "The memory editor requires a reload in order to change the workflow. That will happen now. Any other open tabs will be updated the next time they are loaded."
 msgstr "ワークフローを変更するには、メモリエディタの再読み込みが必要です。今すぐ実行します。他に開いているタブは、次にロードされるときに更新されます。"
 
+#: ../drivers/uvk5_cn.py:697
+#, python-format
+msgid "The name needs more than the %i bytes this name field holds"
+msgstr ""
+
+#: ../drivers/uvk5_cn.py:723
+#, python-format
+msgid "The profile %(profile)s suggests %(default)i bytes; this is only a guess and the radio is the authority. A loaded image sets this automatically, and anything at or above 0x%(limit)x is refused because that is the multi-bootloader region."
+msgstr ""
+
 #: ../wxui/main.py:1491
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
@@ -3634,11 +3708,11 @@ msgstr ""
 msgid "This driver is in development and should be considered as experimental."
 msgstr "このドライバは開発中であり、実験的なものと見なされるべきです。"
 
-#: ../drivers/uvk5.py:686
+#: ../drivers/uvk5.py:744
 msgid "This image is missing firmware information. It may have been generated with an old or modified version of CHIRP. It is advised that you download a fresh image from your radio and use that going forward for the best safety and compatibility."
 msgstr "このイメージにはファームウェア情報が含まれていません。旧バージョンまたはカスタムバージョンのCHIRPで作成された可能性があります。データ保全と互換性のために新たに無線機からダウンロードし直すことをお勧めします。"
 
-#: ../drivers/uvk5.py:2096
+#: ../drivers/uvk5.py:2149
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr "非対応ファームウェアの無線機のイメージであるため、読み取り専用です"
 
@@ -3658,7 +3732,18 @@ msgstr "これは初期段階のベータドライバです\n"
 msgid "This is an early stage beta driver - upload at your own risk\n"
 msgstr "これは初期段階のベータドライバです - アップロードは自己責任で行ってください\n"
 
-#: ../drivers/uvk5.py:613
+#: ../drivers/uvk5_cn.py:485
+msgid ""
+"This is an experimental driver for Quansheng UV-K5/UV-K6 radios running expanded Chinese third-party firmware (LOSEHU, LTS, UVE), which store channel names as GB2312 and use the split address EEPROM commands.\n"
+"\n"
+"It has been verified against one such radio, a LOSEHU131HS build: downloading, uploading and a whole-image read-back were checked there. Other builds in this family may behave differently, and a wrong write can harm your radio. Use at your own risk, and keep the image you download before changing anything: it can be used to restore the radio.\n"
+"\n"
+"- Writing at or above 0x40000 would overwrite the multi-bootloader that some of these builds install there, so this driver never writes that high and refuses an image that extends into it.\n"
+"- The default EEPROM size is derived from the reported firmware version and is only a guess; check the \"EEPROM size\" setting against your radio before uploading.\n"
+"- Settings (keys, DTMF, MDC, scan lists, boot logo, satellite data, calibration) are not supported."
+msgstr ""
+
+#: ../drivers/uvk5.py:671
 msgid ""
 "This is an experimental driver for the Quansheng UV-K5. It may harm your radio, or worse. Use at your own risk.\n"
 "\n"
@@ -3715,7 +3800,7 @@ msgstr ""
 "うまくいかない場合は、数回再試行してください。\n"
 "それでも入れない場合は、無線機とケーブルを確認してください。\n"
 
-#: ../drivers/uvk5.py:1850
+#: ../drivers/uvk5_cn.py:739 ../drivers/uvk5.py:1907
 msgid "This should only be enabled if you are using modified firmware that supports wider frequency coverage. Enabling this will cause CHIRP not to enforce OEM restrictions and may lead to undefined or unregulated behavior. Use at your own risk!"
 msgstr "これは、より広い周波数範囲をサポートする改造ファームウェアを使用している場合にのみ有効にしてください。これを有効にすると、CHIRPはOEM制限を強制しなくなり、未定義または規制されていない動作につながる可能性があります。自己責任で使用してください！"
 
@@ -3859,8 +3944,8 @@ msgstr "ビューがソートされている間はインポートできません
 msgid "Unable to open the clipboard"
 msgstr "クリップボードを開けません"
 
-#: ../sources/mapy73pl.py:50 ../sources/przemienniki_net.py:48
-#: ../sources/przemienniki_eu.py:46
+#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "クエリできません"
 
@@ -3912,7 +3997,7 @@ msgstr "バグ %s を更新中"
 msgid "Upload instructions"
 msgstr "アップロード手順"
 
-#: ../drivers/uvk5.py:2084
+#: ../drivers/uvk5.py:2137
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "非対応ファームウェアバージョンのためアップロードは無効になっています"
 
@@ -3997,8 +4082,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr "警告！"
 
-#: ../wxui/main.py:1907 ../wxui/main.py:2065 ../wxui/bugreport.py:235
-#: ../wxui/memedit.py:2055
+#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
+#: ../wxui/main.py:2065
 msgid "Warning"
 msgstr "警告"
 
