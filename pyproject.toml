@@ -1,0 +1,50 @@
+[build-system]
+requires = ['setuptools>=42.0.0']
+
+[project]
+name = 'chirp'
+version = '0.0.0'
+description = 'A cross-platform cross-radio programming tool'
+readme = 'README.md'
+authors = [
+    { name = 'Dan Smith', email = 'chirp@f.danplanet.com' },
+    { name = 'CHIRP Contributors', email = 'developers@lists.chirpmyradio.com' },
+]
+requires-python = '>=3.10'
+dependencies = [
+    'pyserial',
+    'requests',
+    'yattag',
+    'suds',
+    'lark',
+    'pywin32; platform_system=="Windows"',
+]
+[project.optional-dependencies]
+wx = [
+    'wxPython==4.2.0 ; platform_system!="Linux" and python_version < "3.14"',
+    'wxPython<=4.4; platform_system!="Linux" and python_version >= "3.14"',
+]
+test = [
+    # pytest 8 and higher seem to go insanely OOM on the driver tests
+    'pytest<8',
+    'pytest-xdist',
+    'pytest-html',
+    'six',
+    'pep8',
+    'pyyaml',
+    'ddt',
+]
+[project.scripts]
+chirpc = 'chirp.cli.main:main'
+chirp = 'chirp.wxui:chirpmain'
+experttune = 'chirp.cli.experttune:main'
+
+[tool.setuptools.packages.find]
+where = ['.']
+
+[tool.mypy]
+disable_error_code = ["import-untyped", "var-annotated", "import-not-found"]
+
+[[tool.mypy.overrides]]
+module = "chirp.drivers.*"
+disable_error_code = ["assignment"]

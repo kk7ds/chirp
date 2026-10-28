@@ -2,7 +2,9 @@ include chirp/share/*.desktop
 include chirp/share/*.metainfo.xml
 include chirp/share/*.png
 include chirp/share/*.svg
+include chirp/share/*.icns
 include chirp/share/*.ico
+include chirp/share/*.yaml
 include chirp/share/*.1
 include chirp/stock_configs/*
 include chirp/locale/*/LC_MESSAGES/*.mo
