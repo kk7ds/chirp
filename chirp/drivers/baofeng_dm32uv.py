@@ -1065,6 +1065,14 @@ def _bad_reply(message, got, expected):
     return errors.RadioError(message)
 
 
+# Port timeout for a whole transfer, set once by sync_in/sync_out. Every
+# reply, including a 4 KB page and the ACK after a page write, arrives well
+# within it; a short read means something went wrong. It is never changed
+# during a transfer: on Windows that reconfigures the port, and with some
+# cables (FTDI) bytes the radio is already sending get lost (#12652).
+LINK_TIMEOUT = 5.0
+
+
 class _Link:
     def __init__(self, pipe):
         self.pipe = pipe
@@ -1074,13 +1082,13 @@ class _Link:
         self.pipe.reset_input_buffer()
         self.pipe.write(data)
 
-    def recv(self, n, timeout=0.5):
-        self.pipe.timeout = timeout
+    def recv(self, n):
+        """Read `n` bytes, or fewer if the port times out."""
         return self.pipe.read(n)
 
-    def xfer(self, data, n, timeout=0.5):
+    def xfer(self, data, n):
         self.send(data)
-        resp = self.recv(n, timeout)
+        resp = self.recv(n)
         if len(resp) != n:
             raise errors.RadioError('No reply from radio to %r' % data[:7])
         return resp
@@ -1095,10 +1103,10 @@ class _Link:
                              hdr[:1], b'V')
         return body
 
-    def read_block(self, addr, length, timeout=5.0):
+    def read_block(self, addr, length):
         cmd = b'R' + struct.pack('<I', addr)[:3] + struct.pack('<H', length)
         self.send(cmd)
-        resp = self.recv(6 + length, timeout)
+        resp = self.recv(6 + length)
         if len(resp) != 6 + length or resp[:6] != b'W' + cmd[1:6]:
             raise _bad_reply('Bad reply reading flash at %06x' % addr,
                              resp[:6], b'W' + cmd[1:6])
@@ -1188,7 +1196,7 @@ def _scan(link, start, end, radio, status):
     pages = list(range(start, end + 1 - PAGE + 1, PAGE))
     where = collections.defaultdict(list)
     for i, addr in enumerate(pages):
-        tag = link.read_block(addr + PAGE - 1, 1, timeout=0.5)[0]
+        tag = link.read_block(addr + PAGE - 1, 1)[0]
         if 0x80 <= tag < 0xFF:
             # No page tag has bit 7 set (they go up to 0x7c); a bad cable
             # sets it, which would make a page look missing.
@@ -1239,7 +1247,7 @@ def _write_page(link, addr, data, start, end):
         raise errors.RadioError('Refusing unsafe write at %06x' % addr)
     link.send(b'W' + struct.pack('<I', addr)[:3] + struct.pack('<H', PAGE) +
               bytes(data))
-    ack = link.recv(1, timeout=5.0)
+    ack = link.recv(1)
     if ack != b'\x06' or link.read_block(addr, PAGE) != bytes(data):
         raise errors.RadioError(
             'Writing the page at %06x failed (%s). Upload again, or restore '
@@ -1528,6 +1536,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         return rf
 
     def sync_in(self):
+        self.pipe.timeout = LINK_TIMEOUT
         try:
             self._mmap = do_download(self)
         except errors.RadioError:
@@ -1538,6 +1547,7 @@ class DM32UV(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
+        self.pipe.timeout = LINK_TIMEOUT
         try:
             do_upload(self)
         except errors.RadioError:
