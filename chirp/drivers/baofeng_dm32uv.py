@@ -1068,6 +1068,8 @@ def _bad_reply(message, got, expected):
 class _Link:
     def __init__(self, pipe):
         self.pipe = pipe
+        if getattr(pipe, 'timeout', 0.25) is None:
+            pipe.timeout = 0.25     # never block forever on a silent radio
 
     def send(self, data):
         time.sleep(0.01)
@@ -1075,8 +1077,18 @@ class _Link:
         self.pipe.write(data)
 
     def recv(self, n, timeout=0.5):
-        self.pipe.timeout = timeout
-        return self.pipe.read(n)
+        """Read `n` bytes, waiting up to about `timeout` seconds.
+
+        The port's own timeout (0.25 s from CHIRP) is never changed: on
+        Windows that reconfigures the port, and with some cables (FTDI)
+        bytes the radio is already sending get lost (#12652)."""
+        deadline = time.monotonic() + timeout
+        data = b''
+        while len(data) < n:
+            data += self.pipe.read(n - len(data))
+            if len(data) < n and time.monotonic() >= deadline:
+                break
+        return data
 
     def xfer(self, data, n, timeout=0.5):
         self.send(data)
