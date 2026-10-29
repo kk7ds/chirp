@@ -156,7 +156,7 @@ DTMF_CHARS = '0123456789ABCD*#'
 KEYS = ['None', 'FM radio', 'Scan', 'Frequency search', 'Flashlight',
         'Weather', 'Monitor', 'SOS', 'PTT B']
 KEY_CODES = [255, 7, 28, 29, 8, 12, 5, 3, 1]
-DRIVER_REVISION = '2026-10-29.2'
+DRIVER_REVISION = '2026-10-29.3'
 AIRBAND = (108000000, 136000000)
 TX_BANDS = [(136000000, 174000000), (220000000, 235000000),
             (350000000, 390000000), (400000000, 470000000)]
@@ -634,7 +634,7 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
             mem.offset = 0
         else:
             chirp_common.split_to_offset(mem, mem.freq, tx)
-        mem.name = _name(raw[20:32])
+        mem.name = _name(raw[20:32]).rstrip()
         mem.mode = 'AM' if AIRBAND[0] <= mem.freq < AIRBAND[1] else (
             'NFM' if raw[15] & 64 else 'FM')
         mem.skip = '' if raw[15] & 4 else 'S'
