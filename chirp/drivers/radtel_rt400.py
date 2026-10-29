@@ -753,8 +753,8 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
                 text = str(setting.value).strip()
                 if text and len(text) != 6:
                     raise errors.InvalidValueError(
-                        'FHSS code must be empty or six hex digits')
-                # FIX: preserve all six digits, including bit 7 of the first
+                        'FHSS code must be empty or 6 hex digits')
+                # FIX: preserve all 6 digits, including bit 7 of the first
                 # byte.
                 raw[16:20] = bytes.fromhex(
                     text)[::-1] + b'\xa0' if text else b'\xff' * 4
