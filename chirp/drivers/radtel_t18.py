@@ -1609,7 +1609,7 @@ class BFT20FRSRadio(T18Radio):
     _magic = b"PROGRAM"
     _fingerprint = [b"P3107" + b"\xF7\x00\x00",
                     b"P32073" + b"\xF8\xFF",     # Baofeng T22 FRS
-                   ]
+                    ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
