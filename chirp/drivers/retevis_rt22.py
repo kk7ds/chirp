@@ -722,11 +722,17 @@ class W31E(RT22Radio):
     _block_size = 0x40
 
 
+class T22PMRAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "T22 PMR"
+
+
 @directory.register
 class BFT20(RT22Radio):
     """Baofeng BF-T20"""
     VENDOR = "Baofeng"
     MODEL = "BF-T20"
+    ALIASES = [T22PMRAlias]
 
     _fileid = [b"P330h33",
                b"P32073" + b"\xF8\xFF",

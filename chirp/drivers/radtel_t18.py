@@ -1589,18 +1589,27 @@ class RB87Radio(T18Radio):
     _gmrs = True
 
 
+class T22FRSAlias(chirp_common.Alias):
+    VENDOR = "Baofeng"
+    MODEL = "T22 FRS"
+
+
 @directory.register
 class BFT20FRSRadio(T18Radio):
     """Baofeng BF-T20FRS"""
     VENDOR = "Baofeng"
     MODEL = "BF-T20FRS"
+    CMD_EXIT = b"E"
     ACK_BLOCK = True
+    ALIASES = [T22FRSAlias]
 
     POWER_LEVELS = [chirp_common.PowerLevel("High", watts=2.000),
                     chirp_common.PowerLevel("Low", watts=0.500)]
 
     _magic = b"PROGRAM"
-    _fingerprint = [b"P3107" + b"\xF7\x00\x00"]
+    _fingerprint = [b"P3107" + b"\xF7\x00\x00",
+                    b"P32073" + b"\xF8\xFF",     # Baofeng T22 FRS
+                    ]
     _upper = 22
     _mem_params = (_upper  # number of channels
                    )
