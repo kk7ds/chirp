@@ -153,10 +153,10 @@ class _NamedPowerLevel(chirp_common.PowerLevel):
 # Equal nominal dBm values in the base class must not collapse H/L/M choices.
 POWER_LEVELS = [_NamedPowerLevel(x) for x in ('High', 'Low', 'Medium')]
 DTMF_CHARS = '0123456789ABCD*#'
-KEYS = ['None', 'FM radio', 'Scan', 'Frequency search', 'Flashlight',
-        'Weather', 'Monitor', 'SOS', 'PTT B']
-KEY_CODES = [255, 7, 28, 29, 8, 12, 5, 3, 1]
-DRIVER_REVISION = '2026-10-29.3'
+KEYS = ['Off', 'Radio', 'Tx Power', 'Scan', 'Search', 'Light',
+        'NOAA', 'Monitor', 'SOS', 'Spectrum', 'PTT B']
+KEY_CODES = [255, 7, 10, 28, 29, 8, 12, 5, 3, 36, 1]
+DRIVER_REVISION = '2026-10-31.2'
 AIRBAND = (108000000, 136000000)
 TX_BANDS = [(136000000, 174000000), (220000000, 235000000),
             (350000000, 390000000), (400000000, 470000000)]
@@ -365,8 +365,9 @@ GENERAL = [
     ('backlight', 0x03, 0x0F, 'Backlight', ['Always on', '5 s', '10 s', '15 s',
                                             '20 s', '30 s', '1 min',
                                             '2 min', '3 min']),
-    ('tot', 0x05, 0x0F, 'Transmit timeout', [
-     'Off'] + ['%i s' % i for i in range(30, 241, 30)]),
+    # Radio menu order differs from the supplied CPS's linear labels.
+    ('tot', 0x05, 0x0F, 'Transmit timeout',
+     ['Off', '30 s', '60 s', '120 s', '240 s', '480 s']),
     ('voice', 0x07, 0x01, 'Voice prompts', ['Off', 'On']),
     ('language', 0x08, 0x01, 'Voice language', ['English', 'Chinese']),
     ('sidetone', 0x09, 0x03, 'DTMF sidetone',
@@ -449,7 +450,8 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
         prompts.experimental = ('RT-400 driver based on the JJCC-7700 CPS. '
                                 'Keep an original download before editing.')
         prompts.pre_download = (
-            'Turn the RT-400 on and connect the programming cable. '
+            'WARNING: EXPERIMENTAL. USE AT OWN RISK ! \n'
+            'Turn the RT-400 on and connect the programming cable. \n'
             'After upload, restart the radio before downloading again.')
         prompts.pre_upload = (
             'Keep an original download. After upload completes, switch the '
@@ -879,10 +881,10 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
         # Keep physical addresses explicit: 0x902E is an unused CPS field,
         # not a Top key. Removing it must not shift Side 2 long to that byte.
         for name, address, count in (
-                ('side_short', 0x902B, 9),
-                ('side_long', 0x902C, 8),
-                ('side2_short', 0x902D, 8),
-                ('side2_long', 0x902F, 8)):
+                ('side_short', 0x902B, 11),
+                ('side_long', 0x902C, 10),
+                ('side2_short', 0x902D, 10),
+                ('side2_long', 0x902F, 10)):
             self._add_enum(basic, name, name.replace('_', ' ').title(),
                            address, KEYS[:count], codes=KEY_CODES[:count])
         weather = RadioSetting(
