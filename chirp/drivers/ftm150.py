@@ -63,36 +63,6 @@ FILE_CHECKSUM_AT = 0x007F
 
 
 # ---------------------------------------------------------------------------
-# Frequency encoding, the same as on the FTM-300D: the 100 MHz digit and
-# the BCD digits down to 10 kHz, plus a 4-bit count of 625 Hz steps on
-# top. ftm300d.py and ftm350.py treat the latter as single 5k/2.5k/1.25k
-# (/625) flags, but together they are just binary 8/4/2/1 x 625 Hz.
-# ---------------------------------------------------------------------------
-
-YFREQ_FORMAT = """
-struct yfreq {
-  u8 fine:4,
-     hun:4;
-  bbcd khz10[2];
-};
-"""
-
-
-def decode_freq(freq):
-    """Decode a yfreq struct to Hz."""
-    return ((int(freq.hun) * 10000 + int(freq.khz10)) * 10000
-            + int(freq.fine) * 625)
-
-
-def encode_freq(freq, hz):
-    """Encode Hz into a yfreq struct."""
-    khz10, rest = divmod(hz, 10000)
-    freq.hun = khz10 // 10000 % 10
-    freq.khz10 = khz10 % 10000
-    freq.fine = rest // 625
-
-
-# ---------------------------------------------------------------------------
 # Memory map.
 #
 # `chanrecord` is the 16-byte per-channel layout shared, byte-for-byte, by
@@ -112,7 +82,7 @@ def encode_freq(freq, hz):
 #   seen set on an FTM-150.
 # ---------------------------------------------------------------------------
 
-MEM_FORMAT = YFREQ_FORMAT + """
+MEM_FORMAT = ftm300d.YFREQ_FORMAT + """
 struct chanrecord {
   u8 used:1,
      unknown0:1,
@@ -658,7 +628,7 @@ class FTM150Radio(yaesu_clone.YaesuCloneModeRadio,
                     options.append(current)
             elif int(rec.used):
                 current = "Frequency %s MHz" % chirp_common.format_freq(
-                    decode_freq(rec.freq))
+                    ftm300d.decode_freq(rec.freq))
                 options.insert(1, current)
             rs = RadioSetting(
                 "pmg%d" % i, "Slot %d" % (i + 1),
@@ -791,10 +761,10 @@ class FTM150Radio(yaesu_clone.YaesuCloneModeRadio,
     # every special channel (VFO/HOME/PMS) below, since they're all the
     # same 16-byte chanrecord layout
     def _decode_chanrecord(self, mem, _mem):
-        mem.freq = decode_freq(_mem.freq)
+        mem.freq = ftm300d.decode_freq(_mem.freq)
         mem.duplex = DUPLEX_FROM_RADIO.get(int(_mem.duplex), "")
         if mem.duplex == "split":
-            mem.offset = decode_freq(_mem.tx_freq)
+            mem.offset = ftm300d.decode_freq(_mem.tx_freq)
         else:
             mem.offset = int(_mem.offset) * 50000
         mem.skip = "S" if int(_mem.skip) else ""
@@ -860,13 +830,13 @@ class FTM150Radio(yaesu_clone.YaesuCloneModeRadio,
         _mem.used = 1
         _mem.band = _band_index(mem.freq)
         _mem.skip = 1 if mem.skip == "S" else 0
-        encode_freq(_mem.freq, mem.freq)
+        ftm300d.encode_freq(_mem.freq, mem.freq)
         _mem.duplex = DUPLEX_TO_RADIO.get(mem.duplex, 0)
         if mem.duplex == "split":
-            encode_freq(_mem.tx_freq, int(mem.offset))
+            ftm300d.encode_freq(_mem.tx_freq, int(mem.offset))
             _mem.offset = 0
         else:
-            encode_freq(_mem.tx_freq, 0)
+            ftm300d.encode_freq(_mem.tx_freq, 0)
             _mem.offset = (
                 int(round(mem.offset / 50000.0)) if mem.offset else 0)
 
