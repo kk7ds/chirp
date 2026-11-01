@@ -234,14 +234,13 @@ def _clone_out(radio):
     LOG.debug("Clone-out finished after %d frames", expected)
 
 
+# Frequency encoding: the 100 MHz digit and the BCD digits down to 10 kHz,
+# plus a 4-bit count of 625 Hz steps on top (binary 8/4/2/1 x 625 Hz).
 YFREQ_FORMAT = """
 struct yfreq {
-  u8 fine_5k:1,
-     fine_2k5:1,
-     fine_1k25:1,
-     fine_625:1,
+  u8 fine:4,
      hun:4;
-  u8 bcd[2];
+  bbcd khz10[2];
 };
 """
 
@@ -724,42 +723,18 @@ def _encode_padded(text, length, pad, charset):
     return data
 
 
-# Fine-step flags in the high nibble of the first freq byte.
-# Proven: 0x80 = +5 kHz, 0x20 = +1.25 kHz, together +6.25 kHz (0xA0).
-_FREQ_FINE = (
-    ("fine_5k", 5000),
-    ("fine_2k5", 2500),
-    ("fine_1k25", 1250),
-    ("fine_625", 625),
-)
-
-
 def decode_freq(freq):
     """Decode a yfreq struct to Hz."""
-    digits = "%X%02X%02X" % (
-        int(freq.hun), int(freq.bcd[0]), int(freq.bcd[1]))
-    hz = int(digits, 10) * 10000
-    for name, add in _FREQ_FINE:
-        if int(getattr(freq, name)):
-            hz += add
-    return hz
+    return ((int(freq.hun) * 10000 + int(freq.khz10)) * 10000
+            + int(freq.fine) * 625)
 
 
 def encode_freq(freq, hz):
     """Encode Hz into a yfreq struct."""
-    rem = hz % 10000
-    base = hz - rem
-    for name, add in _FREQ_FINE:
-        if rem >= add:
-            setattr(freq, name, 1)
-            rem -= add
-        else:
-            setattr(freq, name, 0)
-    khz10 = base // 10000
-    s = "%06d" % khz10
-    freq.hun = int(s[1])
-    freq.bcd[0] = (int(s[2]) << 4) | int(s[3])
-    freq.bcd[1] = (int(s[4]) << 4) | int(s[5])
+    khz10, rest = divmod(hz, 10000)
+    freq.hun = khz10 // 10000 % 10
+    freq.khz10 = khz10 % 10000
+    freq.fine = rest // 625
 
 
 def parse_freq_bytes(raw):
