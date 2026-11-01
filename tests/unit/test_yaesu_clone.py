@@ -199,11 +199,28 @@ class TestFTM300Freq(unittest.TestCase):
         self.assertEqual(146520000, ftm300d.decode_freq(freq))
 
     def test_6_25_extra_from_dump(self):
+        # 5 kHz + 1.25 kHz, i.e. fine = 0b1010 = 10 x 625 Hz.
         raw = bytes.fromhex("a4 46 00")
         mmap, freq = ftm300d.parse_freq_bytes(raw)
+        self.assertEqual(10, int(freq.fine))
         self.assertEqual(446006250, ftm300d.decode_freq(freq))
         ftm300d.encode_freq(freq, 446006250)
         self.assertEqual(raw, mmap.get_packed())
+
+    def test_every_625_step(self):
+        mmap, freq = ftm300d.parse_freq_bytes(b"\x00" * 3)
+        for fine in range(16):
+            hz = 433000000 + fine * 625
+            ftm300d.encode_freq(freq, hz)
+            self.assertEqual(hz, ftm300d.decode_freq(freq))
+            self.assertEqual(bytes([fine << 4 | 4, 0x33, 0x00]),
+                             mmap.get_packed())
+
+    def test_8_33_rounds_down_to_625_step(self):
+        # Airband 8.33 kHz channels do not fit.
+        mmap, freq = ftm300d.parse_freq_bytes(b"\x00" * 3)
+        ftm300d.encode_freq(freq, 118008333)
+        self.assertEqual(118008125, ftm300d.decode_freq(freq))
 
     def test_tsql_r_from_adms_rev_tone(self):
         # Dump 31: Tone Mode=REV TONE, byte 5 high nibble 3.
