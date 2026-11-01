@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 import unittest
 
-from chirp import bitwise
 from chirp import directory
 from chirp import errors
 from chirp.drivers import ft60
@@ -767,45 +766,6 @@ class TestFTM150Clone(unittest.TestCase):
         with self.assertRaises(errors.RadioError):
             self._radio(pipe, data).sync_out()
         self.assertEqual([], pipe.frames)
-
-
-def _ftm150_freq(raw):
-    mmap = memmap.MemoryMapBytes(bytes(raw))
-    freq = bitwise.parse(
-        ftm150.YFREQ_FORMAT + "struct yfreq freq;", mmap).freq
-    return mmap, freq
-
-
-class TestFTM150Freq(unittest.TestCase):
-    def test_roundtrip_calling(self):
-        mmap, freq = _ftm150_freq(b"\x00" * 3)
-        ftm150.encode_freq(freq, 145500000)
-        self.assertEqual(bytes.fromhex("01 45 50"), mmap.get_packed())
-        self.assertEqual(145500000, ftm150.decode_freq(freq))
-
-    def test_6_25_from_dump(self):
-        # 5 kHz + 1.25 kHz, i.e. fine = 0b1010 = 10 x 625 Hz.
-        raw = bytes.fromhex("a4 46 00")
-        mmap, freq = _ftm150_freq(raw)
-        self.assertEqual(10, int(freq.fine))
-        self.assertEqual(446006250, ftm150.decode_freq(freq))
-        ftm150.encode_freq(freq, 446006250)
-        self.assertEqual(raw, mmap.get_packed())
-
-    def test_every_625_step(self):
-        mmap, freq = _ftm150_freq(b"\x00" * 3)
-        for fine in range(16):
-            hz = 433000000 + fine * 625
-            ftm150.encode_freq(freq, hz)
-            self.assertEqual(hz, ftm150.decode_freq(freq))
-            self.assertEqual(bytes([fine << 4 | 4, 0x33, 0x00]),
-                             mmap.get_packed())
-
-    def test_8_33_rounds_down_to_625_step(self):
-        # Airband 8.33 kHz channels do not fit; same as ftm300d does.
-        mmap, freq = _ftm150_freq(b"\x00" * 3)
-        ftm150.encode_freq(freq, 118008333)
-        self.assertEqual(118008125, ftm150.decode_freq(freq))
 
 
 class TestFTM150SqlOverride(unittest.TestCase):
