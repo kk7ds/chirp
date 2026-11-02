@@ -594,6 +594,47 @@ struct {
 } rt86a;
 """
 
+MEM_FORMAT_RT97L = """
+struct {
+  lbcd rxfreq[4];      // RX Frequency           0-3
+  lbcd txfreq[4];      // TX Frequency           4-7
+  ul16 rx_tone;        // PL/DPL Decode          8-9
+  ul16 tx_tone;        // PL/DPL Encode          A-B
+  u8 unknown1:2,       //                        C
+     highpower:1,      // Power Level
+     wide:1,           // Bandwidth
+     unknown2:4;
+  u8 reserved[3];      // Settings overlay       D-F
+} memory[16];
+
+#seekto 0x002D;
+struct {
+  u8 unknown_1:4,      //                        002D
+     save:1,           // Battery Save
+     beep:1,           // Beep
+     voice:2;          // Voice Prompts
+  u8 squelch;          // Squelch                002E
+  u8 tot;              // Time-out Timer         002F
+} settings;
+
+#seekto 0x004E;
+u8 skipflags[2];       // SCAN_ADD               004E-004F
+
+#seekto 0x007E;
+struct {
+  u8 delay;            // Relay Delay            007E
+  u8 relay;            // Relay                  007F
+} rt97l_relay;
+
+// 0x00CC is also byte C of channel 13
+#seekto 0x00CC;
+struct {
+  u8 audio;            // Audio Output           00CC
+  u8 unknown;          //                        00CD
+  u8 channel;          // Selected Channel       00CE
+} rt97l_audio;
+"""
+
 CMD_ACK = b"\x06"
 
 ALARM_LIST = ["Local Alarm", "Remote Alarm"]
@@ -2785,5 +2826,181 @@ class RT86ARadio(RT86SRadio):
                 value = 0
             rs = RadioSettingValueList(options, current_index=value)
             basic.append(RadioSetting(name, label, rs))
+
+        return top
+
+
+@directory.register
+class RT97LRadio(RT21Radio):
+    """RETEVIS RT97L"""
+    VENDOR = "Retevis"
+    MODEL = "RT97L"
+    BLOCK_SIZE = 0x20
+    BLOCK_SIZE_UP = 0x10
+
+    DTCS_CODES = DTCS_EXTRA
+    # Low level is not published; 5 W is nominal
+    POWER_LEVELS = [chirp_common.PowerLevel("High", watts=25.00),
+                    chirp_common.PowerLevel("Low", watts=5.00)]
+
+    VALID_BANDS = [(462550000, 467725001)]
+
+    _magic = b"PHOGR\x92\x25"
+    _fingerprint = [b"P32073" + b"\x01\xFF", ]
+    _upper = 16
+    _ack_1st_block = False
+    _skipflags = True
+    _reserved = True
+
+    # Full image only, in order; a single-block write erased the radio
+    _ranges = [
+               (0x0000, 0x0100),
+              ]
+    _memsize = 0x0100
+
+    # Byte C of channel 13 is the audio output level (0x00CC)
+    _AUDIO_CHANNEL = 13
+    _FLAG_BITS = 0x30  # highpower and wide in byte C
+    _FLAG_DEFAULT = 0x08  # byte C in factory records
+
+    def process_mmap(self):
+        self._memobj = bitwise.parse(MEM_FORMAT_RT97L, self._mmap)
+
+    def sync_out(self):
+        # Refuse partial images
+        if len(self._mmap.get_packed()) != self._memsize:
+            raise errors.RadioError("Image is not %i bytes, not uploading" %
+                                    self._memsize)
+        super().sync_out()
+
+    def _audio_channel_fixed(self, mem):
+        """Show channel 13's power and mode as stored, and lock them"""
+        _mem = self._memobj.memory[self._AUDIO_CHANNEL - 1]
+        mem.power = self.POWER_LEVELS[1 - _mem.highpower]
+        mem.mode = _mem.wide and "FM" or "NFM"
+        mem.immutable = mem.immutable + ["power", "mode"]
+
+    def get_memory(self, number):
+        mem = super().get_memory(number)
+        if mem.empty:
+            if number == self._AUDIO_CHANNEL:
+                self._audio_channel_fixed(mem)
+            return mem
+
+        # Factory software writes TX off as 00000000
+        _mem = self._memobj.memory[number - 1]
+        if _mem.txfreq.get_raw() == b"\x00\x00\x00\x00":
+            mem.duplex = "off"
+            mem.offset = 0
+
+        if number == self._AUDIO_CHANNEL:
+            self._audio_channel_fixed(mem)
+
+        return mem
+
+    def validate_memory(self, mem):
+        msgs = super().validate_memory(mem)
+        if mem.number == self._AUDIO_CHANNEL and not mem.empty:
+            _mem = self._memobj.memory[self._AUDIO_CHANNEL - 1]
+            power = self.POWER_LEVELS[1 - _mem.highpower]
+            mode = _mem.wide and "FM" or "NFM"
+            if ((mem.power is not None and mem.power != power) or
+                    mem.mode != mode):
+                msgs.append(chirp_common.ValidationWarning(
+                    "Channel %i power and mode share a byte with the audio "
+                    "output setting and are not changed" %
+                    self._AUDIO_CHANNEL))
+        return msgs
+
+    def set_memory(self, mem):
+        _mem = self._memobj.memory[mem.number - 1]
+        flags = int(_mem.get_raw()[12])
+
+        if mem.empty:
+            # Clear bytes 0-B only; bytes C-F hold settings
+            _mem.set_raw(b"\xFF" * 12 + _mem.get_raw()[12:])
+            return
+
+        super().set_memory(mem)
+
+        if mem.duplex == "off":
+            _mem.txfreq.fill_raw(b"\x00")
+
+        if mem.number == self._AUDIO_CHANNEL:
+            _mem.set_raw(_mem.get_raw()[:12] + bytes([flags]) +
+                         _mem.get_raw()[13:])
+        else:
+            # Preserve unmapped bits of byte C
+            if flags == 0xFF:
+                flags = self._FLAG_DEFAULT
+            new = int(_mem.get_raw()[12]) & self._FLAG_BITS
+            _mem.set_raw(_mem.get_raw()[:12] +
+                         bytes([(flags & ~self._FLAG_BITS) | new]) +
+                         _mem.get_raw()[13:])
+
+    def get_settings(self):
+        _settings = self._memobj.settings
+        _relay = self._memobj.rt97l_relay
+        _audio = self._memobj.rt97l_audio
+
+        basic = RadioSettingGroup("basic", "Basic Settings")
+        top = RadioSettings(basic)
+
+        rs = RadioSettingValueInteger(0, 9, _settings.squelch)
+        rset = RadioSetting("squelch", "Squelch Level", rs)
+        rset.set_doc("Squelch level, 0 to 9")
+        basic.append(rset)
+
+        rs = RadioSettingValueList(TIMEOUTTIMER_LIST,
+                                   current_index=_settings.tot)
+        rset = RadioSetting("tot", "Time-out Timer", rs)
+        rset.set_doc("Transmit time limit")
+        basic.append(rset)
+
+        rs = RadioSettingValueList(VOICE_LIST, current_index=_settings.voice)
+        rset = RadioSetting("voice", "Voice Prompts", rs)
+        rset.set_doc("Voice prompt language")
+        basic.append(rset)
+
+        rs = RadioSettingValueBoolean(_settings.save)
+        rset = RadioSetting("save", "Battery Save", rs)
+        rset.set_doc("Battery save")
+        basic.append(rset)
+
+        rs = RadioSettingValueBoolean(_settings.beep)
+        rset = RadioSetting("beep", "Beep", rs)
+        rset.set_doc("Key press beep")
+        basic.append(rset)
+
+        rs = RadioSettingValueBoolean(_relay.relay)
+        rset = RadioSetting("rt97l_relay.relay", "Relay", rs)
+        rset.set_doc("Repeater mode")
+        basic.append(rset)
+
+        rs = RadioSettingValueInteger(0, 9, min(_relay.delay, 9))
+        rset = RadioSetting("rt97l_relay.delay", "Relay Delay", rs)
+        rset.set_doc("Relay delay, 0 (off) to 9")
+        basic.append(rset)
+
+        # Out of range reads as 5, as in the factory software. Written
+        # only when changed.
+        audio = _audio.audio if _audio.audio <= 9 else 5
+
+        def apply_audio(setting, shown):
+            if int(setting.value) != shown:
+                _audio.audio = int(setting.value)
+
+        rs = RadioSettingValueInteger(0, 9, audio)
+        rset = RadioSetting("rt97l_audio.audio", "Audio Output", rs)
+        rset.set_doc("Audio output level, 0 to 9. Shares 0x00CC with "
+                     "channel 13 byte C")
+        rset.set_apply_callback(apply_audio, audio)
+        basic.append(rset)
+
+        channel = _audio.channel if _audio.channel < self._upper else 0
+        rs = RadioSettingValueInteger(1, self._upper, channel + 1)
+        rset = RadioSetting("rt97l_audio.channel", "Channel", rs)
+        rset.set_doc("Selected channel")
+        basic.append(rset)
 
         return top
