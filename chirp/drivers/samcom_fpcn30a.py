@@ -26,7 +26,14 @@ real FPCN30A radios (model ID "ZW_U5W"):
 - The radio acknowledges the settings frame but does not apply its values,
   so settings are shown read-only. The frame is still required: without
   it the radio ignores the TX frequency in channel frames. It must not
-  contain 0xFF values, which once blanked a radio's settings block.
+  contain 0xFF values.
+- For a while after it has been read (more than 1 s, less than 20 s), the
+  radio acknowledges channel writes but ignores tone changes. The driver
+  therefore waits READ_SETTLE_TIME after its own last read before writing.
+- Every write session sets the serial number in the radio's working copy
+  of its settings to 0xFF, and a write session that changes channels also
+  sets VOX and squelch there to 0xFF (the radio then displays garbage for
+  them). Turning the radio off and on restores all of them from storage.
 
 Wire format (9600 8N1, DTR off). Data frames, in both directions:
 
@@ -62,6 +69,14 @@ from chirp.settings import RadioSettings
 from chirp.settings import RadioSettingValueString
 
 LOG = logging.getLogger(__name__)
+
+# Seconds to wait after reading the radio before writing to it; tone
+# changes were ignored when written ~1 s after a read and applied after 20 s.
+READ_SETTLE_TIME = 30
+
+# time.monotonic() when this driver last finished talking to a radio
+# during a read, or None
+_last_read = None
 
 MAGIC = b"SAMCOMFT"
 NUM_CHANNELS = 22
@@ -249,7 +264,8 @@ def _status(radio, cur, total, msg):
 
 
 def _prepare_pipe(radio):
-    # The vendor tool opens the port with DTR disabled.
+    # The vendor tool opens the port with DTR disabled. CHIRP already opens
+    # it that way (WANTS_DTR); this covers other callers.
     try:
         radio.pipe.dtr = False
     except Exception:
@@ -257,7 +273,28 @@ def _prepare_pipe(radio):
 
 
 def do_download(radio):
+    global _last_read
     _prepare_pipe(radio)
+    try:
+        return _download(radio)
+    finally:
+        _last_read = time.monotonic()
+
+
+def _wait_after_read(radio):
+    """Wait until READ_SETTLE_TIME has passed since the last read."""
+    if _last_read is None:
+        return
+    remaining = READ_SETTLE_TIME - (time.monotonic() - _last_read)
+    while remaining > 0:
+        _status(radio, int(READ_SETTLE_TIME - remaining), READ_SETTLE_TIME,
+                "Waiting for the radio after reading (%i s)" %
+                int(remaining + 0.999))
+        time.sleep(min(1.0, remaining))
+        remaining = READ_SETTLE_TIME - (time.monotonic() - _last_read)
+
+
+def _download(radio):
     link = _Link(radio)
     image = bytearray(MEMSIZE)
     image[0:8] = MAGIC
@@ -362,9 +399,13 @@ def build_channel_frame(index, seq, chan):
 
 def do_upload(radio):
     _prepare_pipe(radio)
-    link = _Link(radio)
     mem = radio._memobj
     used = [i for i in range(NUM_CHANNELS) if mem.channels[i].used]
+
+    # Do not read the radio here: shortly after a read it ignores tone
+    # changes. Wait out a read this driver did recently instead.
+    _wait_after_read(radio)
+    link = _Link(radio)
 
     # The settings frame opens the session; without it the radio ignores
     # TX frequencies. Its values are not applied by the radio.
@@ -412,6 +453,9 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
     VENDOR = "Samcom"
     MODEL = "FPCN30A"
     BAUD_RATE = 9600
+    # Open the port with DTR and RTS off, as the vendor tool does.
+    WANTS_DTR = False
+    WANTS_RTS = False
     _memsize = MEMSIZE
 
     @classmethod
@@ -423,6 +467,13 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
             "It writes channels only; radio settings are shown read-only "
             "because the radio does not apply them over the cable. Save a "
             "backup with the vendor tool before uploading.")
+        rp.pre_upload = (
+            "The radio ignores tone changes written shortly after it has "
+            "been read. If you read it with another program in the last "
+            "half minute, wait before uploading (CHIRP waits by itself "
+            "after its own download).\n\n"
+            "After the upload, turn the radio off and on again. Until then "
+            "it shows VOX and squelch wrongly.")
         return rp
 
     def get_features(self):

@@ -1,3 +1,4 @@
+import time
 import unittest
 from unittest import mock
 
@@ -99,6 +100,31 @@ def make_radio(pipe=None):
     return radio
 
 
+def write_frames(pipe):
+    """Frames written by an upload, which must not read the radio."""
+    frames = list(pipe.written)
+    assert sf.CMD_READ_LOCAL_INFO not in frames
+    return frames
+
+
+class FakeClock:
+    """Stands in for the driver's time module."""
+
+    def __init__(self, now=1000.0):
+        self.now = now
+        self.slept = 0.0
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+        self.slept += seconds
+
+    # Frame timeouts use wall-clock time
+    time = staticmethod(time.time)
+
+
 def settings_values(radio):
     return {s.get_name(): str(s.value)
             for group in radio.get_settings() for s in group}
@@ -106,13 +132,26 @@ def settings_values(radio):
 
 @mock.patch.object(sf, "TIMEOUT_READ", 0.05)
 @mock.patch.object(sf, "TIMEOUT_WRITE", 0.05)
+@mock.patch.object(sf, "READ_SETTLE_TIME", 0)
 class TestSamcomFPCN30A(unittest.TestCase):
+    def setUp(self):
+        self._last_read = sf._last_read
+        sf._last_read = None
+
+    def tearDown(self):
+        sf._last_read = self._last_read
+
     def test_vendor_packets_pass_frame_check(self):
         self.assertTrue(sf.check_frame(sf.CMD_READ_LOCAL_INFO))
         self.assertTrue(sf.check_frame(VENDOR_WRITE_PARA))
         self.assertEqual(sf.CTRL_ACK, bytes.fromhex("360610"))
         self.assertEqual(sf.CTRL_REPEAT, bytes.fromhex("360510"))
         self.assertEqual(sf.CTRL_COMPLETE, bytes.fromhex("360710"))
+
+    def test_port_opened_with_dtr_and_rts_off(self):
+        # CHIRP applies these before opening the port
+        self.assertFalse(sf.SamcomFPCN30A.WANTS_DTR)
+        self.assertFalse(sf.SamcomFPCN30A.WANTS_RTS)
 
     def test_frame_check_rejects_bad_checksum(self):
         bad = bytearray(VENDOR_WRITE_PARA)
@@ -176,7 +215,7 @@ class TestSamcomFPCN30A(unittest.TestCase):
         pipe = FakeRadio()
         radio.pipe = pipe
         radio.sync_out()
-        _settings, channel_frame, complete = pipe.written
+        _settings, channel_frame, complete = write_frames(pipe)
         self.assertTrue(sf.check_frame(channel_frame))
         self.assertEqual(bytes.fromhex("3502030002"), channel_frame[:5])
         self.assertEqual(FPCN30A_CH9, channel_frame[7:7 + 27])
@@ -191,13 +230,50 @@ class TestSamcomFPCN30A(unittest.TestCase):
             radio.set_memory(mem)
         radio.sync_out()
 
-        frames = pipe.written
+        frames = write_frames(pipe)
         self.assertEqual(4, len(frames))
         self.assertEqual(bytes.fromhex("3502020001"), frames[0][:5])
         self.assertTrue(all(f[2] == 0x03 for f in frames[1:3]))  # channels
         self.assertEqual([2, 5], [f[7] for f in frames[1:3]])
         self.assertEqual([2, 3], [f[4] for f in frames[1:3]])    # sequence
         self.assertEqual(sf.CTRL_COMPLETE, frames[3])
+
+    def test_upload_does_not_read_radio(self):
+        # Shortly after a read the radio ignores tone changes, so an upload
+        # must open with the session frame, built from the loaded image.
+        pipe = FakeRadio()
+        radio = make_radio(pipe)
+        mem = chirp_common.Memory(1)
+        mem.freq = 446006250
+        radio.set_memory(mem)
+        radio.sync_out()
+        self.assertEqual(sf.session_settings_frame(
+            radio._memobj.settings.get_raw()), write_frames(pipe)[0])
+
+    def test_download_records_read_time(self):
+        clock = FakeClock(now=500.0)
+        with mock.patch.object(sf, "time", clock):
+            make_radio(FakeRadio()).sync_in()
+        self.assertEqual(500.0, sf._last_read)
+
+    def test_upload_waits_after_recent_read(self):
+        clock = FakeClock(now=1000.0)
+        sf._last_read = 995.0                      # read 5 s ago
+        pipe = FakeRadio()
+        radio = make_radio(pipe)
+        with mock.patch.object(sf, "READ_SETTLE_TIME", 30), \
+                mock.patch.object(sf, "time", clock):
+            radio.sync_out()
+        self.assertAlmostEqual(25.0, clock.slept)
+        self.assertTrue(pipe.written)
+
+    def test_upload_does_not_wait_after_old_read(self):
+        clock = FakeClock(now=1000.0)
+        sf._last_read = 900.0                      # read 100 s ago
+        with mock.patch.object(sf, "READ_SETTLE_TIME", 30), \
+                mock.patch.object(sf, "time", clock):
+            make_radio(FakeRadio()).sync_out()
+        self.assertEqual(0.0, clock.slept)
 
     def test_session_frame_matches_frame_tested_on_radio(self):
         self.assertEqual(TESTED_SESSION_FRAME,
@@ -231,7 +307,7 @@ class TestSamcomFPCN30A(unittest.TestCase):
         radio.set_memory(mem)
         radio.sync_out()
 
-        channel_frame = pipe.written[1]
+        channel_frame = write_frames(pipe)[1]
         self.assertTrue(sf.check_frame(channel_frame))
         self.assertEqual(35, len(channel_frame))
         self.assertEqual(27, channel_frame[6])
