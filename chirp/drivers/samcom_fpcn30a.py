@@ -16,8 +16,17 @@
 """Samcom FPCN30A, as programmed by "SAMCOM_Radio_FreqTool" V1.2.
 
 The protocol was reverse engineered from the vendor programming tool
-(PocTools.exe, SAMCOM_Radio_FreqTools_V1.2-20231212). It has NOT been
-verified against a real radio yet.
+(PocTools.exe, SAMCOM_Radio_FreqTools_V1.2-20231212) and checked against
+real FPCN30A radios (model ID "ZW_U5W"):
+
+- Channel frames are stored with RX in bytes 9-12 and TX in 13-16, the
+  same order the radio reports them. (The vendor tool writes them the
+  other way round, which swaps RX and TX on split channels.)
+- Power, companding and scrambler (bytes 23-25) are stored per channel.
+- The radio acknowledges the settings frame but does not apply its values,
+  so settings are shown read-only. The frame is still required: without
+  it the radio ignores the TX frequency in channel frames. It must not
+  contain 0xFF values, which once blanked a radio's settings block.
 
 Wire format (9600 8N1, DTR off). Data frames, in both directions:
 
@@ -35,6 +44,8 @@ Control frames are three bytes: 36 06 10 (ACK), 36 05 10 (resend),
 
 The radio does not send a memory dump, so this driver keeps its own
 small image: the settings payload followed by one record per channel.
+Uploads send a vendor-style settings frame, the channel frames, then
+COMPLETE, as the vendor tool does.
 """
 
 import logging
@@ -48,7 +59,6 @@ from chirp import memmap
 from chirp.settings import RadioSetting
 from chirp.settings import RadioSettingGroup
 from chirp.settings import RadioSettings
-from chirp.settings import RadioSettingValueList
 from chirp.settings import RadioSettingValueString
 
 LOG = logging.getLogger(__name__)
@@ -69,12 +79,9 @@ CTRL_COMPLETE = bytes([START_CTRL, 0x07, TERMINATOR])
 # PttWRP.CreateReadLocalInfo_Cmd in the vendor tool
 CMD_READ_LOCAL_INFO = bytes([0x35, 0x01, 0x02, 0x01, 0x00, 0x49, 0x00, 0x10])
 
-# The vendor tool writes the TX frequency into bytes 9-12 of a channel
-# frame and the RX frequency into bytes 13-16, but when reading it treats
-# bytes 9-12 as RX and 13-16 as TX. This driver mirrors the vendor tool
-# exactly, so split channels behave the same as with the vendor software.
-# If a real radio shows RX/TX swapped after an upload, flip this.
-WRITE_TX_FIRST = True
+# Values the radio reported for power, companding and scrambler on every
+# channel before any third-party write; used for newly created channels.
+DEFAULT_CHANNEL_EXTRAS = (0x01, 0x00, 0x00)
 
 TIMEOUT_READ = 2.0    # seconds; vendor uses 2000 ms when reading
 TIMEOUT_WRITE = 1.0   # seconds; vendor uses 1000 ms when writing
@@ -108,7 +115,10 @@ struct {
   u8 rxtone;
   u8 txtone;
   u8 band;
-  u8 unknown[4];
+  u8 power;
+  u8 companding;
+  u8 scrambler;
+  u8 unknown;
 } channels[22];
 """
 
@@ -121,15 +131,10 @@ CTCSS_BASE = 1
 DCS_BASE = CTCSS_BASE + len(chirp_common.TONES)
 TONE_MAX = DCS_BASE + len(chirp_common.DTCS_CODES) - 1
 
-FREQ_RANGES = ["134-176 MHz", "406.1-470 MHz", "Other"]
+FREQ_RANGES = {0: "134-176 MHz", 1: "406.1-470 MHz"}
 BANDS = {0: (134000000, 176000001), 1: (406100000, 470000001)}
 MODES = ["FM", "NFM"]   # band byte: 0 = 25.0K, 1 = 12.5K (vendor UI order)
-TOT_LIST = ["%is" % s for s in range(30, 181, 10)]
-VOX_LIST = ["Off", "1", "2", "3", "4", "5"]
-SQUELCH_LIST = ["%i" % i for i in range(1, 10)]
-GROUP_LIST = ["%i" % i for i in range(1, NUM_CHANNELS + 1)]
-POWER_MODES = ["High/Low Selectable", "High", "Low"]
-VOICE_LANGUAGES = ["English", "Chinese"]
+VOICE_LANGUAGES = {0: "English", 1: "Chinese"}
 
 
 def checksum(frame):
@@ -284,11 +289,13 @@ def do_download(radio):
             continue
         base = 0x40 + (number - 1) * 16
         image[base] = 1
-        image[base + 1:base + 5] = reply[9:13]    # RX (vendor read order)
+        image[base + 1:base + 5] = reply[9:13]    # RX
         image[base + 5:base + 9] = reply[13:17]   # TX
-        image[base + 9] = reply[20]
-        image[base + 10] = reply[21]
-        image[base + 11] = reply[22]
+        image[base + 9] = reply[20]               # RX tone
+        image[base + 10] = reply[21]              # TX tone
+        image[base + 11] = reply[22]              # bandwidth
+        image[base + 12:base + 15] = reply[23:26]  # power, companding,
+        #                                            scrambler
         _status(radio, number, NUM_CHANNELS + 1, "Reading channels")
     else:
         raise errors.RadioError("Radio never signalled the end of the "
@@ -297,31 +304,59 @@ def do_download(radio):
     return memmap.MemoryMapBytes(bytes(image))
 
 
-def build_settings_frame(settings_raw):
-    """Mirror of Form_PocTool.CreateLocalPara in the vendor tool."""
-    payload = bytearray(settings_raw[:SETTINGS_LEN])
-    payload[0:22] = b"0" * 22       # vendor writes ASCII zeros over
-    payload[37:41] = b"\x00" * 4    # model/serial and the reserved tail
-    return make_frame(0x02, 0x02, 0x0001, bytes(payload))
+# Offset of the user ID within the 41-byte settings payload
+OFF_USERID = 25
 
 
-def build_channel_frame(index, seq, chan, settings):
-    """Mirror of Form_PocTool.CreateChannelParaData in the vendor tool."""
-    rx = bytes(chan.rxfreq.get_raw())
-    tx = bytes(chan.txfreq.get_raw())
-    first, second = (tx, rx) if WRITE_TX_FIRST else (rx, tx)
+def session_settings_frame(settings_raw):
+    """Settings frame that opens a write session, built as the vendor tool
+    builds it after reading a radio (Form_PocTool.CreateLocalPara):
+    ASCII zeros over model and serial, the radio's own values where they
+    are valid and the vendor tool's defaults otherwise.
+
+    The radio does not apply these values, but it only accepts TX
+    frequencies in channel frames that follow a settings frame. The frame
+    never contains 0xFF: echoing a radio's 0xFF values back once blanked
+    its settings block.
+    """
+    s = bytearray(settings_raw[:SETTINGS_LEN])
+    s[0:22] = b"0" * 22
+    s[22] = 0 if s[22] == 0 else 1                  # frequency range
+    if not (s[23] % 10 == 0 and 30 <= s[23] <= 180):
+        s[23] = 60                                  # time-out timer
+    if s[24] > 5:
+        s[24] = 0                                   # VOX
+    if not all(b == 0 or 0x30 <= b <= 0x39 for b in s[25:31]):
+        s[25:31] = b"\x00" * 6                      # user ID
+    if not 1 <= s[31] <= NUM_CHANNELS:
+        s[31] = 2                                   # group channel
+    if not 1 <= s[32] <= 9:
+        s[32] = 3                                   # squelch
+    for offset, default, limit in ((33, 0, 2),      # voice language
+                                   (34, 0, 2),      # scrambler
+                                   (35, 0, 2),      # companding
+                                   (36, 1, 3)):     # power mode
+        if s[offset] >= limit:
+            s[offset] = default
+    s[37:41] = b"\x00" * 4
+    return make_frame(0x02, 0x02, 0x0001, bytes(s))
+
+
+def build_channel_frame(index, seq, chan):
+    """Channel frame laid out as Form_PocTool.CreateChannelParaData does,
+    except that RX goes first, which is the order the radio stores."""
     band = int(chan.band)
     payload = bytearray(CHANNEL_PAYLOAD_LEN)
     payload[0] = index + 1
-    payload[2:6] = first
-    payload[6:10] = second
+    payload[2:6] = bytes(chan.rxfreq.get_raw())
+    payload[6:10] = bytes(chan.txfreq.get_raw())
     payload[12] = band
     payload[13] = int(chan.rxtone)
     payload[14] = int(chan.txtone)
     payload[15] = band
-    payload[16] = int(settings.power_mode)
-    payload[17] = int(settings.companding)
-    payload[18] = int(settings.scrambler)
+    payload[16] = int(chan.power)
+    payload[17] = int(chan.companding)
+    payload[18] = int(chan.scrambler)
     return make_frame(0x02, 0x03, seq & 0xFF, bytes(payload))
 
 
@@ -331,21 +366,23 @@ def do_upload(radio):
     mem = radio._memobj
     used = [i for i in range(NUM_CHANNELS) if mem.channels[i].used]
 
-    _status(radio, 0, len(used) + 1, "Writing settings")
-    reply = link.transact(build_settings_frame(mem.settings.get_raw()),
+    # The settings frame opens the session; without it the radio ignores
+    # TX frequencies. Its values are not applied by the radio.
+    _status(radio, 0, len(used) + 1, "Starting write")
+    reply = link.transact(session_settings_frame(mem.settings.get_raw()),
                           TIMEOUT_WRITE, want_data=False)
     if reply != CTRL_ACK:
-        raise errors.RadioError("Radio refused the settings")
+        raise errors.RadioError("Radio refused the write session")
 
+    # Sequence numbers start at 2, as in the vendor tool
     seq = 2
     for count, index in enumerate(used, 1):
-        frame = build_channel_frame(index, seq, mem.channels[index],
-                                    mem.settings)
+        frame = build_channel_frame(index, seq, mem.channels[index])
         seq += 1
         reply = link.transact(frame, TIMEOUT_WRITE, want_data=False)
         if reply != CTRL_ACK:
             raise errors.RadioError("Radio refused channel %i" % (index + 1))
-        _status(radio, count, len(used) + 1, "Writing channels")
+        _status(radio, count + 1, len(used) + 1, "Writing channels")
 
     # The vendor tool sends COMPLETE and ignores the answer.
     link.pipe.write(CTRL_COMPLETE)
@@ -381,9 +418,11 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
         rp.experimental = (
-            "This driver was written from the vendor programming software "
-            "and has not been tested with a real radio. Save a backup with "
-            "the vendor tool before uploading.")
+            "This driver was reverse engineered from the vendor programming "
+            "software and has only been partially tested with real radios. "
+            "It writes channels only; radio settings are shown read-only "
+            "because the radio does not apply them over the cable. Save a "
+            "backup with the vendor tool before uploading.")
         return rp
 
     def get_features(self):
@@ -400,9 +439,9 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
         rf.can_odd_split = True
         rf.valid_duplexes = ["", "-", "+", "split"]
         rf.valid_tmodes = ["", "Tone", "TSQL", "DTCS", "Cross"]
+        # "Tone->" is omitted: CHIRP reports TX-tone-only as plain "Tone"
         rf.valid_cross_modes = ["Tone->Tone", "Tone->DTCS", "DTCS->Tone",
-                                "DTCS->DTCS", "->Tone", "->DTCS", "Tone->",
-                                "DTCS->"]
+                                "DTCS->DTCS", "->Tone", "->DTCS", "DTCS->"]
         rf.valid_dtcs_codes = chirp_common.DTCS_CODES
         rf.valid_modes = MODES
         rf.valid_skips = []
@@ -460,6 +499,11 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
             _mem.set_raw(b"\x00" * 16)
             return
 
+        if not _mem.used:
+            # New channel: use the per-channel values real radios report
+            _mem.set_raw(b"\x00" * 16)
+            (_mem.power, _mem.companding,
+             _mem.scrambler) = DEFAULT_CHANNEL_EXTRAS
         _mem.used = 1
         _mem.rxfreq = mem.freq // 10
         _mem.txfreq = self._tx_freq(mem) // 10
@@ -482,90 +526,76 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
 
     def validate_memory(self, mem):
         msgs = super().validate_memory(mem)
-        band = BANDS.get(int(self._memobj.settings.freq_range))
-        if band and not mem.empty:
-            lo, hi = band
-            for freq in (mem.freq, self._tx_freq(mem)):
-                if not lo <= freq < hi:
-                    msgs.append(chirp_common.ValidationWarning(
-                        "Frequency %s is outside this radio's band (%s)" % (
-                            chirp_common.format_freq(freq),
-                            FREQ_RANGES[int(self._memobj.settings
-                                            .freq_range)])))
-                    break
+        freq_range = int(self._memobj.settings.freq_range)
+        if freq_range not in BANDS or mem.empty:
+            return msgs
+        lo, hi = BANDS[freq_range]
+        for freq in (mem.freq, self._tx_freq(mem)):
+            if not lo <= freq < hi:
+                msgs.append(chirp_common.ValidationWarning(
+                    "Frequency %s is outside this radio's band (%s)" % (
+                        chirp_common.format_freq(freq),
+                        FREQ_RANGES[freq_range])))
+                break
         return msgs
 
-    def _list_setting(self, name, label, options, index):
-        known = 0 <= index < len(options)
-        value = RadioSettingValueList(options,
-                                      current_index=index if known else 0)
-        return RadioSetting(name, label, value), known
-
     def get_settings(self):
+        """All settings are read-only: the radio does not apply the values
+        in a settings frame (see session_settings_frame)."""
         _set = self._memobj.settings
-        info = RadioSettingGroup("info", "Radio Information")
-        basic = RadioSettingGroup("basic", "Basic Settings")
-        top = RadioSettings(basic, info)
+        raw = bytes(_set.get_raw())
+        info = RadioSettingGroup("info", "Radio Settings (read-only)")
+        top = RadioSettings(info)
 
-        for name, label in (("model", "Model"), ("serial", "Serial number")):
-            raw = bytes(getattr(_set, name).get_raw())
-            text = "".join(chr(b) if 32 <= b < 127 else " " for b in raw)
-            value = RadioSettingValueString(0, len(raw), text.rstrip(),
-                                            autopad=False)
-            value.set_mutable(False)
-            info.append(RadioSetting(name, label, value))
+        def text(data):
+            return "".join(chr(b) if 32 <= b < 127 else " "
+                           for b in data).rstrip()
 
-        freq_range = int(_set.freq_range)
-        value = RadioSettingValueList(
-            FREQ_RANGES, current_index=min(freq_range, 2))
-        value.set_mutable(False)
-        info.append(RadioSetting("freq_range", "Frequency range", value))
+        def not_set(value):
+            return "Not set (0x%02X)" % value
 
-        tot = int(_set.tot)
-        tot_index = tot // 10 - 3 if tot % 10 == 0 else -1
-        candidates = [
-            ("tot", "Time-out timer", TOT_LIST, tot_index),
-            ("vox", "VOX level", VOX_LIST, int(_set.vox)),
-            ("squelch", "Squelch level", SQUELCH_LIST,
-             int(_set.squelch) - 1),
-            ("group", "Group", GROUP_LIST, int(_set.group) - 1),
-            ("power_mode", "Power", POWER_MODES, int(_set.power_mode)),
-            ("voice_language", "Voice prompt language", VOICE_LANGUAGES,
-             int(_set.voice_language)),
-        ]
-        for name, label, options, index in candidates:
-            setting, known = self._list_setting(name, label, options, index)
-            if not known:
-                # Leave values we do not understand untouched.
-                LOG.debug("Setting %s has unknown raw value", name)
-                continue
-            basic.append(setting)
+        def describe(name, value):
+            if name == "freq_range":
+                return FREQ_RANGES.get(value, not_set(value))
+            if name == "tot":
+                return ("%is" % value if value % 10 == 0 and
+                        30 <= value <= 180 else not_set(value))
+            if name == "vox":
+                return ("Off" if value == 0 else "%i" % value
+                        if value <= 5 else not_set(value))
+            if name == "squelch":
+                return "%i" % value if 1 <= value <= 9 else not_set(value)
+            if name == "group":
+                return ("CH%i" % value if 1 <= value <= NUM_CHANNELS
+                        else not_set(value))
+            if name == "voice_language":
+                return VOICE_LANGUAGES.get(value, not_set(value))
+            return "%i" % value if value != 0xFF else not_set(value)
 
-        userid = "".join(chr(b) if 32 <= b < 127 else " "
-                         for b in bytes(_set.userid.get_raw()))
-        basic.append(RadioSetting(
-            "userid", "User ID",
-            RadioSettingValueString(0, 6, userid.rstrip(), autopad=False,
-                                    charset="0123456789")))
+        rows = [("model", "Model", text(raw[0:6])),
+                ("serial", "Serial number", text(raw[12:22]))]
+        for name, label in (("freq_range", "Frequency range"),
+                            ("tot", "Time-out timer"),
+                            ("vox", "VOX level"),
+                            ("squelch", "Squelch level"),
+                            ("group", "Group channel"),
+                            ("voice_language", "Voice prompt language"),
+                            ("power_mode", "Power mode"),
+                            ("companding", "Companding"),
+                            ("scrambler", "Scrambler")):
+            rows.append((name, label, describe(name, int(getattr(_set,
+                                                                 name)))))
+        userid = raw[OFF_USERID:OFF_USERID + 6]
+        rows.append(("userid", "User ID",
+                     not_set(0xFF) if set(userid) == {0xFF} else text(userid)))
+
+        for name, label, value in rows:
+            setting_value = RadioSettingValueString(0, 32, value,
+                                                    autopad=False)
+            setting_value.set_mutable(False)
+            info.append(RadioSetting(name, label, setting_value))
         return top
 
     def set_settings(self, settings):
-        _set = self._memobj.settings
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
-            if not element.changed():
-                continue
-            name = element.get_name()
-            if name == "userid":
-                _set.userid.set_raw(
-                    str(element.value).ljust(6, "\x00")[:6].encode("ascii"))
-                continue
-            index = int(element.value)
-            if name == "tot":
-                _set.tot = (index + 3) * 10
-            elif name in ("squelch", "group"):
-                setattr(_set, name, index + 1)
-            elif name in ("vox", "power_mode", "voice_language"):
-                setattr(_set, name, index)
+        # Settings are read-only; see get_settings.
+        pass

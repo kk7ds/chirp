@@ -6,29 +6,59 @@ from chirp import errors
 from chirp import memmap
 from chirp.drivers import samcom_fpcn30a as sf
 
-# Exact packets extracted from the vendor tool's static data
-# (PttWRP.CreateWritePara_Cmd and the ACK/RESEND/COMPLETE commands).
+# Exact packet extracted from the vendor tool's static data
+# (PttWRP.CreateWritePara_Cmd); used here to check the checksum rule.
 VENDOR_WRITE_PARA = bytes.fromhex(
     "35 02 02 01 00 6a 29 5a 4e 4e 30 31 31 30 30 30 30 30 30 53 43 46 46"
     "46 46 46 46 46 46 01 3c 00 31 32 33 34 35 36 14 03 00 00 00 00 00 00"
     "00 00 10")
-SETTINGS_PAYLOAD = VENDOR_WRITE_PARA[7:7 + 41]
+
+# Settings block reported by a real FPCN30A (model ZW_U5W).
+FPCN30A_SETTINGS = bytes.fromhex(
+    "5a575f553557 303030303030 53430000000000000000"
+    "ff ff 00 ffffffffffff 14 03 ff ff ff ff ffffffff".replace(" ", ""))
+
+# Settings block of the same radio after its settings were blanked.
+FPCN30A_BLANKED = bytes.fromhex(
+    "5a575f553557 303030303030 5343ffffffffffffffff"
+    "ff ff 00 ffffffffffff 01 03 ff ff ff ff ffffffff".replace(" ", ""))
+
+# The session settings frame that, sent to that blanked radio, made it
+# accept a TX frequency change (and changed none of its settings).
+TESTED_SESSION_FRAME = bytes.fromhex(
+    "35 02 02 00 01 d5 29 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30"
+    "30 30 30 30 30 30 01 3c 00 00 00 00 00 00 00 01 03 00 00 00 01 00 00"
+    "00 00 10")
+
+# Channel 9 payload exactly as a real FPCN30A reported it: RX 462.625,
+# TX 467.625, tone index 13 both ways, 12.5K, power/companding/scrambler
+# 01/00/00.
+FPCN30A_CH9 = bytes.fromhex(
+    "09 00 46262500 46762500 0000 01 0d 0d 01 01 00 00"
+    "0000000000000000".replace(" ", ""))
 
 
-def channel_reply(number, rx_bcd, tx_bcd, rxtone, txtone, band):
-    """A channel frame as the vendor tool expects to read it."""
+def channel_reply(payload):
+    """A channel frame as the radio sends it."""
+    return sf.make_frame(0x01, 0x03, 0x0001, payload)
+
+
+def channel_payload(number, rx_bcd, tx_bcd, rxtone, txtone, band,
+                    extras=(1, 0, 0)):
     payload = bytearray(27)
     payload[0] = number
     payload[2:6] = rx_bcd
     payload[6:10] = tx_bcd
+    payload[12] = band
     payload[13] = rxtone
     payload[14] = txtone
     payload[15] = band
-    return sf.make_frame(0x01, 0x03, 0, bytes(payload))
+    payload[16:19] = bytes(extras)
+    return bytes(payload)
 
 
 class FakeRadio:
-    """Serial pipe emulating the radio side of the vendor protocol."""
+    """Serial pipe emulating the radio side of the protocol."""
 
     def __init__(self, channels=(), repeat_first=False):
         self.channels = list(channels)
@@ -43,8 +73,8 @@ class FakeRadio:
             self.outbox += sf.CTRL_REPEAT
             return
         if data == sf.CMD_READ_LOCAL_INFO:
-            self.outbox += sf.make_frame(0x01, 0x02, 0x0100,
-                                         SETTINGS_PAYLOAD)
+            self.outbox += sf.make_frame(0x01, 0x02, 0x0000,
+                                         FPCN30A_SETTINGS)
         elif data == sf.CTRL_ACK:
             self.outbox += (self.channels.pop(0) if self.channels
                             else sf.CTRL_COMPLETE)
@@ -62,16 +92,21 @@ def make_radio(pipe=None):
     radio = sf.SamcomFPCN30A(None)
     image = bytearray(sf.MEMSIZE)
     image[0:8] = sf.MAGIC
-    image[8:8 + 41] = SETTINGS_PAYLOAD
+    image[8:8 + 41] = FPCN30A_SETTINGS
     radio._mmap = memmap.MemoryMapBytes(bytes(image))
     radio.process_mmap()
     radio.pipe = pipe
     return radio
 
 
+def settings_values(radio):
+    return {s.get_name(): str(s.value)
+            for group in radio.get_settings() for s in group}
+
+
 @mock.patch.object(sf, "TIMEOUT_READ", 0.05)
 @mock.patch.object(sf, "TIMEOUT_WRITE", 0.05)
-class TestSamcomFreqTool(unittest.TestCase):
+class TestSamcomFPCN30A(unittest.TestCase):
     def test_vendor_packets_pass_frame_check(self):
         self.assertTrue(sf.check_frame(sf.CMD_READ_LOCAL_INFO))
         self.assertTrue(sf.check_frame(VENDOR_WRITE_PARA))
@@ -86,10 +121,12 @@ class TestSamcomFreqTool(unittest.TestCase):
 
     def test_download(self):
         pipe = FakeRadio([
-            channel_reply(1, bytes.fromhex("43812500"),
-                          bytes.fromhex("43812500"), 0, 0, 0),
-            channel_reply(3, bytes.fromhex("44600625"),
-                          bytes.fromhex("44110625"), 9, 51, 1),
+            channel_reply(channel_payload(1, bytes.fromhex("43812500"),
+                                          bytes.fromhex("43812500"),
+                                          0, 0, 0)),
+            channel_reply(channel_payload(3, bytes.fromhex("44600625"),
+                                          bytes.fromhex("44110625"),
+                                          9, 51, 1)),
         ])
         radio = make_radio(pipe)
         radio.sync_in()
@@ -126,7 +163,62 @@ class TestSamcomFreqTool(unittest.TestCase):
         with self.assertRaises(errors.RadioError):
             radio.sync_in()
 
-    def test_upload_matches_vendor_layout(self):
+    def test_real_channel_round_trips_byte_for_byte(self):
+        # A split channel read from a real radio must be written back with
+        # the identical payload (RX first, per-channel extras preserved).
+        radio = make_radio(FakeRadio([channel_reply(FPCN30A_CH9)]))
+        radio.sync_in()
+        mem = radio.get_memory(9)
+        self.assertEqual(462625000, mem.freq)
+        self.assertEqual("+", mem.duplex)
+        self.assertEqual(5000000, mem.offset)
+
+        pipe = FakeRadio()
+        radio.pipe = pipe
+        radio.sync_out()
+        _settings, channel_frame, complete = pipe.written
+        self.assertTrue(sf.check_frame(channel_frame))
+        self.assertEqual(bytes.fromhex("3502030002"), channel_frame[:5])
+        self.assertEqual(FPCN30A_CH9, channel_frame[7:7 + 27])
+        self.assertEqual(sf.CTRL_COMPLETE, complete)
+
+    def test_upload_session_order(self):
+        pipe = FakeRadio()
+        radio = make_radio(pipe)
+        for number in (2, 5):
+            mem = chirp_common.Memory(number)
+            mem.freq = 446006250
+            radio.set_memory(mem)
+        radio.sync_out()
+
+        frames = pipe.written
+        self.assertEqual(4, len(frames))
+        self.assertEqual(bytes.fromhex("3502020001"), frames[0][:5])
+        self.assertTrue(all(f[2] == 0x03 for f in frames[1:3]))  # channels
+        self.assertEqual([2, 5], [f[7] for f in frames[1:3]])
+        self.assertEqual([2, 3], [f[4] for f in frames[1:3]])    # sequence
+        self.assertEqual(sf.CTRL_COMPLETE, frames[3])
+
+    def test_session_frame_matches_frame_tested_on_radio(self):
+        self.assertEqual(TESTED_SESSION_FRAME,
+                         sf.session_settings_frame(FPCN30A_BLANKED))
+
+    def test_session_frame_never_contains_ff(self):
+        for settings in (FPCN30A_SETTINGS, FPCN30A_BLANKED, b"\xff" * 41):
+            frame = sf.session_settings_frame(settings)
+            self.assertTrue(sf.check_frame(frame))
+            self.assertNotIn(0xFF, frame[7:48])
+            self.assertEqual(b"0" * 22, frame[7:29])
+
+    def test_session_frame_keeps_valid_radio_values(self):
+        payload = sf.session_settings_frame(FPCN30A_SETTINGS)[7:48]
+        self.assertEqual(0, payload[24])           # VOX
+        self.assertEqual(20, payload[31])          # group channel
+        self.assertEqual(3, payload[32])           # squelch
+        self.assertEqual((1, 60, 0), (payload[22], payload[23],
+                                      payload[33]))  # vendor defaults
+
+    def test_upload_layout_rx_first(self):
         pipe = FakeRadio()
         radio = make_radio(pipe)
         mem = chirp_common.Memory(2)
@@ -139,32 +231,38 @@ class TestSamcomFreqTool(unittest.TestCase):
         radio.set_memory(mem)
         radio.sync_out()
 
-        settings_frame, channel_frame, complete = pipe.written
-        self.assertTrue(sf.check_frame(settings_frame))
-        self.assertEqual(bytes.fromhex("3502020001"), settings_frame[:5])
-        self.assertEqual(41, settings_frame[6])
-        self.assertEqual(b"0" * 22, settings_frame[7:29])   # vendor zeros
-        self.assertEqual(SETTINGS_PAYLOAD[22:37], settings_frame[29:44])
-        self.assertEqual(b"\x00" * 4, settings_frame[44:48])
-
+        channel_frame = pipe.written[1]
         self.assertTrue(sf.check_frame(channel_frame))
         self.assertEqual(35, len(channel_frame))
-        self.assertEqual(bytes.fromhex("3502030002"), channel_frame[:5])
         self.assertEqual(27, channel_frame[6])
         self.assertEqual(2, channel_frame[7])                # channel 2
-        # Vendor write order: TX in 9-12, RX in 13-16
-        self.assertEqual(bytes.fromhex("44110625"), channel_frame[9:13])
-        self.assertEqual(bytes.fromhex("44600625"), channel_frame[13:17])
+        self.assertEqual(bytes.fromhex("44600625"), channel_frame[9:13])
+        self.assertEqual(bytes.fromhex("44110625"), channel_frame[13:17])
         self.assertEqual(1, channel_frame[19])               # band
         self.assertEqual(13, channel_frame[20])              # 100.0 Hz
         self.assertEqual(13, channel_frame[21])
         self.assertEqual(1, channel_frame[22])               # band
+        # New channel gets the per-channel values real radios report
+        self.assertEqual(bytes([1, 0, 0]), channel_frame[23:26])
         self.assertEqual(sf.TERMINATOR, channel_frame[34])
 
-        self.assertEqual(sf.CTRL_COMPLETE, complete)
+    def test_editing_keeps_per_channel_extras(self):
+        radio = make_radio(FakeRadio([channel_reply(channel_payload(
+            4, bytes.fromhex("46256250"), bytes.fromhex("46256250"),
+            0, 0, 1, extras=(2, 1, 1)))]))
+        radio.sync_in()
+        mem = radio.get_memory(4)
+        mem.freq = 462587500
+        radio.set_memory(mem)
+        chan = radio._memobj.channels[3]
+        self.assertEqual((2, 1, 1), (int(chan.power), int(chan.companding),
+                                     int(chan.scrambler)))
 
     def test_upload_without_radio_fails(self):
         radio = make_radio(mock.Mock(read=lambda n: b"", write=lambda d: 0))
+        mem = chirp_common.Memory(1)
+        mem.freq = 446006250
+        radio.set_memory(mem)
         with self.assertRaises(errors.RadioError):
             radio.sync_out()
 
@@ -177,25 +275,23 @@ class TestSamcomFreqTool(unittest.TestCase):
         self.assertEqual(bytes.fromhex("43812500"),
                          bytes(radio._memobj.channels[0].rxfreq.get_raw()))
 
-    def test_settings_roundtrip(self):
+    def test_settings_are_read_only(self):
         radio = make_radio()
-        settings = radio.get_settings()
-        values = {s.get_name(): str(s.value)
-                  for group in settings for s in group}
-        self.assertEqual("ZNN011", values["model"])
-        self.assertEqual("SCFFFFFFFF", values["serial"])
-        self.assertEqual("406.1-470 MHz", values["freq_range"])
-        self.assertEqual("60s", values["tot"])
-        self.assertEqual("123456", values["userid"])
+        values = settings_values(radio)
+        self.assertEqual("ZW_U5W", values["model"])
+        self.assertEqual("SC", values["serial"])
+        self.assertEqual("Not set (0xFF)", values["freq_range"])
+        self.assertEqual("Not set (0xFF)", values["tot"])
+        self.assertEqual("Off", values["vox"])
         self.assertEqual("3", values["squelch"])
-        self.assertEqual("20", values["group"])
+        self.assertEqual("CH20", values["group"])
+        self.assertEqual("Not set (0xFF)", values["userid"])
+        self.assertEqual("Not set (0xFF)", values["power_mode"])
 
+        settings = radio.get_settings()
         for group in settings:
             for setting in group:
-                if setting.get_name() == "tot":
-                    setting.value = "120s"
-                elif setting.get_name() == "squelch":
-                    setting.value = "5"
+                self.assertFalse(setting.value.get_mutable())
+        before = bytes(radio._memobj.settings.get_raw())
         radio.set_settings(settings)
-        self.assertEqual(120, int(radio._memobj.settings.tot))
-        self.assertEqual(5, int(radio._memobj.settings.squelch))
+        self.assertEqual(before, bytes(radio._memobj.settings.get_raw()))
