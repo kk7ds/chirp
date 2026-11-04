@@ -360,7 +360,7 @@ class TestSamcomFPCN30A(unittest.TestCase):
         self.assertEqual("Not set (0xFF)", values["tot"])
         self.assertEqual("Off", values["vox"])
         self.assertEqual("3", values["squelch"])
-        self.assertEqual("CH20", values["group"])
+        self.assertEqual("CH20 (shown as CH0 on the radio)", values["group"])
         self.assertEqual("Not set (0xFF)", values["userid"])
         self.assertEqual("Not set (0xFF)", values["power_mode"])
 

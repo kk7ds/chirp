@@ -617,6 +617,9 @@ class SamcomFPCN30A(chirp_common.CloneModeRadio):
             if name == "squelch":
                 return "%i" % value if 1 <= value <= 9 else not_set(value)
             if name == "group":
+                if value == 20:
+                    # The radio's display shows channel 20 as "CH0"
+                    return "CH20 (shown as CH0 on the radio)"
                 return ("CH%i" % value if 1 <= value <= NUM_CHANNELS
                         else not_set(value))
             if name == "voice_language":
