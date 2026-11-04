@@ -19,8 +19,11 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install python3-pip python3-wxgtk4.0
-        sudo python${{ inputs.py_version }} -mpip install tox
+        sudo apt-get install python3-pip python3-wxgtk4.0 tox
+        if tox --version | grep ^3; then
+            sudo apt-get purge tox
+            sudo pip install tox==4.4.8
+        fi
     - name: Run tox
       shell: bash
       run: |
