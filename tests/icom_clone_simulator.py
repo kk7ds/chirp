@@ -34,6 +34,15 @@ class FakeIcomRadio(object):
     def __init__(self, radio, mapfile=None):
         self._buffer = bytes(b'')
         self._radio = radio
+        # The baud rate the "pipe" is set to, and the one the radio listens at
+        self.baudrate = radio.BAUD_RATE
+        self.radio_baud = radio.BAUD_RATE
+        # Whether the radio switches to 38400 when asked, and how many writes
+        # it ignores while doing so
+        self.accept_hispeed = True
+        self.settle_writes = 0
+        self.hispeed_requested = False
+        self._ignore = 0
         if not mapfile:
             self._memory = bytes(b'\x00') * radio.get_memsize()
         else:
@@ -144,6 +153,14 @@ class FakeIcomRadio(object):
         assert isinstance(
             data, bytes), 'Bytes required, %s received' % data.__class__
 
+        if self.baudrate != self.radio_baud:
+            LOG.debug('Radio cannot hear data sent at %i baud' %
+                      self.baudrate)
+            return len(data)
+        if self._ignore:
+            self._ignore -= 1
+            return len(data)
+
         while data.startswith(b'\xfe\xfe\xfe'):
             data = data[1:]
 
@@ -172,6 +189,10 @@ class FakeIcomRadio(object):
             self.do_clone_end()
         elif cmd == icf.CMD_CLONE_HISPEED:
             LOG.info('Got hispeed kicker')
+            self.hispeed_requested = True
+            if self.accept_hispeed:
+                self.radio_baud = 38400
+                self._ignore = self.settle_writes
         else:
             LOG.debug('Unknown command %i' % cmd)
             self.queue(self.make_response(0x00, bytes([0x01])))
