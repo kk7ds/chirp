@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 23:50-0400\n"
-"PO-Revision-Date: 2026-10-25 19:13+0100\n"
+"POT-Creation-Date: 2026-11-05 20:22+0100\n"
+"PO-Revision-Date: 2026-11-05 20:22+0100\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -862,7 +862,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
+#: ../drivers/tg_uv2p.py:237 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -878,7 +878,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
+#: ../drivers/tg_uv2p.py:245 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1087,6 +1087,12 @@ msgid ""
 "\n"
 "It may not work if you turn the radio on with the cable already attached."
 msgstr ""
+"1. Accendere la radio.\n"
+"2. Collegare il cavo al connettore microfono/altoparlante.\n"
+"3. Assicurati che il connettore sia inserito saldamente.\n"
+"4. Fare clic su OK per scaricare la configurazione dalla radio.\n"
+"\n"
+"L'operazione potrebbe non riuscire se la radio viene accesa con il cavo già collegato."
 
 #: ../drivers/uvk5_cn.py:512
 msgid ""
@@ -1097,6 +1103,12 @@ msgid ""
 "\n"
 "It may not work if you turn the radio on with the cable already attached."
 msgstr ""
+"1. Accendere la radio.\n"
+"2. Collegare il cavo al connettore microfono/altoparlante.\n"
+"3. Assicurati che il connettore sia inserito saldamente.\n"
+"4. Fare clic su OK per scaricare la configurazione dal dispositivo.\n"
+"\n"
+"L'operazione potrebbe non riuscire se la radio viene accesa con il cavo già collegato."
 
 #: ../wxui/main.py:2170
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
@@ -1150,7 +1162,7 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
+#: ../wxui/common.py:849 ../wxui/bugreport.py:345 ../wxui/bugreport.py:480
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
@@ -1391,12 +1403,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
+#: ../drivers/ft4.py:327 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
+#: ../drivers/ft4.py:328 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1647,7 +1659,7 @@ msgstr "Duplex"
 
 #: ../drivers/uvk5_cn.py:719
 msgid "EEPROM size"
-msgstr ""
+msgstr "Dimensione EEPROM"
 
 #: ../wxui/memedit.py:2373
 #, python-format
@@ -1828,7 +1840,7 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
 #: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
@@ -1898,7 +1910,7 @@ msgstr "Lavoro radio completato %s"
 
 #: ../drivers/uvk5_cn.py:712
 msgid "Firmware version"
-msgstr ""
+msgstr "Versione del firmware"
 
 #: ../drivers/ts590.py:685
 msgid ""
@@ -1960,11 +1972,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
+#: ../drivers/gmrsuv1.py:395 ../drivers/btech.py:636 ../drivers/uv6r.py:343
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:421
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2068,7 +2080,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendi la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:642
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2110,7 +2122,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2138,11 +2150,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:401
+#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:349
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:427
+#: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2188,9 +2200,9 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/tdh8.py:2540 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/mml_jc8810.py:1383
+#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:2249
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
@@ -2198,10 +2210,10 @@ msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
-#: ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/tdh8.py:2537 ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
+#: ../drivers/uv5r.py:2245
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
@@ -2287,11 +2299,13 @@ msgid ""
 "Image is %(image)i bytes from firmware %(image_fw)r (profile %(image_profile)s). The radio reports firmware %(radio_fw)r (profile %(radio_profile)s), which suggests %(default)i bytes, and the EEPROM size setting is %(size)i bytes.\n"
 "Load an image of the right size, or set the EEPROM size to the real size."
 msgstr ""
+"La configurazione occupa %(image)i byte ed è relativa al firmware %(image_fw)r (profilo %(image_profile)s). La radio segnala il firmware %(radio_fw)r (profilo %(radio_profile)s), che indica una dimensione prevista di %(default)i byte, mentre la dimensione impostata per la memoria EEPROM è di %(size)i byte.\n"
+"Caricare una configurazione della dimensione corretta oppure impostare la dimensione effettiva dell'EEPROM."
 
 #: ../drivers/uvk5_cn.py:584
 #, python-format
 msgid "Image is %(image)i bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares and writing there can destroy the radio. Use an image that stops before it."
-msgstr ""
+msgstr "La configurazione occupa %(image)i byte, ma questo driver scrive solo fino all'indirizzo 0x%(limit)x. Gli indirizzi da 0x%(limit)x in poi contengono il multi-bootloader di questi firmware e la scrittura in quest'area potrebbe danneggiare la radio. Utilizzare una configurazione che termini prima di tale indirizzo."
 
 #: ../wxui/main.py:1500
 msgid "Import"
@@ -2377,8 +2391,8 @@ msgstr "Errore interno del driver: tentativo di modifica di memoria bloccata; se
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/memedit.py:2049 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2417,7 +2431,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
+#: ../wxui/main.py:854 ../wxui/main.py:1644 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "Lingua"
 
@@ -2467,9 +2481,9 @@ msgstr "Limita uso"
 
 #: ../drivers/uvk5_cn.py:737
 msgid "Limits disabled for modified firmware"
-msgstr ""
+msgstr "Limiti disabilitati per il firmware modificato"
 
-#: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+#: ../drivers/baofeng_uv17Pro.py:682 ../drivers/ft450d.py:1274
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr "Limita la durata massima di una singola trasmissione. Allo scadere del tempo, la radio interrompe la trasmissione finché non viene rilasciato il PTT. In questo modo si evita il surriscaldamento e si impedisce che un PTT bloccato occupi il canale impedendo agli altri di comunicare."
 
@@ -2550,7 +2564,7 @@ msgstr "Le memorie sono di sola lettura a causa della versione del firmware non 
 #: ../wxui/bankedit.py:263
 #, python-format
 msgid "Memory %i could not be loaded, so its bank membership cannot be changed"
-msgstr "Impossibile caricare la memoria %i, quindi non è possibile modificarne l'appartenenza ai banchi."
+msgstr "Impossibile caricare la memoria %i, quindi non è possibile modificarne l'appartenenza ai banchi"
 
 #: ../wxui/memedit.py:2090
 #, python-format
@@ -2579,8 +2593,8 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "Modo"
 
@@ -2664,7 +2678,7 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
 #: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Nessun risultato"
@@ -2677,7 +2691,7 @@ msgstr "Nessun risultato!"
 msgid "No traces stored"
 msgstr "Nessuna traccia memorizzata"
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "Numero"
 
@@ -2822,7 +2836,7 @@ msgstr ""
 "In questa versione, è supportato solo un sottoinsieme\n"
 "delle oltre 130 impostazioni radio disponibili.\n"
 
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
 #: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Elaborazione"
@@ -2981,7 +2995,7 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_net.py:36 ../sources/przemienniki_eu.py:36
 #: ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Interrogazione"
@@ -3082,12 +3096,12 @@ msgstr "Memoria aggiornata %s"
 #: ../drivers/uvk5_cn.py:372
 #, python-format
 msgid "Refusing to read 0x%4.4x..0x%4.4x: this driver only reads below 0x%4.4x"
-msgstr ""
+msgstr "Lettura dell'intervallo 0x%4.4x..0x%4.4x rifiutata: questo driver consente la lettura solo fino all'indirizzo 0x%4.4x"
 
 #: ../drivers/uvk5_cn.py:399
 #, python-format
 msgid "Refusing to write 0x%4.4x..0x%4.4x: 0x%4.4x is the start of the multi-bootloader on this firmware and writing there can destroy the radio"
-msgstr ""
+msgstr "Scrittura dell'intervallo 0x%4.4x..0x%4.4x rifiutata: l'indirizzo 0x%4.4x corrisponde all'inizio del multi-bootloader di questo firmware. La scrittura in quest'area potrebbe danneggiare la radio"
 
 #: ../wxui/main.py:943
 msgid "Reload Driver"
@@ -3512,7 +3526,7 @@ msgstr "Imposta l'intervallo di silenzio tra i toni DTMF trasmessi. Aumenta ques
 
 #: ../drivers/ft450d.py:1294
 msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off."
-msgstr ""
+msgstr "Imposta il timer di timeout per i comandi di controllo inviati dal computer tramite il connettore CAT. Se l'invio dei comandi prosegue oltre il tempo impostato, viene interrotto."
 
 #: ../drivers/ft450d.py:1385
 msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
@@ -3549,7 +3563,7 @@ msgstr "Sposta leggermente la frequenza dell'orologio della CPU della radio. Uti
 
 #: ../drivers/ft450d.py:1775
 msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz."
-msgstr ""
+msgstr "Sposta la frequenza visualizzata sul display nelle modalità dati USER-L e USER-U del valore specificato, espresso in hertz."
 
 #: ../wxui/memedit.py:2335 ../wxui/developer.py:101
 msgid "Show Raw Memory"
@@ -3617,7 +3631,7 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
 #: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Ordinamento"
@@ -3683,12 +3697,12 @@ msgstr "La rete mondiale DMR-MARC"
 #: ../drivers/uvk5_cn.py:568
 #, python-format
 msgid "The EEPROM size is set to 0x%(size)x bytes, but this driver only reads below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares. Correct the \"EEPROM size\" setting."
-msgstr ""
+msgstr "La dimensione della memoria EEPROM è impostata su 0x%(size)x byte, ma questo driver consente la lettura solo fino all'indirizzo 0x%(limit)x. Gli indirizzi da 0x%(limit)x in poi contengono il multi-bootloader di questi firmware. Correggere l'impostazione \"Dimensione EEPROM\"."
 
 #: ../drivers/uvk5_cn.py:577
 #, python-format
 msgid "The EEPROM size is set to 0x%(size)x bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares. Correct the \"EEPROM size\" setting."
-msgstr ""
+msgstr "La dimensione della memoria EEPROM è impostata su 0x%(size)x byte, ma questo driver consente la scrittura solo fino all'indirizzo 0x%(limit)x. Gli indirizzi da 0x%(limit)x in poi contengono il multi-bootloader di questi firmware. Correggere l'impostazione \"Dimensione EEPROM\"."
 
 #: ../drivers/ft450d.py:422
 msgid ""
@@ -3751,12 +3765,12 @@ msgstr "L'editor della memoria richiede un ricaricamento, per modificare il flus
 #: ../drivers/uvk5_cn.py:697
 #, python-format
 msgid "The name needs more than the %i bytes this name field holds"
-msgstr ""
+msgstr "Il nome supera la lunghezza massima di %i byte consentita da questo campo"
 
 #: ../drivers/uvk5_cn.py:723
 #, python-format
 msgid "The profile %(profile)s suggests %(default)i bytes; this is only a guess and the radio is the authority. A loaded image sets this automatically, and anything at or above 0x%(limit)x is refused because that is the multi-bootloader region."
-msgstr ""
+msgstr "Il profilo %(profile)s indica una dimensione prevista di %(default)i byte. Si tratta solo di una stima: il valore effettivo deve essere verificato sulla radio. Il caricamento di una configurazione imposta automaticamente questo valore. Qualsiasi operazione all'indirizzo 0x%(limit)x o superiore viene rifiutata, poiché tale area è riservata al multi-bootloader."
 
 #: ../wxui/main.py:1491
 #, python-format
@@ -3773,7 +3787,7 @@ msgstr "Questo driver è stato testato con la versione 3 dell'ID-5100. Se la tua
 
 #: ../drivers/tyt_uvl15w.py:575
 msgid "This driver is built from TYT's published protocol and memory layout and has not yet been tested widely. Save a copy of a fresh download from your radio before uploading. The radio restarts at the end of every download and upload."
-msgstr ""
+msgstr "Questo driver è stato sviluppato sulla base del protocollo e della struttura della memoria pubblicati da TYT e non è stato ancora ampiamente testato. Prima di caricare una configurazione sulla radio, salvare una copia dei dati appena scaricati dalla radio stessa. Al termine di ogni operazione di download o upload, la radio si riavvia automaticamente."
 
 #: ../drivers/radtel_rt490.py:1356 ../drivers/radtel_rt490.py:1358
 #: ../drivers/radtel_rt490.py:1360
@@ -3814,6 +3828,12 @@ msgid ""
 "- The default EEPROM size is derived from the reported firmware version and is only a guess; check the \"EEPROM size\" setting against your radio before uploading.\n"
 "- Settings (keys, DTMF, MDC, scan lists, boot logo, satellite data, calibration) are not supported."
 msgstr ""
+"Questo è un driver sperimentale per le radio Quansheng UV-K5/UV-K6 che utilizzano firmware cinesi di terze parti con funzionalità estese (LOSEHU, LTS, UVE). Questi firmware memorizzano i nomi dei canali in formato GB2312 e utilizzano i comandi EEPROM con indirizzamento separato.\n"
+"\n"
+"Il driver è stato verificato su una sola radio con firmware LOSEHU131HS: sono state testate le operazioni di download, upload e rilettura dell'intera memoria. Altre versioni di questi firmware potrebbero comportarsi diversamente e una scrittura errata potrebbe danneggiare la radio. L'utilizzo è a proprio rischio e pericolo. Conservare sempre una copia dei dati scaricati dalla radio prima di apportare qualsiasi modifica: potrà essere utilizzata per ripristinare la configurazione originale.\n"
+"- La scrittura agli indirizzi pari o superiori a 0x40000 sovrascriverebbe il multi-bootloader installato in quest'area da alcuni di questi firmware. Per questo motivo, il driver non esegue mai scritture a tali indirizzi e rifiuta le configurazioni che si estendono fino a quest'area.\n"
+"- La dimensione EEPROM predefinita viene ricavata dalla versione del firmware segnalata dalla radio ed è soltanto una stima. Prima di eseguire un upload, verificare che l'impostazione «Dimensione EEPROM» corrisponda alla dimensione effettiva della memoria della radio.\n"
+"- Le impostazioni (tasti, DTMF, MDC, liste di scansione, logo di avvio, dati satellitari e calibrazione) non sono supportate."
 
 #: ../drivers/uvk5.py:694
 msgid ""
@@ -3915,7 +3935,7 @@ msgstr "Potenza di trasmissione"
 
 #: ../drivers/tyt_uvl15w.py:967
 msgid "Transmit frequency is outside the radio's transmit bands and may be refused by the radio"
-msgstr ""
+msgstr "La frequenza di trasmissione è al di fuori delle bande di trasmissione della radio e potrebbe essere rifiutata dalla radio stessa"
 
 #: ../wxui/memedit.py:160
 msgid "Transmit shift, split mode, or transmit inhibit"
@@ -4015,7 +4035,7 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
 #: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
@@ -4267,9 +4287,3 @@ msgstr "non specificato"
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "{bank} è pieno"
-
-#~ msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off. The radio shows the shortest setting as 10 ms."
-#~ msgstr "Imposta il timer di timeout per i comandi di controllo del computer ricevuti tramite la presa CAT. I comandi che continuano oltre questo intervallo vengono interrotti. La radio indica 10 ms come impostazione minima."
-
-#~ msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz. The radio accepts -3000 to +3000 Hz."
-#~ msgstr "Sposta della quantità di hertz impostata la frequenza visualizzata nelle modalità dati USER-L e USER-U. La radio accetta valori da -3000 a +3000 Hz."
