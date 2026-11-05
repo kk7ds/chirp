@@ -21,7 +21,8 @@ from chirp.drivers import yaesu_clone
 from chirp import chirp_common, memmap, directory, bitwise, errors
 from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueList, RadioSettingValueBoolean, \
-    RadioSettingValueString, RadioSettings, RadioSettingValueFloat
+    RadioSettingValueString, RadioSettings, RadioSettingValueFloat, \
+    RadioSettingValueMap
 
 from collections import defaultdict
 
@@ -1254,6 +1255,12 @@ class FT8900Radio(FTx800Radio):
     TMODES = ["", "Tone", "TSQL", "DTCS"]
     STEPS = STEPS
 
+    # Clone-image offsets, including the eight-byte header. Hyper memories
+    # save operating state; ordinary channels and preferential-scan flags
+    # are shared. Only the observed LEFT MR / RIGHT VFO pattern is writable.
+    _HYPER_BASE = 0x0288
+    _HYPER_STRIDE = 0xC0
+
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
@@ -1293,8 +1300,142 @@ class FT8900Radio(FTx800Radio):
                           (700000000, 985000000)]
         rf.memory_bounds = (1, 799)
         rf.has_tuning_step = False
+        rf.has_settings = True
 
         return rf
+
+    def _hyper_data(self):
+        data = self._mmap.get_byte_compatible().get_packed()
+        if len(data) != self._memsize or data[:5] != self._model:
+            raise errors.RadioError('Not a complete FT-8900 image')
+        # Ordinary memory edits may leave the checksum pending until upload.
+        # Reading settings must not reject those otherwise valid images.
+        return data
+
+    def _hyper_supported(self, data, slot):
+        base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
+        index = int.from_bytes(data[base + 0x94:base + 0x96], 'little')
+        # 0x9D contains both the observed MR flag and the MEM/MSM bit.
+        # Other operating-mode patterns are deliberately not modified.
+        return (data[base + 0x90:base + 0x94] == b'\x02\x00\x00\x00' and
+                data[base + 0x96:base + 0x98] == b'\x00\x00' and
+                data[base + 0x9D] in (0x08, 0x0A) and
+                0 <= index < 799 and not self.get_memory(index + 1).empty)
+
+    def _hyper_channels(self):
+        channels = {}
+        for number in range(1, 800):
+            memory = self.get_memory(number)
+            if not memory.empty:
+                channels[number] = '%03i %s (%.6f MHz)' % (
+                    number, memory.name, memory.freq / 1e6)
+        return channels
+
+    @staticmethod
+    def _hyper_readonly(name, label, text):
+        value = RadioSettingValueString(
+            0, max(16, len(text)), text, autopad=False)
+        value.set_mutable(False)
+        setting = RadioSetting(name, label, value)
+        setting.set_doc(text)
+        return setting
+
+    def get_settings(self):
+        data = self._hyper_data()
+        channels = self._hyper_channels()
+        groups = []
+        for slot in range(1, 7):
+            base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
+            group = RadioSettingGroup(f'hyper{slot}', f'Hyper Memory {slot}')
+            main = 0 if data[base + 0x9B] & 0x80 else 1
+            if not self._hyper_supported(data, slot):
+                group.append(self._hyper_readonly(
+                    f'hyper{slot}_status', 'Editing',
+                    'Read only: this operating-mode pattern or stored channel '
+                    'is not supported. Configure LEFT memory / RIGHT VFO on '
+                    'the radio and store the hyper memory first.'))
+                group.append(self._hyper_readonly(
+                    f'hyper{slot}_main_view', 'MAIN (read only)',
+                    ['Left', 'Right'][main]))
+                groups.append(group)
+                continue
+            current = int.from_bytes(
+                data[base + 0x94:base + 0x96], 'little') + 1
+            group.append(self._hyper_readonly(
+                f'hyper{slot}_mode', 'Left mode', 'Memory'))
+            memory = RadioSetting(
+                f'hyper{slot}_memory', 'Left start channel',
+                RadioSettingValueMap(
+                    [(label, number) for number, label in channels.items()],
+                    mem_val=current))
+            memory.set_doc('Memory channel recalled on the left side. '
+                           'Only existing, non-empty channels are listed.')
+            group.append(memory)
+            main_setting = RadioSetting(
+                f'hyper{slot}_main', 'MAIN',
+                RadioSettingValueList(['Left', 'Right'], current_index=main))
+            main_setting.set_doc('Side selected as MAIN when recalled.')
+            group.append(main_setting)
+            scan_index = (data[base + 0x9D] >> 1) & 1
+            scan = RadioSetting(
+                f'hyper{slot}_scan', 'Memory scan',
+                RadioSettingValueList(['MEM', 'MSM'],
+                                      current_index=scan_index))
+            scan.set_doc('MEM scans normal memories; MSM scans preferential '
+                         'memories. Preferential-channel flags are shared '
+                         'between all hyper memories; these are not '
+                         'separate scan banks.')
+            group.append(scan)
+            groups.append(group)
+        return RadioSettings(*groups)
+
+    def set_settings(self, settings):
+        original = self._hyper_data()
+        payload = bytearray(original)
+        channels = self._hyper_channels()
+        seen = set()
+        for setting in settings.walk():
+            if not setting.changed():
+                continue
+            name = setting.get_name()
+            match = re.fullmatch(r'hyper([1-6])[_](memory|main|scan)', name)
+            if not match or name in seen:
+                raise errors.RadioError(
+                    'Unsupported or duplicate hyper setting: %s' % name)
+            seen.add(name)
+            slot, field = int(match[1]), match[2]
+            if not self._hyper_supported(original, slot):
+                raise errors.RadioError(
+                    'Hyper memory %i configuration is not supported' % slot)
+            base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
+            value = str(setting.value)
+            if field == 'memory':
+                if not isinstance(setting.value, RadioSettingValueMap):
+                    raise errors.RadioError(
+                        'Choose an existing memory channel')
+                # The label may be stale after an ordinary-channel edit.
+                # Select by its stable channel number and recheck existence.
+                number = setting.value.get_mem_val()
+                if number not in channels:
+                    raise errors.RadioError(
+                        'Choose an existing memory channel')
+                word = (number - 1).to_bytes(2, 'little')
+                payload[base + 0x94:base + 0x96] = word
+            elif field == 'main':
+                if value not in ('Left', 'Right'):
+                    raise errors.RadioError('MAIN must be Left or Right')
+                payload[base + 0x9B] = ((payload[base + 0x9B] & 0x7F) |
+                                        (0x80 if value == 'Left' else 0))
+            else:
+                if value not in ('MEM', 'MSM'):
+                    raise errors.RadioError('Memory scan must be MEM or MSM')
+                payload[base + 0x9D] = ((payload[base + 0x9D] & ~0x02) |
+                                        (0x02 if value == 'MSM' else 0))
+        if seen:
+            payload[-1] = sum(payload[:-1]) % 256
+            # Validate the whole request before committing any bytes. Keep
+            # the map object so ordinary-channel bitwise views remain valid.
+            self._mmap.get_byte_compatible().set(0, bytes(payload))
 
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x39C7)]
