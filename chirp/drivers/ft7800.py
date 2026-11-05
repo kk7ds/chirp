@@ -432,10 +432,12 @@ class FTx800Radio(yaesu_clone.YaesuCloneModeRadio):
 
     def get_memory(self, number):
         _mem = self._memobj.memory[number - 1]
+        return self._decode_memory(number, _mem)
 
+    def _decode_memory(self, number, _mem, always_used=False):
         mem = chirp_common.Memory()
         mem.number = number
-        mem.empty = not _mem.used
+        mem.empty = not (always_used or _mem.used)
         if mem.empty:
             return mem
 
@@ -1207,9 +1209,8 @@ class FT8800RadioRight(FT8800Radio):
         return rf
 
 
-MEM_FORMAT_8900 = """
-#seekto 0x0708;
-struct {
+MEM_RECORD_8900 = """
+struct mem_struct {
   u8 used:1,
      skip:2,
      sub_used:1,
@@ -1227,17 +1228,17 @@ struct {
   u8 namevalid:1,
      dtcs:7;
   u8 name[6];
-} memory[799];
+};
+"""
 
-#seekto 0x51C8;
-struct {
-  u8 skip0:2,
-     skip1:2,
-     skip2:2,
-     skip3:2;
-} flags[400];
+MEM_FORMAT_8900 = MEM_RECORD_8900 + """
+#seekto 0x0208;
+struct mem_struct homes[7];
 
-#seekto 0x7B48;
+#seekto 0x0708;
+struct mem_struct memory[799];
+struct mem_struct pms[10];
+u8 reserved[0x30];
 u8 checksum;
 """
 
@@ -1260,6 +1261,21 @@ class FT8900Radio(FTx800Radio):
     # are shared. Only the observed LEFT MR / RIGHT VFO pattern is writable.
     _HYPER_BASE = 0x0288
     _HYPER_STRIDE = 0xC0
+
+    _SPECIAL_MEMORIES = {
+        'L1': 800, 'U1': 801, 'L2': 802, 'U2': 803,
+        'L3': 804, 'U3': 805, 'L4': 806, 'U4': 807,
+        'L5': 808, 'U5': 809,
+        'HOME 29': 810, 'HOME 50': 811, 'HOME 144': 812,
+        'HOME 350': 813, 'HOME 430': 814, 'HOME 850': 815,
+    }
+    # The 223 MHz record between 144 and 350 is not an operating band.
+    _HOME_SLOTS = ((0, (28000000, 29700000)),
+                   (1, (50000000, 54000000)),
+                   (2, (108000000, 180000000)),
+                   (4, (320000000, 399999999)),
+                   (5, (400000000, 480000000)),
+                   (6, (700000000, 985000000)))
 
     @classmethod
     def get_prompts(cls):
@@ -1301,6 +1317,7 @@ class FT8900Radio(FTx800Radio):
         rf.memory_bounds = (1, 799)
         rf.has_tuning_step = False
         rf.has_settings = True
+        rf.valid_special_chans = list(self._SPECIAL_MEMORIES)
 
         return rf
 
@@ -1440,6 +1457,139 @@ class FT8900Radio(FTx800Radio):
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x39C7)]
 
+    def _special_record(self, number):
+        if isinstance(number, str):
+            try:
+                number = self._SPECIAL_MEMORIES[number]
+            except KeyError:
+                raise errors.InvalidMemoryLocation(number)
+        if 1 <= number <= 799:
+            return None
+        labels = {value: key for key, value in self._SPECIAL_MEMORIES.items()}
+        if number not in labels:
+            raise errors.InvalidMemoryLocation(number)
+        if number < 810:
+            index = number - 800
+            return (number, labels[number], self._memobj.pms[index],
+                    0x38F8 + 16 * index, None)
+        index, band = self._HOME_SLOTS[number - 810]
+        return (number, labels[number], self._memobj.homes[index],
+                0x0208 + 16 * index, band)
+
+    def get_raw_memory(self, number):
+        special = self._special_record(number)
+        if special:
+            return repr(special[2])
+        return super().get_raw_memory(number)
+
+    def get_memory(self, number):
+        special = self._special_record(number)
+        if special is None:
+            return super().get_memory(number)
+        number, label, record, offset, home_band = special
+        memory = self._decode_memory(
+            number, record, always_used=bool(home_band))
+        memory.extd_number = label
+        if not memory.empty:
+            levels = (self.POWER_LEVELS_UHF if 400000000 <= memory.freq <=
+                      480000000 else self.POWER_LEVELS_VHF)
+            memory.power = levels[int(record.power)]
+        # Only frequency and power have HOME isolation captures. PMS also
+        # supports removing an inherited repeater shift and toggling used.
+        memory.immutable = [
+            'number', 'extd_number', 'name', 'skip', 'mode', 'offset',
+            'tmode', 'rtone', 'ctone', 'dtcs', 'rx_dtcs', 'cross_mode',
+            'dtcs_polarity', 'tuning_step',
+        ]
+        if home_band:
+            memory.immutable.extend(['empty', 'duplex'])
+        return memory
+
+    def _special_frequency_error(self, freq, home_band):
+        bands = [home_band] if home_band else self.get_features().valid_bands
+        if not any(low <= freq <= high for low, high in bands):
+            return 'Frequency is outside this channel\'s operating band'
+        if freq % 2500:
+            return 'Frequency must be a multiple of 2.5 kHz'
+
+    def validate_memory(self, memory):
+        messages = super().validate_memory(memory)
+        special = self._special_record(memory.number)
+        if special and not memory.empty:
+            problem = self._special_frequency_error(memory.freq, special[4])
+            if problem:
+                messages.append(chirp_common.ValidationError(problem))
+        return messages
+
+    def _set_special_memory(self, memory, special):
+        original = self._hyper_data()
+        number, label, record, offset, home_band = special
+        before = self.get_memory(number)
+        if home_band and memory.empty:
+            raise errors.RadioError('HOME channels cannot be deleted')
+        if memory.extd_number and memory.extd_number != label:
+            raise errors.RadioError(
+                'Special channel name does not match number')
+        scratch = memmap.MemoryMapBytes(record.get_raw(asbytes=True))
+        target = bitwise.parse(MEM_RECORD_8900 +
+                               '\nstruct mem_struct record;', scratch).record
+        if memory.empty:
+            target.used = 0
+        else:
+            for field in before.immutable:
+                if field not in ('number', 'extd_number') and (
+                        getattr(memory, field) != getattr(before, field)):
+                    raise errors.RadioError(
+                        'Editing %s is not supported on %s' % (field, label))
+            problem = self._special_frequency_error(memory.freq, home_band)
+            if problem:
+                raise errors.RadioError(problem)
+            if not home_band and memory.duplex not in ('', before.duplex):
+                raise errors.RadioError('PMS shifts may only be cleared')
+            levels = (self.POWER_LEVELS_UHF if 400000000 <= memory.freq <=
+                      480000000 else self.POWER_LEVELS_VHF)
+            if memory.power is not None:
+                try:
+                    target.power = levels.index(memory.power)
+                except ValueError:
+                    raise errors.RadioError('Unsupported power level')
+            set_freq(memory.freq, target, 'freq')
+            if not home_band:
+                target.used = 1
+                target.sub_used = int(108000000 <= memory.freq <= 480000000)
+                if memory.duplex != before.duplex:
+                    target.duplex = 0
+        payload = bytearray(original)
+        payload[offset:offset + 16] = scratch.get_packed()
+        if payload != original:
+            payload[-1] = sum(payload[:-1]) % 256
+            self._mmap.get_byte_compatible().set(0, bytes(payload))
+
+    def _validate_pms_pairs(self):
+        # Validate the current map even if it was assigned without parsing
+        # (for example, after a failed download or in clone error handling).
+        data = self._hyper_data()
+        records = bitwise.parse(
+            MEM_RECORD_8900 + '\nstruct mem_struct pms[10];',
+            memmap.MemoryMapBytes(data[0x38F8:0x3998])).pms
+        for pair in range(5):
+            lower = records[2 * pair]
+            upper = records[2 * pair + 1]
+            if not lower.used or not upper.used:
+                continue
+            low = get_freq(int(lower.freq) * 10000)
+            high = get_freq(int(upper.freq) * 10000)
+            if low >= high or not any(
+                    start <= low < high <= end
+                    for index, (start, end) in self._HOME_SLOTS):
+                raise errors.RadioError(
+                    'PMS pair %i requires lower < upper within one band' %
+                    (pair + 1))
+
+    def sync_out(self):
+        self._validate_pms_pairs()
+        return super().sync_out()
+
     def _get_mem_offset(self, mem, _mem):
         if mem.duplex == "split":
             return get_freq(int(_mem.split) * 10000)
@@ -1485,6 +1635,9 @@ class FT8900Radio(FTx800Radio):
         _mem.skip = SKIPS.index(mem.skip)
 
     def set_memory(self, mem):
+        special = self._special_record(mem.number)
+        if special:
+            return self._set_special_memory(mem, special)
         FT8800Radio.set_memory(self, mem)
 
         # The 8900 has a bit flag that tells the radio whether or not
