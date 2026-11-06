@@ -1136,6 +1136,9 @@ class ChirpMain(wx.Frame):
             self.Bind(wx.EVT_MENU, self._menu_open_recent, mi)
 
     def _editor_page_changed(self, event):
+        if self._editors.GetPageCount() <= 0:
+            # No pages
+            return
         self._editors.GetPage(event.GetSelection())
         self._update_window_for_editor()
         editors = self._editors.GetPage(event.GetSelection())
