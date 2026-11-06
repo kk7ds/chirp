@@ -48,6 +48,10 @@ class FakeLiveRadio(chirp_common.LiveRadio):
         rset = settings.RadioSetting("hex", "Hex Value", rs)
         rset.set_doc("Enter a hex value (0-0xffff)")
         m.extra.append(rset)
+        rs = settings.RadioSettingValueDTMF(0, 16, '#*CADD')
+        rset = settings.RadioSetting("dtmf", "DTMF Value", rs)
+        rset.set_doc("Enter a DTMF value (0-16 chars)")
+        m.extra.append(rset)
 
         if isinstance(m, chirp_common.Memory) and m.number != number:
             LOG.error('fake driver found %i instead of %i',
