@@ -1209,7 +1209,7 @@ class FT8800RadioRight(FT8800Radio):
         return rf
 
 
-MEM_RECORD_8900 = """
+MEM_FORMAT_8900 = """
 struct mem_struct {
   u8 used:1,
      skip:2,
@@ -1229,13 +1229,27 @@ struct mem_struct {
      dtcs:7;
   u8 name[6];
 };
-"""
 
-MEM_FORMAT_8900 = MEM_RECORD_8900 + """
 #seekto 0x0208;
 struct mem_struct homes[7];
 
-#seekto 0x0708;
+#seekto 0x0288;
+struct {
+  u8 unknown_vfos[0x90];
+  u8 left_mode;
+  u8 unknown_mode[3];
+  ul16 left_memory;
+  u8 unknown_right[2];
+  u8 unknown_state[3];
+  u8 main_left:1,
+     unknown_main:7;
+  u8 unknown_9c;
+  u8 mode_flags:6,
+     preferential_scan:1,
+     unknown_scan:1;
+  u8 unknown_tail[0x22];
+} hyper[6];
+
 struct mem_struct memory[799];
 struct mem_struct pms[10];
 u8 reserved[0x30];
@@ -1255,12 +1269,6 @@ class FT8900Radio(FTx800Radio):
     MODES = ["FM", "NFM", "AM"]
     TMODES = ["", "Tone", "TSQL", "DTCS"]
     STEPS = STEPS
-
-    # Clone-image offsets, including the eight-byte header. Hyper memories
-    # save operating state; ordinary channels and preferential-scan flags
-    # are shared. Only the observed LEFT MR / RIGHT VFO pattern is writable.
-    _HYPER_BASE = 0x0288
-    _HYPER_STRIDE = 0xC0
 
     _SPECIAL_MEMORIES = {
         'L1': 800, 'U1': 801, 'L2': 802, 'U2': 803,
@@ -1321,22 +1329,15 @@ class FT8900Radio(FTx800Radio):
 
         return rf
 
-    def _hyper_data(self):
-        data = self._mmap.get_byte_compatible().get_packed()
-        if len(data) != self._memsize or data[:5] != self._model:
-            raise errors.RadioError('Not a complete FT-8900 image')
-        # Ordinary memory edits may leave the checksum pending until upload.
-        # Reading settings must not reject those otherwise valid images.
-        return data
-
-    def _hyper_supported(self, data, slot):
-        base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
-        index = int.from_bytes(data[base + 0x94:base + 0x96], 'little')
-        # 0x9D contains both the observed MR flag and the MEM/MSM bit.
-        # Other operating-mode patterns are deliberately not modified.
-        return (data[base + 0x90:base + 0x94] == b'\x02\x00\x00\x00' and
-                data[base + 0x96:base + 0x98] == b'\x00\x00' and
-                data[base + 0x9D] in (0x08, 0x0A) and
+    def _hyper_supported(self, hyper):
+        index = int(hyper.left_memory)
+        # Only LEFT memory / RIGHT VFO was mapped with physical captures.
+        # Keep unverified mode combinations read-only, including variants
+        # distinguished by the adjacent, otherwise unknown state fields.
+        return (hyper.left_mode == 2 and
+                not any(hyper.unknown_mode) and
+                not any(hyper.unknown_right) and
+                hyper.mode_flags == 2 and not hyper.unknown_scan and
                 0 <= index < 799 and not self.get_memory(index + 1).empty)
 
     def _hyper_channels(self):
@@ -1358,14 +1359,12 @@ class FT8900Radio(FTx800Radio):
         return setting
 
     def get_settings(self):
-        data = self._hyper_data()
         channels = self._hyper_channels()
         groups = []
-        for slot in range(1, 7):
-            base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
+        for slot, hyper in enumerate(self._memobj.hyper, 1):
             group = RadioSettingGroup(f'hyper{slot}', f'Hyper Memory {slot}')
-            main = 0 if data[base + 0x9B] & 0x80 else 1
-            if not self._hyper_supported(data, slot):
+            main = 0 if hyper.main_left else 1
+            if not self._hyper_supported(hyper):
                 group.append(self._hyper_readonly(
                     f'hyper{slot}_status', 'Editing',
                     'Read only: this operating-mode pattern or stored channel '
@@ -1376,8 +1375,7 @@ class FT8900Radio(FTx800Radio):
                     ['Left', 'Right'][main]))
                 groups.append(group)
                 continue
-            current = int.from_bytes(
-                data[base + 0x94:base + 0x96], 'little') + 1
+            current = int(hyper.left_memory) + 1
             group.append(self._hyper_readonly(
                 f'hyper{slot}_mode', 'Left mode', 'Memory'))
             memory = RadioSetting(
@@ -1393,11 +1391,11 @@ class FT8900Radio(FTx800Radio):
                 RadioSettingValueList(['Left', 'Right'], current_index=main))
             main_setting.set_doc('Side selected as MAIN when recalled.')
             group.append(main_setting)
-            scan_index = (data[base + 0x9D] >> 1) & 1
             scan = RadioSetting(
                 f'hyper{slot}_scan', 'Memory scan',
                 RadioSettingValueList(['MEM', 'MSM'],
-                                      current_index=scan_index))
+                                      current_index=int(
+                                          hyper.preferential_scan)))
             scan.set_doc('MEM scans normal memories; MSM scans preferential '
                          'memories. Preferential-channel flags are shared '
                          'between all hyper memories; these are not '
@@ -1407,10 +1405,9 @@ class FT8900Radio(FTx800Radio):
         return RadioSettings(*groups)
 
     def set_settings(self, settings):
-        original = self._hyper_data()
-        payload = bytearray(original)
         channels = self._hyper_channels()
         seen = set()
+        changes = []
         for setting in settings.walk():
             if not setting.changed():
                 continue
@@ -1421,10 +1418,10 @@ class FT8900Radio(FTx800Radio):
                     'Unsupported or duplicate hyper setting: %s' % name)
             seen.add(name)
             slot, field = int(match[1]), match[2]
-            if not self._hyper_supported(original, slot):
+            hyper = self._memobj.hyper[slot - 1]
+            if not self._hyper_supported(hyper):
                 raise errors.RadioError(
                     'Hyper memory %i configuration is not supported' % slot)
-            base = self._HYPER_BASE + (slot - 1) * self._HYPER_STRIDE
             value = str(setting.value)
             if field == 'memory':
                 if not isinstance(setting.value, RadioSettingValueMap):
@@ -1436,23 +1433,20 @@ class FT8900Radio(FTx800Radio):
                 if number not in channels:
                     raise errors.RadioError(
                         'Choose an existing memory channel')
-                word = (number - 1).to_bytes(2, 'little')
-                payload[base + 0x94:base + 0x96] = word
+                changes.append((hyper, 'left_memory', number - 1))
             elif field == 'main':
                 if value not in ('Left', 'Right'):
                     raise errors.RadioError('MAIN must be Left or Right')
-                payload[base + 0x9B] = ((payload[base + 0x9B] & 0x7F) |
-                                        (0x80 if value == 'Left' else 0))
+                changes.append((hyper, 'main_left', value == 'Left'))
             else:
                 if value not in ('MEM', 'MSM'):
                     raise errors.RadioError('Memory scan must be MEM or MSM')
-                payload[base + 0x9D] = ((payload[base + 0x9D] & ~0x02) |
-                                        (0x02 if value == 'MSM' else 0))
-        if seen:
-            payload[-1] = sum(payload[:-1]) % 256
-            # Validate the whole request before committing any bytes. Keep
-            # the map object so ordinary-channel bitwise views remain valid.
-            self._mmap.get_byte_compatible().set(0, bytes(payload))
+                changes.append((hyper, 'preferential_scan', value == 'MSM'))
+        # Validate all requested values before changing the mapped fields.
+        for hyper, field, value in changes:
+            setattr(hyper, field, value)
+        if changes:
+            self.update_checksums()
 
     def _checksums(self):
         return [yaesu_clone.YaesuChecksum(0x0000, 0x39C7)]
@@ -1471,10 +1465,10 @@ class FT8900Radio(FTx800Radio):
         if number < 810:
             index = number - 800
             return (number, labels[number], self._memobj.pms[index],
-                    0x38F8 + 16 * index, None)
+                    None)
         index, band = self._HOME_SLOTS[number - 810]
         return (number, labels[number], self._memobj.homes[index],
-                0x0208 + 16 * index, band)
+                band)
 
     def get_raw_memory(self, number):
         special = self._special_record(number)
@@ -1486,7 +1480,7 @@ class FT8900Radio(FTx800Radio):
         special = self._special_record(number)
         if special is None:
             return super().get_memory(number)
-        number, label, record, offset, home_band = special
+        number, label, record, home_band = special
         memory = self._decode_memory(
             number, record, always_used=bool(home_band))
         memory.extd_number = label
@@ -1516,62 +1510,60 @@ class FT8900Radio(FTx800Radio):
         messages = super().validate_memory(memory)
         special = self._special_record(memory.number)
         if special and not memory.empty:
-            problem = self._special_frequency_error(memory.freq, special[4])
+            problem = self._special_frequency_error(memory.freq, special[3])
             if problem:
                 messages.append(chirp_common.ValidationError(problem))
         return messages
 
     def _set_special_memory(self, memory, special):
-        original = self._hyper_data()
-        number, label, record, offset, home_band = special
+        number, label, record, home_band = special
         before = self.get_memory(number)
         if home_band and memory.empty:
             raise errors.RadioError('HOME channels cannot be deleted')
         if memory.extd_number and memory.extd_number != label:
             raise errors.RadioError(
                 'Special channel name does not match number')
-        scratch = memmap.MemoryMapBytes(record.get_raw(asbytes=True))
-        target = bitwise.parse(MEM_RECORD_8900 +
-                               '\nstruct mem_struct record;', scratch).record
         if memory.empty:
-            target.used = 0
-        else:
-            for field in before.immutable:
-                if field not in ('number', 'extd_number') and (
-                        getattr(memory, field) != getattr(before, field)):
-                    raise errors.RadioError(
-                        'Editing %s is not supported on %s' % (field, label))
-            problem = self._special_frequency_error(memory.freq, home_band)
-            if problem:
-                raise errors.RadioError(problem)
-            if not home_band and memory.duplex not in ('', before.duplex):
-                raise errors.RadioError('PMS shifts may only be cleared')
+            if not before.empty:
+                record.used = 0
+                self.update_checksums()
+            return
+        for field in before.immutable:
+            if field not in ('number', 'extd_number') and (
+                    getattr(memory, field) != getattr(before, field)):
+                raise errors.RadioError(
+                    'Editing %s is not supported on %s' % (field, label))
+        problem = self._special_frequency_error(memory.freq, home_band)
+        if problem:
+            raise errors.RadioError(problem)
+        if not home_band and memory.duplex not in ('', before.duplex):
+            raise errors.RadioError('PMS shifts may only be cleared')
+        changes = {}
+        if memory.power is not None:
             levels = (self.POWER_LEVELS_UHF if 400000000 <= memory.freq <=
                       480000000 else self.POWER_LEVELS_VHF)
-            if memory.power is not None:
-                try:
-                    target.power = levels.index(memory.power)
-                except ValueError:
-                    raise errors.RadioError('Unsupported power level')
-            set_freq(memory.freq, target, 'freq')
-            if not home_band:
-                target.used = 1
-                target.sub_used = int(108000000 <= memory.freq <= 480000000)
-                if memory.duplex != before.duplex:
-                    target.duplex = 0
-        payload = bytearray(original)
-        payload[offset:offset + 16] = scratch.get_packed()
-        if payload != original:
-            payload[-1] = sum(payload[:-1]) % 256
-            self._mmap.get_byte_compatible().set(0, bytes(payload))
+            try:
+                changes['power'] = levels.index(memory.power)
+            except ValueError:
+                raise errors.RadioError('Unsupported power level')
+        if not home_band:
+            changes['used'] = 1
+            changes['sub_used'] = int(108000000 <= memory.freq <= 480000000)
+            if memory.duplex != before.duplex:
+                changes['duplex'] = 0
+        changes = {field: value for field, value in changes.items()
+                   if int(getattr(record, field)) != value}
+        # All validation is complete before writing to the mapped record.
+        frequency_changed = before.freq != memory.freq
+        if frequency_changed:
+            set_freq(memory.freq, record, 'freq')
+        for field, value in changes.items():
+            setattr(record, field, value)
+        if frequency_changed or changes:
+            self.update_checksums()
 
     def _validate_pms_pairs(self):
-        # Validate the current map even if it was assigned without parsing
-        # (for example, after a failed download or in clone error handling).
-        data = self._hyper_data()
-        records = bitwise.parse(
-            MEM_RECORD_8900 + '\nstruct mem_struct pms[10];',
-            memmap.MemoryMapBytes(data[0x38F8:0x3998])).pms
+        records = self._memobj.pms
         for pair in range(5):
             lower = records[2 * pair]
             upper = records[2 * pair + 1]
@@ -1587,6 +1579,9 @@ class FT8900Radio(FTx800Radio):
                     (pair + 1))
 
     def sync_out(self):
+        # Clone error handling can supply an image before it is parsed.
+        if self._memobj is None:
+            self.process_mmap()
         self._validate_pms_pairs()
         return super().sync_out()
 

@@ -211,20 +211,19 @@ class TestFT8900Specials(unittest.TestCase):
             upload.assert_called_once_with(self.radio)
         self.assertEqual(self.radio.get_mmap().get_packed(), self.data)
 
-    def test_upload_validation_does_not_require_parsed_state(self):
-        radio = ft7800.FT8900Radio(None)
-        radio._mmap = memmap.MemoryMapBytes(self.data)
-        self.assertIsNone(radio._memobj)
-        with mock.patch.object(ft7800, '_upload') as upload:
-            radio.sync_out()
-            upload.assert_called_once_with(radio)
-        payload = bytearray(self.data)
-        payload[0x3909:0x390C] = b'\x01\x44\x00'
-        radio._mmap = memmap.MemoryMapBytes(bytes(payload))
-        with mock.patch.object(ft7800, '_upload') as upload:
-            with self.assertRaises(errors.RadioError):
+    def test_upload_validation_with_parsed_and_unparsed_images(self):
+        unparsed = ft7800.FT8900Radio(None)
+        unparsed._mmap = memmap.MemoryMapBytes(self.data)
+        for radio in (self.new_radio(), unparsed):
+            with mock.patch.object(ft7800, '_upload') as upload:
                 radio.sync_out()
-            upload.assert_not_called()
+                upload.assert_called_once_with(radio)
+            # An edit through the parsed view must be visible to validation.
+            radio._memobj.pms[1].freq = 14400
+            with mock.patch.object(ft7800, '_upload') as upload:
+                with self.assertRaises(errors.RadioError):
+                    radio.sync_out()
+                upload.assert_not_called()
 
     def test_ordinary_views_survive_special_write(self):
         original_map = self.radio.get_mmap()

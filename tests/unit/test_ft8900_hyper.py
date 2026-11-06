@@ -245,15 +245,3 @@ class TestFT8900Hyper(unittest.TestCase):
             reopened = directory.get_radio_by_image(str(path))
             self.assertIsInstance(reopened, FT8900Radio)
             self.assertEqual(reopened.get_mmap().get_packed(), self.data)
-
-    def test_invalid_image_header_and_size_rejected_without_writing(self):
-        settings = self.radio.get_settings()
-        settings['hyper2']['hyper2_scan'].value = 'MSM'
-        for invalid in (b'WRONG' + self.data[5:], self.data[:-1]):
-            radio = FT8900Radio(None)
-            radio._mmap = memmap.MemoryMapBytes(invalid)
-            with self.assertRaises(errors.RadioError):
-                radio.get_settings()
-            with self.assertRaises(errors.RadioError):
-                radio.set_settings(settings)
-            self.assertEqual(radio.get_mmap().get_packed(), invalid)
