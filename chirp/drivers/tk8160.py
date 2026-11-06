@@ -450,13 +450,19 @@ class TKx160Radio(chirp_common.CloneModeRadio):
         """Claim the next available slot entry for channel."""
         for next_index in range(128):
             index_obj = self._memobj.index[next_index]
-            if index_obj.zone == 0xFF:
+            if not 1 <= int(index_obj.zone) <= 128:
                 break
         else:
             raise errors.RadioError('Radio is out if index memory')
 
+        used_slots = set()
+        for i in range(128):
+            index_obj = self._memobj.index[i]
+            if 1 <= int(index_obj.zone) <= 128:
+                used_slots.add(int(index_obj.slot))
+
         for next_slot in range(128):
-            if self._memobj.memories[next_slot].number == 0xFF:
+            if next_slot not in used_slots:
                 break
         else:
             raise errors.RadioError('Radio is out of memory slots')
@@ -514,9 +520,10 @@ class TKx160Radio(chirp_common.CloneModeRadio):
             index_obj = self._memobj.index[i]
             byte = i // 8
             mask = 1 << (i % 8)
-            if index_obj.memory != 0xFF:
+            zone = int(index_obj.zone)
+            if 1 <= zone <= 128:
                 mem_flags[byte] |= mask
-                zone_counts[index_obj.zone - 1] += 1
+                zone_counts[zone - 1] += 1
 
         for i, byte in enumerate(mem_flags):
             self._memobj.flag1[i] = byte
