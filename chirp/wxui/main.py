@@ -464,7 +464,11 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
                   self._editor_page_changed)
-        self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_BEGIN_DRAG, self._tab_drag)
+        if sys.platform == 'darwin':
+            LOG.warning('Disabling tab drag on macos because of bug 12665')
+        else:
+            self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_BEGIN_DRAG,
+                               self._tab_drag)
         self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN,
                            self._tab_rclick)
         self.Bind(wx.EVT_CLOSE, self._window_close)
