@@ -473,7 +473,9 @@ class ICV80Radio(icf.IcomCloneModeRadio, chirp_common.ExperimentalRadio):
 
         _mem = self._memobj.memory[mem.number]
         _unused = self._memobj.unused[byte]
-        _skip = (mem.extd_number == "") and self._memobj.skip[byte] or None
+        _skip = None
+        if mem.extd_number == "":
+            _skip = self._memobj.skip[byte]
         assert (_mem)
 
         if mem.empty:
