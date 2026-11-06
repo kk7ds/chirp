@@ -76,7 +76,7 @@ driver_modules.update(set(deps))
 # running all the driver tests
 exclude_mods = ('chirp/wxui', 'chirp/cli', 'chirp/sources', 'chirp/drivers',
                 'chirp/locale', 'chirp/share', 'chirp/stock_configs',
-                'tools')
+                'tests/unit', 'tools')
 base_modules = [mod for parent, mod in files_by_module
                 if parent not in exclude_mods]
 
