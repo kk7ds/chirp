@@ -132,6 +132,25 @@ class TestCaseBruteForce(base.DriverTest):
                 # dynamically allocated and will run out of space here.
                 self.radio.erase_memory(m.number)
 
+    @base.requires_feature('valid_skips')
+    def test_skip_by_skip(self):
+        mem = self.get_mem()
+        lo, hi = self.rf.memory_bounds
+        # Walk through the skip flags twice each, to make sure we can
+        # toggle them on..off..on
+        for skip in self.rf.valid_skips * 2:
+            # Walk through several memories, specifically across 8 and 16,
+            # as many radio use bitfields for skip flags.
+            for i in range(max(5, lo), min(25, hi)):
+                m = mem.dupe()
+                if 'empty' not in m.immutable:
+                    m.empty = False
+                m.number = i
+                m.skip = skip
+                self.radio.set_memory(m)
+            for i in range(max(5, lo), min(25, hi)):
+                self.assertEqual(skip, self.radio.get_memory(i).skip)
+
     @base.requires_feature('valid_modes')
     def test_mode(self):
         m = self.get_mem()
