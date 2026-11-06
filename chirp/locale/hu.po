@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 23:50-0400\n"
+"POT-Creation-Date: 2026-11-05 18:59-0800\n"
 "PO-Revision-Date: 2015-01-28 13:47+0100\n"
 "Last-Translator: Attila Joubert <joubert.attila@gmail.com>\n"
 "Language-Team: English\n"
@@ -49,10 +49,15 @@ msgstr[1] "... és a tömböt felfelé lépteti"
 msgid "%s %s, row %d"
 msgstr ""
 
-#: ../wxui/main.py:1533
+#: ../wxui/main.py:1540
 #, fuzzy, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "A fájl megváltozott! Menti bezárás előtt?"
+
+#: ../settings.py:267 ../settings.py:391
+#, python-format
+msgid "%s is not valid for this setting"
+msgstr ""
 
 #: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
@@ -723,7 +728,11 @@ msgid ""
 "It may not work if you turn the radio on with the cable already attached."
 msgstr ""
 
-#: ../wxui/main.py:2170
+#: ../settings.py:189
+msgid "A floating point value is required"
+msgstr ""
+
+#: ../wxui/main.py:2177
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr ""
 
@@ -731,19 +740,19 @@ msgstr ""
 msgid "AM mode does not allow duplex or tone"
 msgstr ""
 
-#: ../wxui/main.py:977
+#: ../wxui/main.py:981
 msgid "About"
 msgstr ""
 
-#: ../wxui/main.py:1924
+#: ../wxui/main.py:1931
 msgid "About CHIRP"
 msgstr ""
 
-#: ../wxui/main.py:1979
+#: ../wxui/main.py:1986
 msgid "Agree"
 msgstr ""
 
-#: ../chirp_common.py:1883
+#: ../chirp_common.py:1901
 msgid "Aircraft frequencies must be aligned to 25kHz, 8.33kHz, be or a valid channel"
 msgstr ""
 
@@ -751,12 +760,12 @@ msgstr ""
 msgid "All"
 msgstr "Mind"
 
-#: ../wxui/main.py:1362
+#: ../wxui/main.py:1369
 #, fuzzy
 msgid "All Files"
 msgstr "CSV fájlok"
 
-#: ../wxui/main.py:1373
+#: ../wxui/main.py:1380
 msgid "All supported formats"
 msgstr ""
 
@@ -779,6 +788,10 @@ msgstr ""
 #: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
 msgid "An error has occurred"
 msgstr "Hiba történt"
+
+#: ../settings.py:147
+msgid "An integer is required"
+msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
@@ -808,7 +821,11 @@ msgstr ""
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
 msgstr ""
 
-#: ../wxui/main.py:1630
+#: ../wxui/query_sources.py:1136
+msgid "Attempting login..."
+msgstr ""
+
+#: ../wxui/main.py:1637
 #, fuzzy
 msgid "Automatic from system"
 msgstr "Automatic Repeater Offset"
@@ -821,7 +838,7 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
-#: ../wxui/main.py:2094
+#: ../wxui/main.py:2101
 msgid "Bandplan"
 msgstr ""
 
@@ -867,7 +884,7 @@ msgstr ""
 msgid "Building Radio Browser"
 msgstr ""
 
-#: ../wxui/main.py:1659
+#: ../wxui/main.py:1666
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr ""
 
@@ -905,7 +922,7 @@ msgstr ""
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr ""
 
-#: ../wxui/main.py:1361
+#: ../wxui/main.py:1368
 msgid "Chirp Image Files"
 msgstr ""
 
@@ -928,7 +945,7 @@ msgstr ""
 msgid "Choose Cross Mode"
 msgstr "Kereszt-üzem"
 
-#: ../wxui/main.py:1198
+#: ../wxui/main.py:1205
 msgid "Choose Diff Target"
 msgstr ""
 
@@ -988,11 +1005,11 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#: ../wxui/main.py:1965
+#: ../wxui/main.py:1972
 msgid "Click here for full license text"
 msgstr ""
 
-#: ../wxui/main.py:1944
+#: ../wxui/main.py:1951
 msgid "Click here for online documentation"
 msgstr ""
 
@@ -1010,7 +1027,7 @@ msgstr ""
 msgid "Clone completed, checking for spurious bytes"
 msgstr ""
 
-#: ../wxui/common.py:145
+#: ../wxui/common.py:124 ../wxui/common.py:145
 msgid "Cloning"
 msgstr "Klónozás"
 
@@ -1026,7 +1043,7 @@ msgstr "Letöltés a rádióról"
 msgid "Cloning to radio"
 msgstr "Feltöltés a rádióra"
 
-#: ../wxui/main.py:1075 ../wxui/main.py:1980
+#: ../wxui/main.py:1079 ../wxui/main.py:1987
 msgid "Close"
 msgstr ""
 
@@ -1034,7 +1051,7 @@ msgstr ""
 msgid "Close String"
 msgstr ""
 
-#: ../wxui/main.py:1076
+#: ../wxui/main.py:1080
 msgid "Close file"
 msgstr ""
 
@@ -1057,7 +1074,7 @@ msgstr "Megjegyzés"
 msgid "Communicate with radio"
 msgstr ""
 
-#: ../wxui/clone.py:153
+#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
 #, fuzzy
 msgid "Complete"
 msgstr "Befejeződött"
@@ -1105,10 +1122,19 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
+#: ../wxui/query_sources.py:1098
+msgid "County"
+msgstr ""
+
 #: ../wxui/memedit.py:689
 #, fuzzy
 msgid "Cross Mode"
 msgstr "Kereszt-üzem"
+
+#: ../chirp_common.py:1140
+#, python-format
+msgid "Cross tone mode %s not supported"
+msgstr ""
 
 #: ../wxui/clone.py:568
 msgid "Custom Port"
@@ -1143,16 +1169,42 @@ msgid ""
 "Polarity"
 msgstr "DTCS pol."
 
+#: ../chirp_common.py:1160 ../chirp_common.py:1165
+#, python-format
+msgid "DTCS Code %03i not supported"
+msgstr ""
+
+#: ../chirp_common.py:1154
+#, python-format
+msgid "DTCS Polarity %s not supported"
+msgstr ""
+
+#: ../chirp_common.py:582
+msgid "DTCS Rx code is not a valid number"
+msgstr ""
+
+#: ../chirp_common.py:585
+msgid "DTCS Rx code is not valid"
+msgstr ""
+
+#: ../chirp_common.py:568
+msgid "DTCS code is not a valid number"
+msgstr ""
+
+#: ../chirp_common.py:570
+msgid "DTCS code is not valid"
+msgstr ""
+
 #: ../drivers/uvk5.py:926
 msgid "DTMF decode"
 msgstr ""
 
-#: ../wxui/memedit.py:2945
+#: ../wxui/memedit.py:2856 ../wxui/memedit.py:2946
 #, fuzzy
 msgid "DV Memory"
 msgstr "ez a memória"
 
-#: ../wxui/main.py:2003
+#: ../wxui/main.py:2010
 msgid "Danger Ahead"
 msgstr ""
 
@@ -1173,17 +1225,31 @@ msgstr "Törlés"
 msgid "Delete memories"
 msgstr ""
 
+#: ../import_logic.py:209
+#, python-format
+msgid "Destination does not support %s"
+msgstr ""
+
+#: ../import_logic.py:150 ../import_logic.py:154
+#, python-format
+msgid "Destination does not support tone frequency %s"
+msgstr ""
+
+#: ../import_logic.py:261
+msgid "Destination radio does not support D-STAR"
+msgstr ""
+
 #: ../wxui/bugreport.py:570
 #, fuzzy
 msgid "Detailed information"
 msgstr "%s információk lekérése"
 
-#: ../wxui/main.py:982
+#: ../wxui/main.py:986
 #, fuzzy
 msgid "Developer Mode"
 msgstr "Fejlesztői"
 
-#: ../wxui/main.py:2012
+#: ../wxui/main.py:2019
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr ""
@@ -1196,7 +1262,7 @@ msgstr "Memóriasorok összehasonlítása"
 msgid "Diff against another editor"
 msgstr ""
 
-#: ../wxui/memedit.py:2862
+#: ../wxui/memedit.py:2863
 msgid "Digital Code"
 msgstr "Digitális kód"
 
@@ -1205,7 +1271,7 @@ msgstr "Digitális kód"
 msgid "Digital Modes"
 msgstr "Digitális kód"
 
-#: ../wxui/main.py:2025
+#: ../wxui/main.py:2032
 msgid "Disable reporting"
 msgstr ""
 
@@ -1236,20 +1302,28 @@ msgstr ""
 msgid "Do you accept the risk?"
 msgstr ""
 
+#: ../sources/amsats.py:136 ../sources/amsats.py:280
+msgid "Done"
+msgstr ""
+
 #: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
 msgstr ""
 
-#: ../wxui/main.py:1077
+#: ../wxui/main.py:1081
 msgid "Download"
 msgstr ""
 
-#: ../wxui/main.py:1078
+#: ../sources/repeaterbook.py:207
+msgid "Download complete"
+msgstr ""
+
+#: ../wxui/main.py:1082
 #, fuzzy
 msgid "Download from radio"
 msgstr "Letöltés a rádióról"
 
-#: ../wxui/main.py:868
+#: ../wxui/main.py:872
 #, fuzzy
 msgid "Download from radio..."
 msgstr "Letöltés a rádióról"
@@ -1259,6 +1333,22 @@ msgstr "Letöltés a rádióról"
 msgid "Download instructions"
 msgstr "{name} Utasítások"
 
+#: ../sources/repeaterbook.py:173
+msgid "Downloading"
+msgstr ""
+
+#: ../sources/amsats.py:240
+msgid "Downloading SatNOGS satellites..."
+msgstr ""
+
+#: ../sources/amsats.py:243
+msgid "Downloading SatNOGS transmitters..."
+msgstr ""
+
+#: ../sources/amsats.py:106
+msgid "Downloading satellite data..."
+msgstr ""
+
 #: ../wxui/radioinfo.py:76
 msgid "Driver"
 msgstr ""
@@ -1267,8 +1357,12 @@ msgstr ""
 msgid "Driver information"
 msgstr ""
 
-#: ../wxui/main.py:574
+#: ../wxui/main.py:578
 msgid "Driver messages"
+msgstr ""
+
+#: ../chirp_common.py:576
+msgid "DtcsPolarity is not valid"
 msgstr ""
 
 #: ../wxui/query_sources.py:409
@@ -1279,6 +1373,15 @@ msgstr ""
 msgid "Duplex"
 msgstr "Duplex"
 
+#: ../chirp_common.py:1170
+#, python-format
+msgid "Duplex %s not supported"
+msgstr ""
+
+#: ../chirp_common.py:535
+msgid "Duplex is not +,-, or empty"
+msgstr ""
+
 #: ../drivers/uvk5_cn.py:719
 msgid "EEPROM size"
 msgstr ""
@@ -1288,17 +1391,17 @@ msgstr ""
 msgid "Edit %i memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2892
+#: ../wxui/memedit.py:2893
 #, fuzzy, python-format
 msgid "Edit details for %i memories"
 msgstr "Több memória szerkesztése"
 
-#: ../wxui/memedit.py:2890
+#: ../wxui/memedit.py:2891
 #, python-format
 msgid "Edit details for memory %i"
 msgstr ""
 
-#: ../wxui/main.py:926
+#: ../wxui/main.py:930
 msgid "Enable Automatic Edits"
 msgstr ""
 
@@ -1416,26 +1519,31 @@ msgstr ""
 msgid "Exclude private and closed repeaters"
 msgstr ""
 
+#: ../wxui/memquery.py:232
+#, python-format
+msgid "Expected: %s"
+msgstr ""
+
 #: ../wxui/clone.py:750
 #, fuzzy
 msgid "Experimental driver"
 msgstr "Folytassam kísérleti driver-rel?"
 
-#: ../wxui/memedit.py:2805
+#: ../wxui/memedit.py:2806
 msgid "Export can only write CSV files"
 msgstr ""
 
-#: ../wxui/main.py:1518
+#: ../wxui/main.py:1525
 #, fuzzy
 msgid "Export to CSV"
 msgstr "Export fájlba"
 
-#: ../wxui/main.py:740
+#: ../wxui/main.py:744
 #, fuzzy
 msgid "Export to CSV..."
 msgstr "Export fájlba"
 
-#: ../wxui/memedit.py:2934
+#: ../wxui/memedit.py:2935
 msgid "Extra"
 msgstr ""
 
@@ -1458,7 +1566,12 @@ msgid ""
 "required."
 msgstr ""
 
-#: ../wxui/memedit.py:2843
+#: ../sources/amsats.py:114
+#, python-format
+msgid "Failed to download data: %s"
+msgstr ""
+
+#: ../wxui/memedit.py:2844
 msgid "Failed to export some memories"
 msgstr ""
 
@@ -1475,21 +1588,45 @@ msgstr ""
 msgid "Failed to send bug report:"
 msgstr ""
 
+#: ../sources/repeaterbook.py:192
+msgid "Failed to write RepeaterBook data to disk"
+msgstr ""
+
+#: ../wxui/query_sources.py:204 ../wxui/query_sources.py:1131
+#, python-format
+msgid "Failed: %s"
+msgstr ""
+
 #: ../wxui/radioinfo.py:57
 msgid "Features"
+msgstr ""
+
+#: ../sources/amsats.py:217
+#, python-format
+msgid "Fetching %s (page %i)..."
+msgstr ""
+
+#: ../sources/radioreference.py:153
+#, python-format
+msgid "Fetching %s:%s"
+msgstr ""
+
+#: ../sources/radioreference.py:176
+#, python-format
+msgid "Fetching agency %s %s:%s"
 msgstr ""
 
 #: ../wxui/bugreport.py:213
 msgid "File a new bug"
 msgstr ""
 
-#: ../wxui/main.py:581
+#: ../wxui/main.py:585
 #, python-format
 msgid "File does not exist: %s"
 msgstr ""
 
-#: ../wxui/main.py:1365 ../wxui/main.py:1445 ../wxui/main.py:1455
-#: ../wxui/main.py:1514 ../wxui/main.py:1894 ../wxui/main.py:1895
+#: ../wxui/main.py:1372 ../wxui/main.py:1452 ../wxui/main.py:1462
+#: ../wxui/main.py:1521 ../wxui/main.py:1901 ../wxui/main.py:1902
 #, fuzzy
 msgid "Files"
 msgstr "_Fájl"
@@ -1511,17 +1648,17 @@ msgstr ""
 msgid "Filter..."
 msgstr ""
 
-#: ../wxui/main.py:1588
+#: ../wxui/main.py:1595
 #, fuzzy
 msgid "Find"
 msgstr "RFinder"
 
-#: ../wxui/main.py:808
+#: ../wxui/main.py:812
 #, fuzzy
 msgid "Find Next"
 msgstr "RFinder"
 
-#: ../wxui/main.py:794
+#: ../wxui/main.py:798
 #, fuzzy
 msgid "Find..."
 msgstr "RFinder"
@@ -1753,8 +1890,17 @@ msgstr ""
 msgid "Frequency in this range requires AM mode"
 msgstr ""
 
+#: ../chirp_common.py:529
+msgid "Frequency is not a valid number"
+msgstr ""
+
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
+msgstr ""
+
+#: ../chirp_common.py:1187
+#, python-brace-format
+msgid "Frequency {freq} is out of supported ranges {ranges}"
 msgstr ""
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
@@ -1766,6 +1912,11 @@ msgstr ""
 #, fuzzy
 msgid "Getting settings"
 msgstr "%s információk beolvasása"
+
+#: ../sources/repeaterbook.py:158
+#, python-format
+msgid "Got error code %i (%s) from server"
+msgstr ""
 
 #: ../wxui/memedit.py:1408
 #, fuzzy
@@ -1786,7 +1937,12 @@ msgstr ""
 msgid "Group: %s"
 msgstr ""
 
-#: ../wxui/main.py:1043
+#: ../drivers/generic_csv.py:232
+#, python-format
+msgid "Header line has unknown field %r"
+msgstr ""
+
+#: ../wxui/main.py:1047
 msgid "Help"
 msgstr "Súgó"
 
@@ -1833,6 +1989,10 @@ msgstr ""
 msgid "If set, sort results by distance from these coordinates"
 msgstr ""
 
+#: ../wxui/radioinfo.py:131
+msgid "Image Metadata"
+msgstr ""
+
 #: ../drivers/uvk5_cn.py:592
 #, python-format
 msgid ""
@@ -1845,7 +2005,7 @@ msgstr ""
 msgid "Image is %(image)i bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares and writing there can destroy the radio. Use an image that stops before it."
 msgstr ""
 
-#: ../wxui/main.py:1500
+#: ../wxui/main.py:1507
 msgid "Import"
 msgstr "Importálás"
 
@@ -1854,16 +2014,16 @@ msgstr "Importálás"
 msgid "Import %i memories"
 msgstr ""
 
-#: ../wxui/main.py:734
+#: ../wxui/main.py:738
 #, fuzzy
 msgid "Import from file..."
 msgstr "Importálás fájlból"
 
-#: ../wxui/main.py:1504
+#: ../wxui/main.py:1511
 msgid "Import messages"
 msgstr ""
 
-#: ../wxui/main.py:1498
+#: ../wxui/main.py:1505
 msgid "Import not recommended"
 msgstr ""
 
@@ -1907,11 +2067,15 @@ msgstr "%s információk beolvasása"
 msgid "Insert Row Above"
 msgstr "Memória beszúrása fölé"
 
+#: ../wxui/memedit.py:2380
+msgid "Insert row"
+msgstr ""
+
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
 msgstr ""
 
-#: ../wxui/main.py:966
+#: ../wxui/main.py:970
 msgid "Interact with driver"
 msgstr ""
 
@@ -1924,8 +2088,17 @@ msgstr ""
 msgid "Internal driver error"
 msgstr "Belső hiba"
 
-#: ../chirp_common.py:674
+#: ../chirp_common.py:685
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
+msgstr ""
+
+#: ../sources/repeaterbook.py:105
+msgid "Internal error - check log"
+msgstr ""
+
+#: ../wxui/memedit.py:312
+#, python-format
+msgid "Internal error: unable to prompt for %s"
 msgstr ""
 
 #: ../wxui/query_sources.py:62
@@ -1934,7 +2107,7 @@ msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Érvénytelen érték! Egész szám kell legyen."
 
 #: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/memedit.py:2049
+#: ../wxui/query_sources.py:151 ../wxui/memedit.py:2049 ../wxui/memedit.py:3029
 #, fuzzy
 msgid "Invalid Entry"
 msgstr "Érvénytelen érték %s"
@@ -1943,18 +2116,27 @@ msgstr "Érvénytelen érték %s"
 msgid "Invalid ZIP code"
 msgstr ""
 
-#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3027
+#: ../wxui/memedit.py:2048 ../wxui/memedit.py:3028
 #, fuzzy, python-format
 msgid "Invalid edit: %s"
 msgstr "Érvénytelen érték %s"
+
+#: ../wxui/memedit.py:413
+msgid "Invalid frequency"
+msgstr ""
 
 #: ../wxui/query_sources.py:124
 #, fuzzy
 msgid "Invalid locator"
 msgstr "Érvénytelen érték %s"
 
-#: ../wxui/main.py:1891
+#: ../wxui/main.py:1898
 msgid "Invalid or unsupported module file"
+msgstr ""
+
+#: ../chirp_common.py:546
+#, python-format
+msgid "Invalid tone mode `%s'"
 msgstr ""
 
 #: ../wxui/memedit.py:296 ../wxui/memedit.py:302
@@ -1975,7 +2157,7 @@ msgstr ""
 msgid "LIVE"
 msgstr ""
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:854 ../wxui/main.py:1644
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:858 ../wxui/main.py:1651
 #, fuzzy
 msgid "Language"
 msgstr "Nyelv választás"
@@ -2032,12 +2214,22 @@ msgstr ""
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr ""
 
-#: ../wxui/main.py:1746
+#: ../drivers/generic_csv.py:240
+#, python-format
+msgid "Line %i has %i columns, expected %i"
+msgstr ""
+
+#: ../drivers/generic_csv.py:255
+#, python-format
+msgid "Line %i: %s"
+msgstr ""
+
+#: ../wxui/main.py:1753
 #, fuzzy
 msgid "Live Radio"
 msgstr "Rádió"
 
-#: ../wxui/main.py:746
+#: ../wxui/main.py:750
 #, fuzzy
 msgid "Load Module..."
 msgstr "Modul betöltése"
@@ -2047,21 +2239,31 @@ msgstr "Modul betöltése"
 msgid "Load module from issue"
 msgstr "Modul betöltése"
 
-#: ../wxui/main.py:1019
+#: ../wxui/main.py:1023
 #, fuzzy
 msgid "Load module from issue..."
 msgstr "Modul betöltése"
 
-#: ../wxui/main.py:2061
+#: ../wxui/main.py:2068
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr ""
 
-#: ../wxui/main.py:1898
+#: ../wxui/main.py:1905
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr ""
 
 #: ../wxui/clone.py:147
 msgid "Loading settings"
+msgstr ""
+
+#: ../chirp_common.py:1121
+#, python-format
+msgid "Location %i is out of range"
+msgstr ""
+
+#: ../chirp_common.py:521
+#, python-format
+msgid "Location '%s' is not a valid integer"
 msgstr ""
 
 #: ../wxui/query_sources.py:110
@@ -2070,6 +2272,18 @@ msgstr ""
 
 #: ../drivers/ft450d.py:1729
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
+msgstr ""
+
+#: ../wxui/query_sources.py:1086
+msgid "Log In"
+msgstr ""
+
+#: ../wxui/query_sources.py:1091 ../wxui/query_sources.py:1097
+msgid "Log in First"
+msgstr ""
+
+#: ../wxui/query_sources.py:1134
+msgid "Logged in"
 msgstr ""
 
 #: ../wxui/bugreport.py:343
@@ -2148,6 +2362,16 @@ msgstr ""
 msgid "Mode"
 msgstr "Mód"
 
+#: ../chirp_common.py:593
+#, python-format
+msgid "Mode %r is not valid"
+msgstr ""
+
+#: ../chirp_common.py:1128
+#, python-format
+msgid "Mode %s not supported"
+msgstr ""
+
 #: ../wxui/clone.py:357
 msgid "Model"
 msgstr "Modell"
@@ -2157,17 +2381,17 @@ msgstr "Modell"
 msgid "Modes"
 msgstr "Mód"
 
-#: ../wxui/main.py:1895
+#: ../wxui/main.py:1902
 #, fuzzy
 msgid "Module"
 msgstr "Modul betöltése"
 
-#: ../wxui/main.py:1867
+#: ../wxui/main.py:1874
 #, fuzzy
 msgid "Module Loaded"
 msgstr "Modul betöltése"
 
-#: ../wxui/main.py:2072
+#: ../wxui/main.py:2079
 msgid "Module loaded successfully"
 msgstr ""
 
@@ -2180,7 +2404,7 @@ msgstr ""
 msgid "More than one port found: %s"
 msgstr ""
 
-#: ../wxui/memedit.py:2743
+#: ../wxui/memedit.py:2744
 #, python-format
 msgid "Move %i memories"
 msgstr ""
@@ -2195,7 +2419,7 @@ msgstr "Lefel_é"
 msgid "Move Up"
 msgstr "Fe_lfelé"
 
-#: ../wxui/memedit.py:2713
+#: ../wxui/memedit.py:2714
 msgid "Move operations are disabled while the view is sorted"
 msgstr ""
 
@@ -2203,14 +2427,35 @@ msgstr ""
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
 msgstr ""
 
-#: ../wxui/main.py:692
+#: ../wxui/memedit.py:1449
+msgid "Name"
+msgstr "Név"
+
+#: ../chirp_common.py:1237
+#, python-format
+msgid "Name character `%s' not supported"
+msgstr ""
+
+#: ../sources/base.py:58
+msgid "Network source is immutable"
+msgstr ""
+
+#: ../wxui/main.py:696
 msgid "New Window"
 msgstr ""
 
-#: ../wxui/main.py:2172
+#: ../wxui/main.py:2179
 #, fuzzy
 msgid "New version available"
 msgstr "A CHIRP egy új verziója érhető el:"
+
+#: ../wxui/memedit.py:2671
+msgid "No channels extracted from paste"
+msgstr ""
+
+#: ../drivers/generic_csv.py:265
+msgid "No channels found"
+msgstr ""
 
 #: ../wxui/memedit.py:2390
 #, fuzzy
@@ -2240,12 +2485,25 @@ msgstr ""
 msgid "No results"
 msgstr ""
 
-#: ../sources/repeaterbook.py:371
+#: ../sources/repeaterbook.py:204 ../sources/repeaterbook.py:371
 msgid "No results!"
 msgstr ""
 
-#: ../wxui/main.py:2082
+#: ../import_logic.py:46 ../import_logic.py:64
+#, python-format
+msgid "No room to add callsign %s"
+msgstr ""
+
+#: ../wxui/main.py:2089
 msgid "No traces stored"
+msgstr ""
+
+#: ../sources/amsats.py:277
+msgid "No valid SatNOGS frequencies found!"
+msgstr ""
+
+#: ../sources/amsats.py:133
+msgid "No valid satellite frequencies found!"
 msgstr ""
 
 #: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
@@ -2267,6 +2525,10 @@ msgstr ""
 #: ../wxui/memedit.py:346
 msgid "Offset"
 msgstr "Offszet"
+
+#: ../chirp_common.py:541
+msgid "Offset is not a valid number"
+msgstr ""
 
 #: ../wxui/memedit.py:344
 msgid ""
@@ -2300,37 +2562,37 @@ msgstr ""
 msgid "Only working repeaters"
 msgstr ""
 
-#: ../wxui/main.py:1071 ../wxui/main.py:1500
+#: ../wxui/main.py:1075 ../wxui/main.py:1507
 msgid "Open"
 msgstr ""
 
-#: ../wxui/main.py:721
+#: ../wxui/main.py:725
 #, fuzzy
 msgid "Open Recent"
 msgstr "Leg_utóbbi"
 
-#: ../wxui/main.py:703
+#: ../wxui/main.py:707
 #, fuzzy
 msgid "Open Stock Config"
 msgstr "A csoportos beállítás megnyitása"
 
-#: ../wxui/main.py:1072 ../wxui/main.py:1376
+#: ../wxui/main.py:1076 ../wxui/main.py:1383
 msgid "Open a file"
 msgstr ""
 
-#: ../wxui/main.py:1913
+#: ../wxui/main.py:1920
 msgid "Open a module"
 msgstr ""
 
-#: ../wxui/main.py:1003
+#: ../wxui/main.py:1007
 msgid "Open debug log"
 msgstr ""
 
-#: ../wxui/main.py:545
+#: ../wxui/main.py:549
 msgid "Open in new window"
 msgstr ""
 
-#: ../wxui/main.py:1034
+#: ../wxui/main.py:1038
 msgid "Open last serial trace"
 msgstr ""
 
@@ -2338,7 +2600,7 @@ msgstr ""
 msgid "Open repeaters only"
 msgstr ""
 
-#: ../wxui/main.py:650
+#: ../wxui/main.py:654
 #, fuzzy
 msgid "Open stock config directory"
 msgstr "A(z) {name} konfigurációs készlet megnyitása"
@@ -2396,12 +2658,17 @@ msgid ""
 "are supported in this release.\n"
 msgstr ""
 
+#: ../sources/repeaterbook.py:299 ../sources/dmrmarc.py:52
 #: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
 #: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr ""
 
-#: ../wxui/bugreport.py:276
+#: ../sources/amsats.py:117
+msgid "Parsing data..."
+msgstr ""
+
+#: ../wxui/bugreport.py:276 ../wxui/query_sources.py:1062
 msgid "Password"
 msgstr ""
 
@@ -2413,7 +2680,7 @@ msgstr "Beillesztés"
 msgid "Paste external memories"
 msgstr ""
 
-#: ../wxui/memedit.py:2656
+#: ../wxui/memedit.py:2657
 msgid "Paste memories"
 msgstr ""
 
@@ -2445,7 +2712,7 @@ msgstr ""
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
 msgstr ""
 
-#: ../wxui/main.py:2176
+#: ../wxui/main.py:2183
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr ""
 
@@ -2453,7 +2720,7 @@ msgstr ""
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr ""
 
-#: ../wxui/main.py:1997
+#: ../wxui/main.py:2004
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr ""
 
@@ -2477,6 +2744,16 @@ msgstr "Port"
 msgid "Power"
 msgstr "Teljesítmény"
 
+#: ../chirp_common.py:1218
+#, python-format
+msgid "Power level %s is out of radio's range"
+msgstr ""
+
+#: ../chirp_common.py:1224
+#, python-format
+msgid "Power level %s not supported"
+msgstr ""
+
 #: ../wxui/query_sources.py:877
 msgid "Prefixes"
 msgstr ""
@@ -2490,12 +2767,16 @@ msgstr "Memória beállítási hiba"
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
 msgstr ""
 
-#: ../wxui/main.py:757
+#: ../wxui/main.py:761
 msgid "Print Preview"
 msgstr ""
 
 #: ../wxui/printing.py:29
 msgid "Printing"
+msgstr ""
+
+#: ../sources/amsats.py:247
+msgid "Processing data..."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:572
@@ -2531,16 +2812,20 @@ msgstr ""
 msgid "Property Value"
 msgstr ""
 
+#: ../wxui/query_sources.py:1093
+msgid "Province"
+msgstr ""
+
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
 msgstr ""
 
-#: ../wxui/main.py:2110
+#: ../wxui/main.py:2117
 #, fuzzy, python-format
 msgid "Query %s"
 msgstr "Lekérdezés hiba"
 
-#: ../wxui/main.py:882
+#: ../wxui/main.py:886
 #, fuzzy
 msgid "Query Source"
 msgstr "Lekérd. adatforrása"
@@ -2558,18 +2843,22 @@ msgstr "Lekérdezés hiba"
 msgid "Query syntax help"
 msgstr ""
 
-#: ../sources/przemienniki_eu.py:36 ../sources/przemienniki_net.py:36
-#: ../sources/mapy73pl.py:36
+#: ../sources/dmrmarc.py:40 ../sources/przemienniki_eu.py:36
+#: ../sources/przemienniki_net.py:36 ../sources/mapy73pl.py:36
 #, fuzzy
 msgid "Querying"
 msgstr "Lekérdezés hiba"
+
+#: ../sources/radioreference.py:119
+msgid "Querying..."
+msgstr ""
 
 #: ../wxui/memedit.py:622
 #, fuzzy
 msgid "RX DTCS"
 msgstr "RX DTCS kód"
 
-#: ../wxui/main.py:1042
+#: ../wxui/main.py:1046
 msgid "Radio"
 msgstr "Rádió"
 
@@ -2670,11 +2959,11 @@ msgstr ""
 msgid "Refusing to write 0x%4.4x..0x%4.4x: 0x%4.4x is the start of the multi-bootloader on this firmware and writing there can destroy the radio"
 msgstr ""
 
-#: ../wxui/main.py:943
+#: ../wxui/main.py:947
 msgid "Reload Driver"
 msgstr ""
 
-#: ../wxui/main.py:952
+#: ../wxui/main.py:956
 msgid "Reload Driver and File"
 msgstr ""
 
@@ -2700,7 +2989,11 @@ msgid ""
 "worldwide, FREE repeater directory."
 msgstr ""
 
-#: ../wxui/main.py:1025
+#: ../sources/repeaterbook.py:182
+msgid "RepeaterBook returned invalid response"
+msgstr ""
+
+#: ../wxui/main.py:1029
 msgid "Report or update a bug..."
 msgstr ""
 
@@ -2709,27 +3002,27 @@ msgstr ""
 msgid "Reporting a new bug: %r"
 msgstr "Listázás letiltva"
 
-#: ../wxui/main.py:991
+#: ../wxui/main.py:995
 #, fuzzy
 msgid "Reporting enabled"
 msgstr "Listázás letiltva"
 
-#: ../wxui/main.py:2021
+#: ../wxui/main.py:2028
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr ""
 
-#: ../wxui/main.py:1661 ../wxui/main.py:2014
+#: ../wxui/main.py:1668 ../wxui/main.py:2021
 msgid "Restart Required"
 msgstr ""
 
-#: ../wxui/main.py:715
+#: ../wxui/main.py:719
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../wxui/main.py:847
+#: ../wxui/main.py:851
 msgid "Restore tabs on start"
 msgstr ""
 
@@ -2749,15 +3042,15 @@ msgid ""
 "up-to-date transmitter data."
 msgstr ""
 
-#: ../wxui/main.py:1073
+#: ../wxui/main.py:1077
 msgid "Save"
 msgstr ""
 
-#: ../wxui/main.py:1535
+#: ../wxui/main.py:1542
 msgid "Save before closing?"
 msgstr ""
 
-#: ../wxui/main.py:1074 ../wxui/main.py:1459
+#: ../wxui/main.py:1078 ../wxui/main.py:1466
 msgid "Save file"
 msgstr ""
 
@@ -2782,7 +3075,7 @@ msgstr ""
 msgid "Security Risk"
 msgstr ""
 
-#: ../wxui/main.py:933
+#: ../wxui/main.py:937
 #, fuzzy
 msgid "Select Bandplan..."
 msgstr "Oszlopok kiválasztása"
@@ -2793,7 +3086,7 @@ msgstr "Oszlopok kiválasztása"
 msgid "Select Bands"
 msgstr "Oszlopok kiválasztása"
 
-#: ../wxui/main.py:1644
+#: ../wxui/main.py:1651
 #, fuzzy
 msgid "Select Language"
 msgstr "Oszlopok kiválasztása"
@@ -2807,11 +3100,11 @@ msgstr "Oszlopok kiválasztása"
 msgid "Select Modes to Import"
 msgstr ""
 
-#: ../wxui/main.py:2093
+#: ../wxui/main.py:2100
 msgid "Select a bandplan"
 msgstr ""
 
-#: ../wxui/main.py:1202
+#: ../wxui/main.py:1209
 msgid "Select a tab and memory to diff"
 msgstr ""
 
@@ -2917,6 +3210,10 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1245
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
+msgstr ""
+
+#: ../wxui/bugreport.py:592
+msgid "Sending report..."
 msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:769
@@ -3137,7 +3434,7 @@ msgstr ""
 msgid "Show Raw Memory"
 msgstr "Memóriasor mutatása"
 
-#: ../wxui/main.py:1009
+#: ../wxui/main.py:1013
 msgid "Show debug log location"
 msgstr ""
 
@@ -3145,7 +3442,7 @@ msgstr ""
 msgid "Show extra fields"
 msgstr ""
 
-#: ../wxui/main.py:1014
+#: ../wxui/main.py:1018
 msgid "Show image backup location"
 msgstr ""
 
@@ -3157,7 +3454,11 @@ msgstr ""
 msgid "Skip"
 msgstr "Ugrás"
 
-#: ../wxui/memedit.py:2647
+#: ../chirp_common.py:604
+msgid "Skip value is not valid"
+msgstr ""
+
+#: ../wxui/memedit.py:2648
 #, fuzzy
 msgid "Some memories are incompatible with this radio"
 msgstr "A beillesztett {number}. számú memória nem kompatibilis ezzel a rádióval, mert:"
@@ -3223,7 +3524,7 @@ msgstr ""
 msgid "State/Province"
 msgstr ""
 
-#: ../wxui/main.py:2073
+#: ../wxui/main.py:2080
 msgid "Success"
 msgstr ""
 
@@ -3323,7 +3624,7 @@ msgstr ""
 msgid "The profile %(profile)s suggests %(default)i bytes; this is only a guess and the radio is the authority. A loaded image sets this automatically, and anything at or above 0x%(limit)x is refused because that is the multi-bootloader region."
 msgstr ""
 
-#: ../wxui/main.py:1491
+#: ../wxui/main.py:1498
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr ""
@@ -3354,11 +3655,11 @@ msgstr ""
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
-#: ../wxui/main.py:1743
+#: ../wxui/main.py:1750
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr ""
 
-#: ../wxui/main.py:1749
+#: ../wxui/main.py:1756
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr ""
 
@@ -3440,6 +3741,10 @@ msgstr ""
 msgid "This tool will upload details about your system to an existing issue on the CHIRP tracker. It requires your username and password for chirpmyradio.com in order to work. Information about your system, including your debug log, config file, and any open image files will be uploaded. An attempt will be made to redact any personal information before it leaves your system."
 msgstr ""
 
+#: ../settings.py:85
+msgid "This value is not mutable"
+msgstr ""
+
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
 msgstr ""
@@ -3447,6 +3752,11 @@ msgstr ""
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "CTCSS"
+
+#: ../chirp_common.py:1145 ../chirp_common.py:1148
+#, python-format
+msgid "Tone %.1f not supported"
+msgstr ""
 
 #: ../wxui/memedit.py:1452
 msgid "Tone Mode"
@@ -3456,6 +3766,11 @@ msgstr "Hang (CTCSS) mód"
 #, fuzzy
 msgid "Tone Squelch"
 msgstr "ToneSql"
+
+#: ../chirp_common.py:1133
+#, python-format
+msgid "Tone mode %s not supported"
+msgstr ""
 
 #: ../wxui/memedit.py:151
 #, fuzzy
@@ -3503,6 +3818,15 @@ msgstr ""
 msgid "Tuning Step"
 msgstr "Lépésköz"
 
+#: ../chirp_common.py:1176
+#, python-format
+msgid "Tuning step %.2f not supported"
+msgstr ""
+
+#: ../chirp_common.py:598
+msgid "Tuning step is invalid"
+msgstr ""
+
 #: ../drivers/baofeng_uv17Pro.py:1083
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
 msgstr ""
@@ -3539,6 +3863,11 @@ msgstr ""
 msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
 msgstr ""
 
+#: ../chirp_common.py:1209
+#, python-brace-format
+msgid "Tx freq {freq} is out of supported range"
+msgstr ""
+
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr ""
@@ -3546,6 +3875,11 @@ msgstr ""
 #: ../wxui/clone.py:486 ../wxui/clone.py:493 ../wxui/clone.py:504
 #: ../wxui/clone.py:512 ../wxui/clone.py:516
 msgid "USB Port Finder"
+msgstr ""
+
+#: ../chirp_common.py:1957
+#, python-format
+msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
 #: ../wxui/clone.py:502
@@ -3556,7 +3890,12 @@ msgstr ""
 msgid "Unable to edit memory before radio is loaded"
 msgstr ""
 
-#: ../wxui/main.py:1417
+#: ../chirp_common.py:1853
+#, python-format
+msgid "Unable to find a supported tuning step for %s"
+msgstr ""
+
+#: ../wxui/main.py:1424
 #, fuzzy, python-format
 msgid "Unable to find stock config %r"
 msgstr "A csoportos beállítás megnyitása"
@@ -3576,6 +3915,10 @@ msgstr "Nem érzékelek a {port} porton!"
 msgid "Unable to query"
 msgstr ""
 
+#: ../sources/dmrmarc.py:50
+msgid "Unable to query DMR-MARC"
+msgstr ""
+
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
 msgstr ""
@@ -3590,7 +3933,7 @@ msgstr "Ennél a modellnél nem változtatható"
 msgid "Unable to set %s on this memory"
 msgstr "Ennél a modellnél nem változtatható"
 
-#: ../wxui/main.py:1753
+#: ../wxui/main.py:1760
 #, fuzzy
 msgid "Unable to upload this file"
 msgstr "Ennél a modellnél nem változtatható"
@@ -3603,6 +3946,18 @@ msgstr ""
 msgid "United States"
 msgstr ""
 
+#: ../sources/radioreference.py:173
+msgid "Unknown Category"
+msgstr ""
+
+#: ../directory.py:229
+msgid "Unknown file format"
+msgstr ""
+
+#: ../drivers/tdm11.py:480
+msgid "Unknown file header"
+msgstr ""
+
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
@@ -3611,6 +3966,10 @@ msgstr ""
 #, fuzzy, python-format
 msgid "Unsupported model %r"
 msgstr "Nem támogatott fájltípus"
+
+#: ../drivers/ft70.py:1237 ../drivers/ft2d.py:167 ../drivers/ft2d.py:204
+msgid "Unsupported version found in ADMS file"
+msgstr ""
 
 #: ../wxui/bugreport.py:219
 msgid "Update an existing bug"
@@ -3621,6 +3980,10 @@ msgstr ""
 msgid "Updating bug %s"
 msgstr "URCALL lista frissítése."
 
+#: ../wxui/main.py:1083
+msgid "Upload"
+msgstr ""
+
 #: ../wxui/clone.py:898
 #, fuzzy
 msgid "Upload instructions"
@@ -3630,12 +3993,12 @@ msgstr "{instructions}"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr ""
 
-#: ../wxui/main.py:1080
+#: ../wxui/main.py:1084
 #, fuzzy
 msgid "Upload to radio"
 msgstr "Feltöltés a rádióra"
 
-#: ../wxui/main.py:876
+#: ../wxui/main.py:880
 #, fuzzy
 msgid "Upload to radio..."
 msgstr "Feltöltés a rádióra"
@@ -3653,21 +4016,51 @@ msgstr ""
 msgid "Use at most 3 digits."
 msgstr ""
 
-#: ../wxui/main.py:832
+#: ../wxui/main.py:836
 msgid "Use fixed-width font"
 msgstr ""
 
-#: ../wxui/main.py:840
+#: ../wxui/main.py:844
 msgid "Use larger font"
 msgstr ""
 
-#: ../wxui/bugreport.py:266
+#: ../wxui/bugreport.py:266 ../wxui/query_sources.py:1054
 msgid "Username"
+msgstr ""
+
+#: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
+#: ../sources/repeaterbook.py:156
+msgid "Using cached data"
+msgstr ""
+
+#: ../settings.py:149
+#, python-format
+msgid "Value %i not in range %i-%i"
+msgstr ""
+
+#: ../settings.py:328
+#, python-format
+msgid "Value %r contains invalid character `%s'"
+msgstr ""
+
+#: ../settings.py:323
+#, python-format
+msgid "Value %r must be between %i and %i chars"
+msgstr ""
+
+#: ../settings.py:191
+#, python-format
+msgid "Value %s not in range %s-%s"
 msgstr ""
 
 #: ../wxui/developer.py:314
 #, python-format
 msgid "Value does not fit in %i bits"
+msgstr ""
+
+#: ../settings.py:264
+#, python-format
+msgid "Value for %s is out of range"
 msgstr ""
 
 #: ../wxui/common.py:759
@@ -3693,7 +4086,7 @@ msgstr ""
 msgid "Value to search memory field for"
 msgstr ""
 
-#: ../wxui/memedit.py:2925
+#: ../wxui/memedit.py:2926
 msgid "Values"
 msgstr ""
 
@@ -3701,7 +4094,7 @@ msgstr ""
 msgid "Vendor"
 msgstr "Gyártó"
 
-#: ../wxui/main.py:1041
+#: ../wxui/main.py:1045
 #, fuzzy
 msgid "View"
 msgstr "Né_zet"
@@ -3714,8 +4107,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr ""
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1907
-#: ../wxui/main.py:2065
+#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1914
+#: ../wxui/main.py:2072
 msgid "Warning"
 msgstr ""
 
@@ -3764,6 +4157,10 @@ msgstr ""
 msgid "Your cable appears to be on port:"
 msgstr ""
 
+#: ../wxui/query_sources.py:1118
+msgid "ZIP Code"
+msgstr ""
+
 #: ../wxui/developer.py:194
 msgid "bits"
 msgstr ""
@@ -3776,6 +4173,14 @@ msgstr ""
 msgid "bytes each"
 msgstr ""
 
+#: ../chirp_common.py:560
+msgid "cTone is not a valid number"
+msgstr ""
+
+#: ../chirp_common.py:562
+msgid "cTone is not valid"
+msgstr ""
+
 #: ../wxui/common.py:545
 msgid "checkbox"
 msgstr ""
@@ -3784,7 +4189,7 @@ msgstr ""
 msgid "checked"
 msgstr ""
 
-#: ../wxui/main.py:1994
+#: ../wxui/main.py:2001
 #, fuzzy
 msgid "disabled"
 msgstr "Engedélyezve"
@@ -3793,7 +4198,7 @@ msgstr "Engedélyezve"
 msgid "empty"
 msgstr ""
 
-#: ../wxui/main.py:1994
+#: ../wxui/main.py:2001
 #, fuzzy
 msgid "enabled"
 msgstr "Engedélyezve"
@@ -3806,8 +4211,25 @@ msgstr ""
 msgid "locked"
 msgstr ""
 
+#: ../settings.py:366
+#, python-format
+msgid "map_entries must be 2 el tuples instead of: %s"
+msgstr ""
+
 #: ../wxui/common.py:550
 msgid "number"
+msgstr ""
+
+#: ../import_logic.py:239
+msgid "offset is abnormally large."
+msgstr ""
+
+#: ../chirp_common.py:552
+msgid "rTone is not a valid number"
+msgstr ""
+
+#: ../chirp_common.py:554
+msgid "rTone is not valid"
 msgstr ""
 
 #: ../wxui/bugreport.py:421
@@ -4124,9 +4546,6 @@ msgstr ""
 
 #~ msgid "My callsign"
 #~ msgstr "Az én hívójelem"
-
-#~ msgid "Name"
-#~ msgstr "Név"
 
 #~ msgid "No space to insert a row"
 #~ msgstr "Nincs hely a sor beszúrásához"
