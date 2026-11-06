@@ -496,7 +496,9 @@ class ZoneMemoryMixin(abc.ABC):
             self._set_zone_flagoffset(dest_zoneinfo, scan_index)
             scan_index += count
 
-        self.process_mmap()
+        # _memobj is already parsed with the new zone layout, and _zones was
+        # computed above. Re-probing and reparsing here would discard the
+        # object we just used to move the zone data.
 
 
 class KenwoodOSTMixin:
