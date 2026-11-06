@@ -88,12 +88,16 @@ class TestCaseClone(base.DriverTest):
 
         real_time = time.time
 
+        # This makes it appear that lots of time is passing between
+        # successive calls, which will defeat most timeout loops
         def fake_time():
             return real_time() * 1000
 
         self.patches = []
         self.use_patch(mock.patch('time.sleep'))
         self.use_patch(mock.patch('time.time',
+                                  side_effect=fake_time))
+        self.use_patch(mock.patch('time.monotonic',
                                   side_effect=fake_time))
 
     def _test_with_serial(self, serial):
