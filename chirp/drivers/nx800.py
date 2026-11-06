@@ -572,6 +572,9 @@ class KenwoodNXx00Radio(tk8180.ZoneMemoryMixin, tk8180.KenwoodOSTMixin,
             self._build_mem_format_from_zone_sizes(
                 [x[1] for x in self._zones]),
             self._mmap)
+        self._rebuild_channel_map()
+
+    def _rebuild_channel_map(self):
         self._channel_map = []
         for zoneindex, (_addr, count) in enumerate(self._zones):
             for chanindex in range(count):
@@ -682,6 +685,7 @@ class KenwoodNXx00Radio(tk8180.ZoneMemoryMixin, tk8180.KenwoodOSTMixin,
 
     def expand_mmap(self, zone_sizes):
         super().expand_mmap(zone_sizes)
+        self._rebuild_channel_map()
 
     def get_raw_memory(self, number):
         resolved = self._resolve_channel(number)
