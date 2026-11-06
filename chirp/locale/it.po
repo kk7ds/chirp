@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 18:59-0800\n"
-"PO-Revision-Date: 2026-11-05 20:22+0100\n"
+"POT-Creation-Date: 2026-11-06 08:20+0100\n"
+"PO-Revision-Date: 2026-11-06 08:16+0100\n"
 "Last-Translator: Giovanni Scafora IK5TWZ <scafora.giovanni@gmail.com>\n"
 "Language-Team: CHIRP Italian Translation\n"
 "Language: it\n"
@@ -59,7 +59,7 @@ msgstr "%s non è stato salvato. Vuoi salvarlo prima di chiudere?"
 #: ../settings.py:267 ../settings.py:391
 #, python-format
 msgid "%s is not valid for this setting"
-msgstr ""
+msgstr "%s non è valido per questa impostazione"
 
 #: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
@@ -867,7 +867,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per caricare l'immagine sul dispositivo.\n"
 
-#: ../drivers/uvb5.py:293 ../drivers/wouxun.py:222 ../drivers/tg_uv2p.py:237
+#: ../drivers/tg_uv2p.py:237 ../drivers/wouxun.py:222 ../drivers/uvb5.py:293
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -883,7 +883,7 @@ msgstr ""
 "5. Assicurati che la radio sia sintonizzata su un canale privo di attività.\n"
 "6. Fai clic su OK per scaricare l'immagine dal dispositivo.\n"
 
-#: ../drivers/uvb5.py:301 ../drivers/wouxun.py:230 ../drivers/tg_uv2p.py:245
+#: ../drivers/tg_uv2p.py:245 ../drivers/wouxun.py:230 ../drivers/uvb5.py:301
 msgid ""
 "1. Turn radio off.\n"
 "2. Connect cable to mic/spkr connector.\n"
@@ -1117,7 +1117,7 @@ msgstr ""
 
 #: ../settings.py:189
 msgid "A floating point value is required"
-msgstr ""
+msgstr "È richiesto un valore in virgola mobile"
 
 #: ../wxui/main.py:2177
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
@@ -1171,13 +1171,13 @@ msgstr "Inizia sempre con un elenco recente"
 msgid "Amateur"
 msgstr "Radioamatore"
 
-#: ../wxui/bugreport.py:345 ../wxui/bugreport.py:480 ../wxui/common.py:849
+#: ../wxui/common.py:849 ../wxui/bugreport.py:345 ../wxui/bugreport.py:480
 msgid "An error has occurred"
 msgstr "Si è verificato un errore"
 
 #: ../settings.py:147
 msgid "An integer is required"
-msgstr ""
+msgstr "È richiesto un numero intero"
 
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
@@ -1209,7 +1209,7 @@ msgstr "Assegna la seconda funzione della manopola DSP/SEL, attivata premendola 
 
 #: ../wxui/query_sources.py:1136
 msgid "Attempting login..."
-msgstr ""
+msgstr "Tentativo di accesso..."
 
 #: ../wxui/main.py:1637
 msgid "Automatic from system"
@@ -1420,12 +1420,12 @@ msgstr "Clonazione completata, controllo dei byte spuri"
 msgid "Cloning"
 msgstr "Clonazione"
 
-#: ../drivers/bj9900.py:133 ../drivers/ft450d.py:517 ../drivers/ft4.py:327
+#: ../drivers/ft4.py:327 ../drivers/ft450d.py:517 ../drivers/bj9900.py:133
 #: ../drivers/ft817.py:343
 msgid "Cloning from radio"
 msgstr "Clonazione dalla radio"
 
-#: ../drivers/bj9900.py:165 ../drivers/ft450d.py:546 ../drivers/ft4.py:328
+#: ../drivers/ft4.py:328 ../drivers/ft450d.py:546 ../drivers/bj9900.py:165
 #: ../drivers/ft817.py:381
 msgid "Cloning to radio"
 msgstr "Clonazione verso la radio"
@@ -1512,7 +1512,7 @@ msgstr "Nazione"
 
 #: ../wxui/query_sources.py:1098
 msgid "County"
-msgstr ""
+msgstr "Contea"
 
 #: ../wxui/memedit.py:689
 msgid "Cross Mode"
@@ -1521,7 +1521,7 @@ msgstr "Modalità incrociata"
 #: ../chirp_common.py:1140
 #, python-format
 msgid "Cross tone mode %s not supported"
-msgstr ""
+msgstr "Modalità tono incrociato %s non supportata"
 
 #: ../wxui/clone.py:568
 msgid "Custom Port"
@@ -1559,28 +1559,28 @@ msgstr ""
 #: ../chirp_common.py:1160 ../chirp_common.py:1165
 #, python-format
 msgid "DTCS Code %03i not supported"
-msgstr ""
+msgstr "Codice DTCS %03i non supportato"
 
 #: ../chirp_common.py:1154
 #, python-format
 msgid "DTCS Polarity %s not supported"
-msgstr ""
+msgstr "Polarità DTCS %s non supportata"
 
 #: ../chirp_common.py:582
 msgid "DTCS Rx code is not a valid number"
-msgstr ""
+msgstr "Il codice DTCS in RX non è un numero valido"
 
 #: ../chirp_common.py:585
 msgid "DTCS Rx code is not valid"
-msgstr ""
+msgstr "Il codice DTCS in RX non è valido"
 
 #: ../chirp_common.py:568
 msgid "DTCS code is not a valid number"
-msgstr ""
+msgstr "Il codice DTCS non è un numero valido"
 
 #: ../chirp_common.py:570
 msgid "DTCS code is not valid"
-msgstr ""
+msgstr "Il codice DTCS non è valido"
 
 #: ../drivers/uvk5.py:926
 msgid "DTMF decode"
@@ -1613,16 +1613,16 @@ msgstr "Elimina memorie"
 #: ../import_logic.py:209
 #, python-format
 msgid "Destination does not support %s"
-msgstr ""
+msgstr "La destinazione non supporta %s"
 
 #: ../import_logic.py:150 ../import_logic.py:154
 #, python-format
 msgid "Destination does not support tone frequency %s"
-msgstr ""
+msgstr "La destinazione non supporta la frequenza di tono %s"
 
 #: ../import_logic.py:261
 msgid "Destination radio does not support D-STAR"
-msgstr ""
+msgstr "La radio di destinazione non supporta D-STAR"
 
 #: ../wxui/bugreport.py:570
 msgid "Detailed information"
@@ -1685,7 +1685,7 @@ msgstr "Accetti il rischio?"
 
 #: ../sources/amsats.py:136 ../sources/amsats.py:280
 msgid "Done"
-msgstr ""
+msgstr "Fatto"
 
 #: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
@@ -1697,7 +1697,7 @@ msgstr "Scarica"
 
 #: ../sources/repeaterbook.py:207
 msgid "Download complete"
-msgstr ""
+msgstr "Download completato"
 
 #: ../wxui/main.py:1082
 msgid "Download from radio"
@@ -1713,19 +1713,19 @@ msgstr "Istruzioni per il download"
 
 #: ../sources/repeaterbook.py:173
 msgid "Downloading"
-msgstr ""
+msgstr "Download in corso"
 
 #: ../sources/amsats.py:240
 msgid "Downloading SatNOGS satellites..."
-msgstr ""
+msgstr "Download satelliti SatNOGS in corso..."
 
 #: ../sources/amsats.py:243
 msgid "Downloading SatNOGS transmitters..."
-msgstr ""
+msgstr "Download trasmettitori SatNOGS in corso..."
 
 #: ../sources/amsats.py:106
 msgid "Downloading satellite data..."
-msgstr ""
+msgstr "Download dati satellitari in corso..."
 
 #: ../wxui/radioinfo.py:76
 msgid "Driver"
@@ -1741,7 +1741,7 @@ msgstr "Messaggi del driver"
 
 #: ../chirp_common.py:576
 msgid "DtcsPolarity is not valid"
-msgstr ""
+msgstr "La polarità DTCS non è valida"
 
 #: ../wxui/query_sources.py:409
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -1754,11 +1754,11 @@ msgstr "Duplex"
 #: ../chirp_common.py:1170
 #, python-format
 msgid "Duplex %s not supported"
-msgstr ""
+msgstr "Duplex %s non supportato"
 
 #: ../chirp_common.py:535
 msgid "Duplex is not +,-, or empty"
-msgstr ""
+msgstr "Duplex non è +, - o vuoto"
 
 #: ../drivers/uvk5_cn.py:719
 msgid "EEPROM size"
@@ -1896,7 +1896,7 @@ msgstr "Escludi ripetitori privati e chiusi"
 #: ../wxui/memquery.py:232
 #, python-format
 msgid "Expected: %s"
-msgstr ""
+msgstr "Atteso: %s"
 
 #: ../wxui/clone.py:750
 msgid "Experimental driver"
@@ -1943,7 +1943,7 @@ msgstr ""
 #: ../sources/amsats.py:114
 #, python-format
 msgid "Failed to download data: %s"
-msgstr ""
+msgstr "Impossibile scaricare i dati: %s"
 
 #: ../wxui/memedit.py:2844
 msgid "Failed to export some memories"
@@ -1953,7 +1953,7 @@ msgstr "Impossibile esportare alcune memorie"
 msgid "Failed to load radio browser"
 msgstr "Impossibile caricare il browser della radio"
 
-#: ../sources/przemienniki_eu.py:57 ../sources/przemienniki_net.py:59
+#: ../sources/przemienniki_net.py:59 ../sources/przemienniki_eu.py:57
 #: ../sources/mapy73pl.py:61
 msgid "Failed to parse result"
 msgstr "Impossibile elaborare il risultato"
@@ -1964,12 +1964,12 @@ msgstr "Impossibile inviare la segnalazione del bug:"
 
 #: ../sources/repeaterbook.py:192
 msgid "Failed to write RepeaterBook data to disk"
-msgstr ""
+msgstr "Impossibile scrivere i dati di RepeaterBook sul disco"
 
 #: ../wxui/query_sources.py:204 ../wxui/query_sources.py:1131
 #, python-format
 msgid "Failed: %s"
-msgstr ""
+msgstr "Non riuscito: %s"
 
 #: ../wxui/radioinfo.py:57
 msgid "Features"
@@ -1978,17 +1978,17 @@ msgstr "Funzionalità"
 #: ../sources/amsats.py:217
 #, python-format
 msgid "Fetching %s (page %i)..."
-msgstr ""
+msgstr "Recupero di %s (pagina %i)..."
 
 #: ../sources/radioreference.py:153
 #, python-format
 msgid "Fetching %s:%s"
-msgstr ""
+msgstr "Recupero di %s:%s"
 
 #: ../sources/radioreference.py:176
 #, python-format
 msgid "Fetching agency %s %s:%s"
-msgstr ""
+msgstr "Recupero agenzia %s %s:%s"
 
 #: ../wxui/bugreport.py:213
 msgid "File a new bug"
@@ -2109,11 +2109,11 @@ msgstr ""
 "5 - Scollega il cavo dati dell'interfaccia! In caso contrario, non ci sarà\n"
 "    l'audio del lato destro!\n"
 
-#: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
-#: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
-#: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/bf_t1.py:484 ../drivers/mursv1.py:341
+#: ../drivers/baofeng_wp970i.py:327 ../drivers/baofeng_uv17Pro.py:514
+#: ../drivers/gmrsuv1.py:395 ../drivers/btech.py:636 ../drivers/uv6r.py:343
+#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv5x3.py:421
+#: ../drivers/gmrsv2.py:363
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2217,7 +2217,7 @@ msgstr ""
 "    l'audio del lato destro!\n"
 "6 - Accendi la radio per uscire dalla modalità clone.\n"
 
-#: ../drivers/btech.py:642 ../drivers/bf_t1.py:490
+#: ../drivers/bf_t1.py:490 ../drivers/btech.py:642
 msgid ""
 "Follow these instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2259,7 +2259,7 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Fai clic su OK per iniziare\n"
 
-#: ../drivers/vgc.py:586 ../drivers/lt725uv.py:486
+#: ../drivers/lt725uv.py:486 ../drivers/vgc.py:586
 msgid ""
 "Follow this instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2287,11 +2287,11 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati dalla radio\n"
 
-#: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
-#: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
-#: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/mursv1.py:347 ../drivers/baofeng_wp970i.py:333
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/gmrsuv1.py:401
+#: ../drivers/lt725uv.py:492 ../drivers/vgc.py:592 ../drivers/uv6r.py:349
+#: ../drivers/tdxone_tdq8a.py:450 ../drivers/uv5x3.py:427
+#: ../drivers/gmrsv2.py:369
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2337,9 +2337,9 @@ msgstr "La frequenza %s è al di fuori degli intervalli supportati %s"
 msgid "Frequency granularity in kHz"
 msgstr "Granularità della frequenza in kHz"
 
-#: ../drivers/ga510.py:1094 ../drivers/mml_jc8810.py:1383
-#: ../drivers/tdh8.py:2540 ../drivers/retevis_ha1g.py:1439
-#: ../drivers/uv5r.py:2249 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/tdh8.py:2540 ../drivers/baofeng_uv17Pro.py:1478
+#: ../drivers/retevis_ha1g.py:1439 ../drivers/mml_jc8810.py:1383
+#: ../drivers/ga510.py:1094 ../drivers/uv5r.py:2249
 msgid "Frequency in this range must not be AM mode"
 msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 
@@ -2347,16 +2347,16 @@ msgstr "La frequenza in questo intervallo non deve essere in modalità AM"
 msgid "Frequency in this range not supported by firmware"
 msgstr "La frequenza in questo intervallo non è supportata dal firmware"
 
-#: ../drivers/ga510.py:1087 ../drivers/radtel_rt900.py:1623
-#: ../drivers/mml_jc8810.py:1380 ../drivers/tdh8.py:2537
-#: ../drivers/retevis_ha1g.py:1435 ../drivers/uv5r.py:2245
-#: ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/tdh8.py:2537 ../drivers/baofeng_uv17Pro.py:1475
+#: ../drivers/retevis_ha1g.py:1435 ../drivers/radtel_rt900.py:1623
+#: ../drivers/mml_jc8810.py:1380 ../drivers/ga510.py:1087
+#: ../drivers/uv5r.py:2245
 msgid "Frequency in this range requires AM mode"
 msgstr "La frequenza in questo intervallo richiede la modalità AM"
 
 #: ../chirp_common.py:529
 msgid "Frequency is not a valid number"
-msgstr ""
+msgstr "La frequenza non è un numero valido"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
@@ -2365,7 +2365,7 @@ msgstr "La frequenza al di fuori delle bande TX deve essere duplex=off"
 #: ../chirp_common.py:1187
 #, python-brace-format
 msgid "Frequency {freq} is out of supported ranges {ranges}"
-msgstr ""
+msgstr "La frequenza {freq} è fuori dall'intervallo supportato {ranges}"
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -2379,7 +2379,7 @@ msgstr "Acquisisci le impostazioni"
 #: ../sources/repeaterbook.py:158
 #, python-format
 msgid "Got error code %i (%s) from server"
-msgstr ""
+msgstr "Ricevuto codice di errore %i (%s) dal server"
 
 #: ../wxui/memedit.py:1408
 msgid "Goto Memory"
@@ -2401,7 +2401,7 @@ msgstr "Gruppo: %s"
 #: ../drivers/generic_csv.py:232
 #, python-format
 msgid "Header line has unknown field %r"
-msgstr ""
+msgstr "La riga d'intestazione contiene il campo sconosciuto %r"
 
 #: ../wxui/main.py:1047
 msgid "Help"
@@ -2451,7 +2451,7 @@ msgstr "Se impostata, ordina i risultati secondo la distanza da tali coordinate"
 
 #: ../wxui/radioinfo.py:131
 msgid "Image Metadata"
-msgstr ""
+msgstr "Metadati immagine"
 
 #: ../drivers/uvk5_cn.py:592
 #, python-format
@@ -2528,7 +2528,7 @@ msgstr "Inserisci riga sopra"
 
 #: ../wxui/memedit.py:2380
 msgid "Insert row"
-msgstr ""
+msgstr "Inserisci riga"
 
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
@@ -2552,20 +2552,20 @@ msgstr "Errore interno del driver: tentativo di modifica di memoria bloccata; se
 
 #: ../sources/repeaterbook.py:105
 msgid "Internal error - check log"
-msgstr ""
+msgstr "Errore interno - controlla il log"
 
 #: ../wxui/memedit.py:312
 #, python-format
 msgid "Internal error: unable to prompt for %s"
-msgstr ""
+msgstr "Errore interno: impossibile richiedere %s"
 
 #: ../wxui/query_sources.py:62
 #, python-format
 msgid "Invalid %(value)s (use decimal degrees)"
 msgstr "Il valore %(value)s non è valido (usare i gradi decimali)"
 
-#: ../wxui/query_sources.py:70 ../wxui/query_sources.py:124
-#: ../wxui/query_sources.py:151 ../wxui/memedit.py:2049 ../wxui/memedit.py:3029
+#: ../wxui/memedit.py:2049 ../wxui/memedit.py:3029 ../wxui/query_sources.py:70
+#: ../wxui/query_sources.py:124 ../wxui/query_sources.py:151
 msgid "Invalid Entry"
 msgstr "Valore non valido"
 
@@ -2580,7 +2580,7 @@ msgstr "Modifica non valida: %s"
 
 #: ../wxui/memedit.py:413
 msgid "Invalid frequency"
-msgstr ""
+msgstr "Frequenza non valida"
 
 #: ../wxui/query_sources.py:124
 msgid "Invalid locator"
@@ -2593,7 +2593,7 @@ msgstr "File del modulo non valido o non supportato"
 #: ../chirp_common.py:546
 #, python-format
 msgid "Invalid tone mode `%s'"
-msgstr ""
+msgstr "Modalità di tono non valida `%s'"
 
 #: ../wxui/memedit.py:296 ../wxui/memedit.py:302
 #, python-format
@@ -2613,7 +2613,7 @@ msgstr "Numero:"
 msgid "LIVE"
 msgstr "In diretta live"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:858 ../wxui/main.py:1651
+#: ../wxui/main.py:858 ../wxui/main.py:1651 ../drivers/radtel_rt490.py:1024
 msgid "Language"
 msgstr "Lingua"
 
@@ -2665,19 +2665,19 @@ msgstr "Limita uso"
 msgid "Limits disabled for modified firmware"
 msgstr "Limiti disabilitati per il firmware modificato"
 
-#: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+#: ../drivers/baofeng_uv17Pro.py:682 ../drivers/ft450d.py:1274
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr "Limita la durata massima di una singola trasmissione. Allo scadere del tempo, la radio interrompe la trasmissione finché non viene rilasciato il PTT. In questo modo si evita il surriscaldamento e si impedisce che un PTT bloccato occupi il canale impedendo agli altri di comunicare."
 
 #: ../drivers/generic_csv.py:240
 #, python-format
 msgid "Line %i has %i columns, expected %i"
-msgstr ""
+msgstr "La riga %i ha %i colonne, ne erano attese %i"
 
 #: ../drivers/generic_csv.py:255
 #, python-format
 msgid "Line %i: %s"
-msgstr ""
+msgstr "Riga %i: %s"
 
 #: ../wxui/main.py:1753
 msgid "Live Radio"
@@ -2701,7 +2701,7 @@ msgstr "Il caricamento di un modulo non influisce sulle schede aperte. Si consig
 
 #: ../wxui/main.py:1905
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
-msgstr "Il caricamento dei moduli può essere estremamente pericoloso e causare danni al computer, alla radio o a entrambi. Non caricate MAI un modulo da una fonte di cui non vi fidate, soprattutto se non dal sito web principale di CHIRP (chirpmyradio.com). Caricare un modulo da un'altra fonte equivale a dargli accesso diretto al vostro computer e a tutto ciò che contiene! Vuoi procedere nonostante questo rischio?"
+msgstr "Il caricamento dei moduli può essere estremamente dangerous e causare danni al computer, alla radio o a entrambi. Non caricate MAI un modulo da una fonte di cui non vi fidate, soprattutto se non dal sito web principale di CHIRP (chirpmyradio.com). Caricare un modulo da un'altra fonte equivale a dargli accesso diretto al vostro computer e a tutto ciò che contiene! Vuoi procedere nonostante questo rischio?"
 
 #: ../wxui/clone.py:147
 msgid "Loading settings"
@@ -2710,12 +2710,12 @@ msgstr "Caricamento delle impostazioni"
 #: ../chirp_common.py:1121
 #, python-format
 msgid "Location %i is out of range"
-msgstr ""
+msgstr "La posizione %i è fuori dall'intervallo"
 
 #: ../chirp_common.py:521
 #, python-format
 msgid "Location '%s' is not a valid integer"
-msgstr ""
+msgstr "La posizione '%s' non è un numero intero valido"
 
 #: ../wxui/query_sources.py:110
 msgid "Locator"
@@ -2727,15 +2727,15 @@ msgstr "Blocca i comandi selezionati in Modalità di blocco per evitare modifich
 
 #: ../wxui/query_sources.py:1086
 msgid "Log In"
-msgstr ""
+msgstr "Accedi"
 
 #: ../wxui/query_sources.py:1091 ../wxui/query_sources.py:1097
 msgid "Log in First"
-msgstr ""
+msgstr "Accedi prima"
 
 #: ../wxui/query_sources.py:1134
 msgid "Logged in"
-msgstr ""
+msgstr "Connesso"
 
 #: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
@@ -2807,20 +2807,20 @@ msgstr "La memoria deve trovarsi in un banco per essere modificata"
 msgid "Memory {num} not in bank {bank}"
 msgstr "La memoria {num} non è presente nel banco {bank}"
 
-#: ../wxui/query_sources.py:626 ../wxui/query_sources.py:779
-#: ../wxui/memedit.py:675
+#: ../wxui/memedit.py:675 ../wxui/query_sources.py:626
+#: ../wxui/query_sources.py:779
 msgid "Mode"
 msgstr "Modo"
 
 #: ../chirp_common.py:593
 #, python-format
 msgid "Mode %r is not valid"
-msgstr ""
+msgstr "La modalità %r non è valida"
 
 #: ../chirp_common.py:1128
 #, python-format
 msgid "Mode %s not supported"
-msgstr ""
+msgstr "Modalità %s non supportata"
 
 #: ../wxui/clone.py:357
 msgid "Model"
@@ -2874,16 +2874,16 @@ msgstr "Sposta la porzione della banda passante su cui agisce il filtro Contour:
 
 #: ../wxui/memedit.py:1449
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: ../chirp_common.py:1237
 #, python-format
 msgid "Name character `%s' not supported"
-msgstr ""
+msgstr "Carattere del nome `%s' non supportato"
 
 #: ../sources/base.py:58
 msgid "Network source is immutable"
-msgstr ""
+msgstr "La sorgente di rete è immutabile"
 
 #: ../wxui/main.py:696
 msgid "New Window"
@@ -2895,11 +2895,11 @@ msgstr "Nuova versione disponibile"
 
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
-msgstr ""
+msgstr "Nessun canale estratto dall'operazione incolla"
 
 #: ../drivers/generic_csv.py:265
 msgid "No channels found"
-msgstr ""
+msgstr "Nessun canale trovato"
 
 #: ../wxui/memedit.py:2390
 msgid "No empty rows below!"
@@ -2923,7 +2923,7 @@ msgstr "Nessun modulo trovato nel sito %i"
 msgid "No more space available; some memories were not applied"
 msgstr "Non c'è più spazio disponibile; alcune memorie non sono state inserite"
 
-#: ../sources/przemienniki_eu.py:53 ../sources/przemienniki_net.py:55
+#: ../sources/przemienniki_net.py:55 ../sources/przemienniki_eu.py:53
 #: ../sources/mapy73pl.py:57
 msgid "No results"
 msgstr "Nessun risultato"
@@ -2935,7 +2935,7 @@ msgstr "Nessun risultato!"
 #: ../import_logic.py:46 ../import_logic.py:64
 #, python-format
 msgid "No room to add callsign %s"
-msgstr ""
+msgstr "Spazio insufficiente per aggiungere il nominativo %s"
 
 #: ../wxui/main.py:2089
 msgid "No traces stored"
@@ -2943,13 +2943,13 @@ msgstr "Nessuna traccia memorizzata"
 
 #: ../sources/amsats.py:277
 msgid "No valid SatNOGS frequencies found!"
-msgstr ""
+msgstr "Nessuna frequenza SatNOGS valida trovata!"
 
 #: ../sources/amsats.py:133
 msgid "No valid satellite frequencies found!"
-msgstr ""
+msgstr "Nessuna frequenza satellitare valida trovata!"
 
-#: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
+#: ../wxui/memedit.py:1407 ../wxui/query_sources.py:45
 msgid "Number"
 msgstr "Numero"
 
@@ -2971,7 +2971,7 @@ msgstr "Offset"
 
 #: ../chirp_common.py:541
 msgid "Offset is not a valid number"
-msgstr ""
+msgstr "L'offset non è un numero valido"
 
 #: ../wxui/memedit.py:344
 msgid ""
@@ -3099,14 +3099,14 @@ msgstr ""
 "delle oltre 130 impostazioni radio disponibili.\n"
 
 #: ../sources/repeaterbook.py:299 ../sources/dmrmarc.py:52
-#: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
+#: ../sources/przemienniki_net.py:50 ../sources/przemienniki_eu.py:48
 #: ../sources/mapy73pl.py:52
 msgid "Parsing"
 msgstr "Elaborazione"
 
 #: ../sources/amsats.py:117
 msgid "Parsing data..."
-msgstr ""
+msgstr "Analisi dei dati in corso..."
 
 #: ../wxui/bugreport.py:276 ../wxui/query_sources.py:1062
 msgid "Password"
@@ -3187,12 +3187,12 @@ msgstr "Potenza"
 #: ../chirp_common.py:1218
 #, python-format
 msgid "Power level %s is out of radio's range"
-msgstr ""
+msgstr "Il livello di potenza %s è fuori dalla portata della radio"
 
 #: ../chirp_common.py:1224
 #, python-format
 msgid "Power level %s not supported"
-msgstr ""
+msgstr "Livello di potenza %s non supportato"
 
 #: ../wxui/query_sources.py:877
 msgid "Prefixes"
@@ -3216,7 +3216,7 @@ msgstr "Stampa in corso"
 
 #: ../sources/amsats.py:247
 msgid "Processing data..."
-msgstr ""
+msgstr "Elaborazione dati in corso..."
 
 #: ../drivers/baofeng_uv17Pro.py:572
 #, python-format
@@ -3253,7 +3253,7 @@ msgstr "Valore della proprietà"
 
 #: ../wxui/query_sources.py:1093
 msgid "Province"
-msgstr ""
+msgstr "Provincia"
 
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
@@ -3280,14 +3280,14 @@ msgstr "La sintassi della query è OK"
 msgid "Query syntax help"
 msgstr "Aiuto per la sintassi delle query"
 
-#: ../sources/dmrmarc.py:40 ../sources/przemienniki_eu.py:36
-#: ../sources/przemienniki_net.py:36 ../sources/mapy73pl.py:36
+#: ../sources/dmrmarc.py:40 ../sources/przemienniki_net.py:36
+#: ../sources/przemienniki_eu.py:36 ../sources/mapy73pl.py:36
 msgid "Querying"
 msgstr "Interrogazione"
 
 #: ../sources/radioreference.py:119
 msgid "Querying..."
-msgstr ""
+msgstr "Interrogazione in corso..."
 
 #: ../wxui/memedit.py:622
 msgid "RX DTCS"
@@ -3426,7 +3426,7 @@ msgstr ""
 
 #: ../sources/repeaterbook.py:182
 msgid "RepeaterBook returned invalid response"
-msgstr ""
+msgstr "RepeaterBook ha restituito una risposta non valida"
 
 #: ../wxui/main.py:1029
 msgid "Report or update a bug..."
@@ -3646,7 +3646,7 @@ msgstr "Seleziona la modulazione FM larga o stretta per il VFO B. Usa Narrow qua
 
 #: ../wxui/bugreport.py:592
 msgid "Sending report..."
-msgstr ""
+msgstr "Invio segnalazione in corso..."
 
 #: ../drivers/baofeng_uv17Pro.py:769
 msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
@@ -3799,7 +3799,7 @@ msgstr "Imposta l'intonazione del tono laterale CW, che corrisponde anche allo s
 
 #: ../drivers/ft450d.py:1550
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
-msgstr "Imposta l'intonazione del segnale acustico emesso dalla radio per confermare la pressione dei tasti."
+msgstr "Imposta l'intonazione del segnale acustico emetto dalla radio per confermare la pressione dei tasti."
 
 #: ../drivers/baofeng_uv17Pro.py:1130
 msgid "Sets the receive frequency shown on display line A in Frequency (VFO) mode."
@@ -3888,7 +3888,7 @@ msgstr "Ignora"
 
 #: ../chirp_common.py:604
 msgid "Skip value is not valid"
-msgstr ""
+msgstr "Il valore di skip non è valido"
 
 #: ../wxui/memedit.py:2648
 msgid "Some memories are incompatible with this radio"
@@ -3932,7 +3932,7 @@ msgstr "Ordina per colonna:"
 msgid "Sort memories"
 msgstr "Ordina memorie"
 
-#: ../sources/przemienniki_eu.py:60 ../sources/przemienniki_net.py:62
+#: ../sources/przemienniki_net.py:62 ../sources/przemienniki_eu.py:60
 #: ../sources/mapy73pl.py:64
 msgid "Sorting"
 msgstr "Ordinamento"
@@ -4212,7 +4212,7 @@ msgstr "Questo strumento carica i dettagli del vostro sistema in un problema esi
 
 #: ../settings.py:85
 msgid "This value is not mutable"
-msgstr ""
+msgstr "Questo valore non è modificabile"
 
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
@@ -4225,7 +4225,7 @@ msgstr "Tono"
 #: ../chirp_common.py:1145 ../chirp_common.py:1148
 #, python-format
 msgid "Tone %.1f not supported"
-msgstr ""
+msgstr "Tono %.1f non supportato"
 
 #: ../wxui/memedit.py:1452
 msgid "Tone Mode"
@@ -4238,7 +4238,7 @@ msgstr "Squelch a tono"
 #: ../chirp_common.py:1133
 #, python-format
 msgid "Tone mode %s not supported"
-msgstr ""
+msgstr "Modalità tono %s non supportata"
 
 #: ../wxui/memedit.py:151
 msgid "Tone squelch mode"
@@ -4287,11 +4287,11 @@ msgstr "Passo sintonia"
 #: ../chirp_common.py:1176
 #, python-format
 msgid "Tuning step %.2f not supported"
-msgstr ""
+msgstr "Passo sintonia %.2f non supportato"
 
 #: ../chirp_common.py:598
 msgid "Tuning step is invalid"
-msgstr ""
+msgstr "Il passo di sintonia non è valido"
 
 #: ../drivers/baofeng_uv17Pro.py:1083
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
@@ -4332,7 +4332,7 @@ msgstr "Spegne automaticamente la radio se, per il numero di ore selezionato, no
 #: ../chirp_common.py:1209
 #, python-brace-format
 msgid "Tx freq {freq} is out of supported range"
-msgstr ""
+msgstr "La frequenza TX {freq} è fuori dall'intervallo supportato"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
@@ -4346,7 +4346,7 @@ msgstr "Trova porta USB"
 #: ../chirp_common.py:1957
 #, python-format
 msgid "Unable to correct rounded frequency %s"
-msgstr ""
+msgstr "Impossibile correggere la frequenza arrotondata %s"
 
 #: ../wxui/clone.py:502
 msgid "Unable to determine port for your cable. Check your drivers and connections."
@@ -4359,7 +4359,7 @@ msgstr "Impossibile modificare la memoria prima di averla caricata dalla radio"
 #: ../chirp_common.py:1853
 #, python-format
 msgid "Unable to find a supported tuning step for %s"
-msgstr ""
+msgstr "Impossibile trovare un passo di sintonia supportato per %s"
 
 #: ../wxui/main.py:1424
 #, python-format
@@ -4374,14 +4374,14 @@ msgstr "Impossibile importare mentre la visualizzazione è ordinata"
 msgid "Unable to open the clipboard"
 msgstr "Impossibile aprire gli appunti"
 
-#: ../sources/przemienniki_eu.py:46 ../sources/przemienniki_net.py:48
+#: ../sources/przemienniki_net.py:48 ../sources/przemienniki_eu.py:46
 #: ../sources/mapy73pl.py:50
 msgid "Unable to query"
 msgstr "Impossibile eseguire la ricerca"
 
 #: ../sources/dmrmarc.py:50
 msgid "Unable to query DMR-MARC"
-msgstr ""
+msgstr "Impossibile interrogare DMR-MARC"
 
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
@@ -4411,15 +4411,15 @@ msgstr "Stati Uniti"
 
 #: ../sources/radioreference.py:173
 msgid "Unknown Category"
-msgstr ""
+msgstr "Categoria sconosciuta"
 
 #: ../directory.py:229
 msgid "Unknown file format"
-msgstr ""
+msgstr "Formato di file sconosciuto"
 
 #: ../drivers/tdm11.py:480
 msgid "Unknown file header"
-msgstr ""
+msgstr "Intestazione del file sconosciuta"
 
 #: ../wxui/clone.py:485
 msgid "Unplug your cable (if needed) and then click OK"
@@ -4430,9 +4430,9 @@ msgstr "Scollega il cavo (se necessario) e quindi fai clic su OK"
 msgid "Unsupported model %r"
 msgstr "Modello non supportato %r"
 
-#: ../drivers/ft70.py:1237 ../drivers/ft2d.py:167 ../drivers/ft2d.py:204
+#: ../drivers/ft2d.py:167 ../drivers/ft2d.py:204 ../drivers/ft70.py:1237
 msgid "Unsupported version found in ADMS file"
-msgstr ""
+msgstr "Versione non supportata trovata nel file ADMS"
 
 #: ../wxui/bugreport.py:219
 msgid "Update an existing bug"
@@ -4445,7 +4445,7 @@ msgstr "Aggiornamento del bug %s"
 
 #: ../wxui/main.py:1083
 msgid "Upload"
-msgstr ""
+msgstr "Carica"
 
 #: ../wxui/clone.py:898
 msgid "Upload instructions"
@@ -4491,27 +4491,27 @@ msgstr "Nome utente"
 #: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
 #: ../sources/repeaterbook.py:156
 msgid "Using cached data"
-msgstr ""
+msgstr "Uso dei dati in cache"
 
 #: ../settings.py:149
 #, python-format
 msgid "Value %i not in range %i-%i"
-msgstr ""
+msgstr "Il valore %i non è compreso nell'intervallo %i-%i"
 
 #: ../settings.py:328
 #, python-format
 msgid "Value %r contains invalid character `%s'"
-msgstr ""
+msgstr "Il valore %r contiene il carattere non valido `%s'"
 
 #: ../settings.py:323
 #, python-format
 msgid "Value %r must be between %i and %i chars"
-msgstr ""
+msgstr "Il valore %r deve essere compreso tra %i e %i caratteri"
 
 #: ../settings.py:191
 #, python-format
 msgid "Value %s not in range %s-%s"
-msgstr ""
+msgstr "Il valore %s non è compreso nell'intervallo %s-%s"
 
 #: ../wxui/developer.py:314
 #, python-format
@@ -4521,7 +4521,7 @@ msgstr "Il valore non rientra in %i bit"
 #: ../settings.py:264
 #, python-format
 msgid "Value for %s is out of range"
-msgstr ""
+msgstr "Il valore di %s è fuori dall'intervallo"
 
 #: ../wxui/common.py:759
 #, python-format
@@ -4618,7 +4618,7 @@ msgstr "Il cavo sembra collegato alla porta:"
 
 #: ../wxui/query_sources.py:1118
 msgid "ZIP Code"
-msgstr ""
+msgstr "Codice postale"
 
 #: ../wxui/developer.py:194
 msgid "bits"
@@ -4634,11 +4634,11 @@ msgstr "byte ciascuno"
 
 #: ../chirp_common.py:560
 msgid "cTone is not a valid number"
-msgstr ""
+msgstr "cTone non è un numero valido"
 
 #: ../chirp_common.py:562
 msgid "cTone is not valid"
-msgstr ""
+msgstr "cTone non è valido"
 
 #: ../wxui/common.py:545
 msgid "checkbox"
@@ -4671,7 +4671,7 @@ msgstr "bloccato"
 #: ../settings.py:366
 #, python-format
 msgid "map_entries must be 2 el tuples instead of: %s"
-msgstr ""
+msgstr "map_entries deve contenere tuple da 2 elementi invece di: %s"
 
 #: ../wxui/common.py:550
 msgid "number"
@@ -4679,15 +4679,15 @@ msgstr "numero"
 
 #: ../import_logic.py:239
 msgid "offset is abnormally large."
-msgstr ""
+msgstr "l'offset è insolitamente grande."
 
 #: ../chirp_common.py:552
 msgid "rTone is not a valid number"
-msgstr ""
+msgstr "rTone non è un numero valido"
 
 #: ../chirp_common.py:554
 msgid "rTone is not valid"
-msgstr ""
+msgstr "rTone non è valido"
 
 #: ../wxui/bugreport.py:421
 msgid "searched for duplicate issues"
