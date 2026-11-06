@@ -1234,7 +1234,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
                 self._adms_header = f.read(0xED)
                 if b'=ADMS10, Version=1.0.1.0' not in self._adms_header:
                     raise errors.ImageDetectFailed(
-                        'Unsupported version found in ADMS file')
+                        _('Unsupported version found in ADMS file'))
                 LOG.debug('ADMS Header:\n%s',
                           util.hexprint(self._adms_header))
                 self._mmap = memmap.MemoryMapBytes(self._model + f.read())

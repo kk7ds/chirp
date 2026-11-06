@@ -103,7 +103,7 @@ class RadioAmateurSatellites(base.NetworkResultRadio):
         return mem
 
     def do_fetch(self, status, params):
-        status.send_status('Downloading satellite data...', 10)
+        status.send_status(_('Downloading satellite data...'), 10)
 
         try:
             resp = requests.get(DATA_URL, headers=base.HEADERS, timeout=30)
@@ -111,10 +111,10 @@ class RadioAmateurSatellites(base.NetworkResultRadio):
             data = resp.json()
         except Exception as e:
             LOG.exception('Failed to download satellite data: %s', e)
-            status.send_fail('Failed to download data: %s' % e)
+            status.send_fail(_('Failed to download data: %s') % e)
             return
 
-        status.send_status('Parsing data...', 50)
+        status.send_status(_('Parsing data...'), 50)
 
         i = 0
         for item in data:
@@ -130,10 +130,10 @@ class RadioAmateurSatellites(base.NetworkResultRadio):
                 continue
 
         if not self._memories:
-            status.send_fail('No valid satellite frequencies found!')
+            status.send_fail(_('No valid satellite frequencies found!'))
             return
 
-        status.send_status('Done', 100)
+        status.send_status(_('Done'), 100)
         status.send_end()
 
 
@@ -214,7 +214,7 @@ class SatNOGS(base.NetworkResultRadio):
         page = 1
 
         while next_url:
-            status.send_status('Fetching %s (page %i)...' % (label, page),
+            status.send_status(_('Fetching %s (page %i)...') % (label, page),
                                len(results) % 100)
             try:
                 resp = requests.get(next_url, headers=base.HEADERS, timeout=30)
@@ -237,14 +237,14 @@ class SatNOGS(base.NetworkResultRadio):
     def do_fetch(self, status, params):
         filter_modes = params.get('modes', [])
 
-        status.send_status('Downloading SatNOGS satellites...', 5)
+        status.send_status(_('Downloading SatNOGS satellites...'), 5)
         satellites = self._fetch_all(status, SATNOGS_SATS_URL, 'satellites')
 
-        status.send_status('Downloading SatNOGS transmitters...', 50)
+        status.send_status(_('Downloading SatNOGS transmitters...'), 50)
         transmitters = self._fetch_all(status, SATNOGS_TRANS_URL,
                                        'transmitters')
 
-        status.send_status('Processing data...', 90)
+        status.send_status(_('Processing data...'), 90)
 
         # Index satellites by sat_id
         sat_map = {s['sat_id']: s for s in satellites}
@@ -274,8 +274,8 @@ class SatNOGS(base.NetworkResultRadio):
                 continue
 
         if not self._memories:
-            status.send_fail('No valid SatNOGS frequencies found!')
+            status.send_fail(_('No valid SatNOGS frequencies found!'))
             return
 
-        status.send_status('Done', 100)
+        status.send_status(_('Done'), 100)
         status.send_end()

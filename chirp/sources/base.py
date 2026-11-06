@@ -55,7 +55,7 @@ class NetworkResultRadio(chirp_common.NetworkSourceRadio):
         return self._memories[number]
 
     def set_memory(self, memory):
-        raise errors.RadioError('Network source is immutable')
+        raise errors.RadioError(_('Network source is immutable'))
 
     def validate_memory(self, memory):
         return ['Network source is immutable']

@@ -43,7 +43,7 @@ def ensure_has_calls(radio, memory):
                 ulist_changed = True
                 break
         if not ulist_changed:
-            raise errors.RadioError("No room to add callsign %s" %
+            raise errors.RadioError(_("No room to add callsign %s") %
                                     memory.dv_urcall)
 
     rlist_add = []
@@ -61,7 +61,7 @@ def ensure_has_calls(radio, memory):
                 rlist_changed = True
                 break
         if call:
-            raise errors.RadioError("No room to add callsign %s" % call)
+            raise errors.RadioError(_("No room to add callsign %s") % call)
 
     if ulist_changed:
         radio.set_urcall_list(ulist)
@@ -147,11 +147,11 @@ def _import_tone(dst_radio, srcrf, mem):
         # without, and the tmode is TSQL, then use the ctone value
         if mem.rtone not in dstrf.valid_tones:
             raise DestNotCompatible(
-                "Destination does not support tone frequency %s" %
+                _("Destination does not support tone frequency %s") %
                 mem.rtone)
         if mem.ctone not in dstrf.valid_tones:
             raise DestNotCompatible(
-                "Destination does not support tone frequency %s" %
+                _("Destination does not support tone frequency %s") %
                 mem.ctone)
         if mem.tmode == "TSQL":
             mem.rtone = mem.ctone
@@ -205,7 +205,8 @@ def _import_mode(dst_radio, srcrf, mem):
     if mem.mode == "Auto" and mem.mode not in dstrf.valid_modes:
         mode = _guess_mode_by_frequency(mem.freq)
         if mode not in dstrf.valid_modes:
-            raise DestNotCompatible("Destination does not support %s" % mode)
+            raise DestNotCompatible(
+                _("Destination does not support %s") % mode)
         mem.mode = mode
 
 
@@ -235,7 +236,7 @@ def _import_duplex(dst_radio, srcrf, mem):
         for lo, hi, limit in ranges:
             if lo < mem.freq <= hi:
                 if abs(mem.offset) > limit:
-                    raise DestNotCompatible("offset is abnormally large.")
+                    raise DestNotCompatible(_("offset is abnormally large."))
     elif mem.duplex == 'off' and mem.duplex not in dstrf.valid_duplexes:
         # If a radio does not support duplex=off, we should just convert to
         # simplex
@@ -257,7 +258,7 @@ def import_mem(dst_radio, src_features, src_mem, overrides={}, mem_cls=None):
                 ensure_has_calls(dst_radio, src_mem)
         elif 'DV' not in dst_rf.valid_modes:
             raise DestNotCompatible(
-                "Destination radio does not support D-STAR")
+                _("Destination radio does not support D-STAR"))
 
     if mem_cls:
         dst_mem = mem_cls()

@@ -226,7 +226,7 @@ def get_radio_by_image(image_file):
         if image_file.lower().endswith('.csv'):
             rclass = get_radio('Generic_CSV')
             return rclass(image_file)
-        raise errors.ImageDetectFailed("Unknown file format")
+        raise errors.ImageDetectFailed(_("Unknown file format"))
 
 
 def import_drivers(limit=None):

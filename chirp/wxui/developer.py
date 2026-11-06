@@ -661,7 +661,7 @@ class IssueModuleLoader:
             }
         choices = list(attachment_strings.keys())
         choice = wx.GetSingleChoice(
-            _('Choose the module to load from issue %i:' % issue),
+            _('Choose the module to load from issue %i:') % issue,
             _('Available modules'),
             choices,
             len(choices) - 1,

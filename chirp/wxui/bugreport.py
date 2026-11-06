@@ -589,7 +589,7 @@ class ResultPage(BugReportPage):
         self.thread = None
         self.Bind(EVT_REPORT_THREAD, self.report_done)
 
-        self.result = wx.StaticText(self, label='Sending report...',
+        self.result = wx.StaticText(self, label=_('Sending report...'),
                                     style=wx.TE_CENTER)
         vbox.Add(self.result, 0, border=20, flag=wx.EXPAND | wx.ALL)
 

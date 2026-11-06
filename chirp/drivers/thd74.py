@@ -334,7 +334,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
                 pass
 
         if id and not self.MODEL.startswith(id):
-            raise errors.RadioError(_('Unsupported model %r' % id))
+            raise errors.RadioError(_('Unsupported model %r') % id)
         elif id:
             return id
         else:
