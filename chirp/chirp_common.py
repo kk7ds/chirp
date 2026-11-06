@@ -518,79 +518,90 @@ class Memory:
             self.number = int(vals[0])
         except Exception:
             raise errors.InvalidDataError(
-                "Location '%s' is not a valid integer" % vals[0])
+                _("Location '%s' is not a valid integer") % vals[0])
 
         self.name = vals[1]
 
         try:
             self.freq = to_MHz(float(vals[2]))
         except Exception:
-            raise errors.InvalidDataError("Frequency is not a valid number")
+            raise errors.InvalidDataError(
+                _("Frequency is not a valid number"))
 
         if vals[3].strip() in ["+", "-", ""]:
             self.duplex = vals[3].strip()
         else:
-            raise errors.InvalidDataError("Duplex is not +,-, or empty")
+            raise errors.InvalidDataError(
+                _("Duplex is not +,-, or empty"))
 
         try:
             self.offset = to_MHz(float(vals[4]))
         except Exception:
-            raise errors.InvalidDataError("Offset is not a valid number")
+            raise errors.InvalidDataError(
+                _("Offset is not a valid number"))
 
         self.tmode = vals[5]
         if self.tmode not in TONE_MODES:
-            raise errors.InvalidDataError("Invalid tone mode `%s'" %
-                                          self.tmode)
+            raise errors.InvalidDataError(
+                _("Invalid tone mode `%s'") % self.tmode)
 
         try:
             self.rtone = float(vals[6])
         except Exception:
-            raise errors.InvalidDataError("rTone is not a valid number")
+            raise errors.InvalidDataError(
+                _("rTone is not a valid number"))
         if self.rtone not in TONES:
-            raise errors.InvalidDataError("rTone is not valid")
+            raise errors.InvalidDataError(_("rTone is not valid"))
 
         try:
             self.ctone = float(vals[7])
         except Exception:
-            raise errors.InvalidDataError("cTone is not a valid number")
+            raise errors.InvalidDataError(
+                _("cTone is not a valid number"))
         if self.ctone not in TONES:
-            raise errors.InvalidDataError("cTone is not valid")
+            raise errors.InvalidDataError(_("cTone is not valid"))
 
         try:
             self.dtcs = int(vals[8], 10)
         except Exception:
-            raise errors.InvalidDataError("DTCS code is not a valid number")
+            raise errors.InvalidDataError(
+                _("DTCS code is not a valid number"))
         if self.dtcs not in DTCS_CODES:
-            raise errors.InvalidDataError("DTCS code is not valid")
+            raise errors.InvalidDataError(_("DTCS code is not valid"))
 
         if vals[9] in ["NN", "NR", "RN", "RR"]:
             self.dtcs_polarity = vals[9]
         else:
-            raise errors.InvalidDataError("DtcsPolarity is not valid")
+            raise errors.InvalidDataError(
+                _("DtcsPolarity is not valid"))
 
         try:
             self.rx_dtcs = int(vals[10], 10)
         except Exception:
-            raise errors.InvalidDataError("DTCS Rx code is not a valid number")
+            raise errors.InvalidDataError(
+                _("DTCS Rx code is not a valid number"))
         if self.rx_dtcs not in DTCS_CODES:
-            raise errors.InvalidDataError("DTCS Rx code is not valid")
+            raise errors.InvalidDataError(
+                _("DTCS Rx code is not valid"))
 
         self.cross_mode = vals[11]
 
         if vals[12] in MODES:
             self.mode = vals[12]
         else:
-            raise errors.InvalidDataError("Mode %r is not valid" % vals[10])
+            raise errors.InvalidDataError(
+                _("Mode %r is not valid") % vals[10])
 
         try:
             self.tuning_step = float(vals[13])
         except Exception:
-            raise errors.InvalidDataError("Tuning step is invalid")
+            raise errors.InvalidDataError(_("Tuning step is invalid"))
 
         try:
             self.skip = vals[14]
         except Exception:
-            raise errors.InvalidDataError("Skip value is not valid")
+            raise errors.InvalidDataError(
+                _("Skip value is not valid"))
 
         return True
 
@@ -1106,57 +1117,63 @@ class RadioFeatures:
         if not self.has_infinite_number and \
                 (mem.number < lo or mem.number > hi) and \
                 mem.extd_number not in self.valid_special_chans:
-            msg = ValidationWarning("Location %i is out of range" % mem.number)
+            msg = ValidationWarning(
+                _("Location %i is out of range") % mem.number)
             msgs.append(msg)
 
         if (self.valid_modes and
                 mem.mode not in self.valid_modes and
                 'mode' not in mem.immutable and
                 mem.mode != "Auto"):
-            msg = ValidationError("Mode %s not supported" % mem.mode)
+            msg = ValidationError(_("Mode %s not supported") % mem.mode)
             msgs.append(msg)
 
         if self.valid_tmodes and mem.tmode not in self.valid_tmodes:
-            msg = ValidationError("Tone mode %s not supported" % mem.tmode)
+            msg = ValidationError(
+                _("Tone mode %s not supported") % mem.tmode)
             msgs.append(msg)
         else:
             if mem.tmode == "Cross":
                 if self.valid_cross_modes and \
                         mem.cross_mode not in self.valid_cross_modes:
-                    msg = ValidationError("Cross tone mode %s not supported" %
-                                          mem.cross_mode)
+                    msg = ValidationError(
+                        _("Cross tone mode %s not supported") %
+                        mem.cross_mode)
                     msgs.append(msg)
 
         if self.valid_tones and mem.rtone not in self.valid_tones:
-            msg = ValidationError("Tone %.1f not supported" % mem.rtone)
+            msg = ValidationError(_("Tone %.1f not supported") % mem.rtone)
             msgs.append(msg)
         if self.valid_tones and mem.ctone not in self.valid_tones:
-            msg = ValidationError("Tone %.1f not supported" % mem.ctone)
+            msg = ValidationError(_("Tone %.1f not supported") % mem.ctone)
             msgs.append(msg)
 
         if self.has_dtcs_polarity and \
                 mem.dtcs_polarity not in self.valid_dtcs_pols:
-            msg = ValidationError("DTCS Polarity %s not supported" %
-                                  mem.dtcs_polarity)
+            msg = ValidationError(
+                _("DTCS Polarity %s not supported") % mem.dtcs_polarity)
             msgs.append(msg)
 
         if self.valid_dtcs_codes and \
                 mem.dtcs not in self.valid_dtcs_codes:
-            msg = ValidationError("DTCS Code %03i not supported" % mem.dtcs)
+            msg = ValidationError(
+                _("DTCS Code %03i not supported") % mem.dtcs)
             msgs.append(msg)
         if self.valid_dtcs_codes and \
                 mem.rx_dtcs not in self.valid_dtcs_codes:
-            msg = ValidationError("DTCS Code %03i not supported" % mem.rx_dtcs)
+            msg = ValidationError(
+                _("DTCS Code %03i not supported") % mem.rx_dtcs)
             msgs.append(msg)
 
         if self.valid_duplexes and mem.duplex not in self.valid_duplexes:
-            msg = ValidationError("Duplex %s not supported" % mem.duplex)
+            msg = ValidationError(
+                _("Duplex %s not supported") % mem.duplex)
             msgs.append(msg)
 
         ts = mem.tuning_step
         if self.valid_tuning_steps and ts not in self.valid_tuning_steps and \
                 not self.has_nostep_tuning:
-            msg = ValidationError("Tuning step %.2f not supported" % ts)
+            msg = ValidationError(_("Tuning step %.2f not supported") % ts)
             msgs.append(msg)
 
         if self.valid_bands:
@@ -1167,8 +1184,8 @@ class RadioFeatures:
                     break
             if not valid:
                 msg = ValidationError(
-                    ("Frequency {freq} is out "
-                     "of supported ranges {ranges}").format(
+                    _("Frequency {freq} is out "
+                      "of supported ranges {ranges}").format(
                          freq=format_freq(mem.freq),
                          ranges=self.concise_bands))
                 msgs.append(msg)
@@ -1189,8 +1206,8 @@ class RadioFeatures:
                     break
             if not valid:
                 msg = ValidationError(
-                    ("Tx freq {freq} is out "
-                     "of supported range").format(freq=format_freq(freq)))
+                    _("Tx freq {freq} is out "
+                      "of supported range").format(freq=format_freq(freq)))
                 msgs.append(msg)
 
         if mem.power and self.valid_power_levels:
@@ -1198,12 +1215,13 @@ class RadioFeatures:
                 if (mem.power < min(self.valid_power_levels) or
                         mem.power > max(self.valid_power_levels)):
                     msg = ValidationWarning(
-                        "Power level %s is out of radio's range" % mem.power)
+                        _("Power level %s is out of radio's range") %
+                        mem.power)
                     msgs.append(msg)
             else:
                 if mem.power not in self.valid_power_levels:
                     msg = ValidationWarning(
-                        "Power level %s not supported" % mem.power)
+                        _("Power level %s not supported") % mem.power)
                     msgs.append(msg)
 
         if self.valid_tuning_steps and not self.has_nostep_tuning:
@@ -1215,9 +1233,8 @@ class RadioFeatures:
         if self.valid_characters:
             for char in mem.name:
                 if char not in self.valid_characters:
-                    msgs.append(ValidationWarning("Name character " +
-                                                  "`%s'" % char +
-                                                  " not supported"))
+                    msgs.append(ValidationWarning(
+                        _("Name character `%s' not supported") % char))
                     break
 
         if is_airband(mem.freq):
@@ -1832,8 +1849,9 @@ def required_step(freq, allowed=None):
             LOG.debug('Chose step %s for %s' % (step, format_freq(freq)))
             return step
 
-    raise errors.InvalidDataError("Unable to find a supported " +
-                                  "tuning step for %s" % format_freq(freq))
+    raise errors.InvalidDataError(
+        _("Unable to find a supported tuning step for %s") %
+        format_freq(freq))
 
 
 def is_airband(freq):
@@ -1935,8 +1953,8 @@ def fix_rounded_step(freq):
     except errors.InvalidDataError:
         pass
 
-    raise errors.InvalidDataError("Unable to correct rounded frequency " +
-                                  format_freq(freq))
+    raise errors.InvalidDataError(
+        _("Unable to correct rounded frequency %s") % format_freq(freq))
 
 
 def _name(name, len, just_upper):

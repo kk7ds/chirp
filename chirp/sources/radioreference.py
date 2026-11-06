@@ -116,7 +116,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
     def do_fetch(self, status, params):
         """Fetches frequencies for all subcategories in a county
         (or zip if USA)."""
-        status.send_status('Querying...', 5)
+        status.send_status(_('Querying...'), 5)
         self._freqs = []
         # if this method was accessed for the USA, use the zip; otherwise
         # use the county ID
@@ -150,7 +150,7 @@ class RadioReferenceRadio(base.NetworkResultRadio):
                 status_cur += 1
                 try:
                     status.send_status(
-                        'Fetching %s:%s' % (cat.cName, subcat.scName),
+                        _('Fetching %s:%s') % (cat.cName, subcat.scName),
                         status_cur / status_max * 100)
                 except AttributeError:
                     LOG.debug('Category %r subcat %r has no name',
@@ -170,12 +170,12 @@ class RadioReferenceRadio(base.NetworkResultRadio):
                     try:
                         sc_name = subcat.scName
                     except AttributeError:
-                        sc_name = 'Unknown Category'
+                        sc_name = _('Unknown Category')
 
                     status.send_status(
-                        'Fetching agency %s %s:%s' % (agency.aid,
-                                                      cat.cName,
-                                                      sc_name),
+                        _('Fetching agency %s %s:%s') % (agency.aid,
+                                                         cat.cName,
+                                                         sc_name),
                         status_cur / status_max * 100)
         status.send_end()
 

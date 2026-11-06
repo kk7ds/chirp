@@ -229,14 +229,15 @@ class CSVRadio(chirp_common.FileBackedRadio):
                 for field in header:
                     # Log unknown header names for the UI to capture and expose
                     if field not in chirp_common.Memory.CSV_FORMAT:
-                        LOG.error('Header line has unknown field %r' % field)
+                        LOG.error(_('Header line has unknown field %r'),
+                                  field)
                 self.file_has_rTone = "rToneFreq" in header
                 self.file_has_cTone = "cToneFreq" in header
                 continue
 
             # Spreadsheets like to omit trailing empty columns in TSV
             if len(header) > len(line) and not self.SEPCHAR.isspace():
-                LOG.error("Line %i has %i columns, expected %i",
+                LOG.error(_("Line %i has %i columns, expected %i"),
                           lineno, len(line), len(header))
                 self.errors.append("Column number mismatch on line %i" %
                                    lineno)
@@ -251,7 +252,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
                 if mem.number is None:
                     raise Exception("Invalid Location field" % lineno)
             except Exception as e:
-                LOG.error("Line %i: %s", lineno, e)
+                LOG.error(_("Line %i: %s"), lineno, e)
                 self.errors.append("Line %i: %s" % (lineno, e))
                 continue
 
@@ -261,7 +262,7 @@ class CSVRadio(chirp_common.FileBackedRadio):
             good += 1
 
         if not good:
-            raise errors.InvalidDataError("No channels found")
+            raise errors.InvalidDataError(_("No channels found"))
 
     def save(self, filename=None):
         if filename is None and self._filename is None:

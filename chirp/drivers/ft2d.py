@@ -164,7 +164,7 @@ class FT3D(FT2D):
                 self._adms_header = f.read(0x18C)
                 if b'ADMS11, Version=1.0.0.0' not in self._adms_header:
                     raise errors.ImageDetectFailed(
-                        'Unsupported version found in ADMS file')
+                        _('Unsupported version found in ADMS file'))
                 LOG.debug('ADMS Header:\n%s',
                           util.hexprint(self._adms_header))
                 self._mmap = memmap.MemoryMapBytes(f.read())
@@ -201,7 +201,7 @@ class FT5D(FT2D):
                 self._adms_header = f.read(0x18C)
                 if b'ADMS14, Version=1.0.' not in self._adms_header:
                     raise errors.ImageDetectFailed(
-                        'Unsupported version found in ADMS file')
+                        _('Unsupported version found in ADMS file'))
                 LOG.debug('ADMS Header:\n%s',
                           util.hexprint(self._adms_header))
                 self._mmap = memmap.MemoryMapBytes(f.read())

@@ -128,7 +128,7 @@ class ChirpRadioInfo(common.ChirpEditor, common.ChirpSyncEditor):
             self, style=wx.propgrid.PG_SPLITTER_AUTO_CENTER)
         _enable_scrolling(pg)
         accessibility.enable_propgrid_a11y(pg, _('Radio Info: Image Metadata'))
-        self._group_control.AddPage(pg, 'Image Metadata')
+        self._group_control.AddPage(pg, _('Image Metadata'))
         # Don't show the icom fields which are displayed elsewhere, and
         # don't dump the whole mem_extra blob in here
         exclude = ('modelid', 'endframe', 'raw', 'memsize',

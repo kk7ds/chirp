@@ -82,7 +82,7 @@ class RadioSettingValue:
     def set_value(self, value):
         """Sets the current value, triggers changed"""
         if not self.get_mutable() and self.initialized:
-            raise InvalidValueError("This value is not mutable")
+            raise InvalidValueError(_("This value is not mutable"))
 
         if self._current is not None and value != self._current:
             self._has_changed = True
@@ -144,9 +144,9 @@ class RadioSettingValueInteger(RadioSettingValue):
         try:
             value = int(value)
         except Exception:
-            raise InvalidValueError("An integer is required")
+            raise InvalidValueError(_("An integer is required"))
         if value > self._max or value < self._min:
-            raise InvalidValueError("Value %i not in range %i-%i" %
+            raise InvalidValueError(_("Value %i not in range %i-%i") %
                                     (value, self._min, self._max))
         RadioSettingValue.set_value(self, value)
 
@@ -186,9 +186,9 @@ class RadioSettingValueFloat(RadioSettingValue):
         try:
             value = float(value)
         except Exception:
-            raise InvalidValueError("A floating point value is required")
+            raise InvalidValueError(_("A floating point value is required"))
         if value > self._max or value < self._min:
-            raise InvalidValueError("Value %s not in range %s-%s" % (
+            raise InvalidValueError(_("Value %s not in range %s-%s") % (
                 self.format(value),
                 self.format(self._min), self.format(self._max)))
 
@@ -260,9 +260,11 @@ class RadioSettingValueList(RadioSettingValue):
             try:
                 value = self._options[value]
             except IndexError:
-                raise InvalidValueError("Value for %s is out of range" % value)
+                raise InvalidValueError(
+                    _("Value for %s is out of range") % value)
         if value not in self._options:
-            raise InvalidValueError("%s is not valid for this setting" % value)
+            raise InvalidValueError(
+                _("%s is not valid for this setting") % value)
         RadioSettingValue.set_value(self, value)
 
     def set_index(self, index):
@@ -318,12 +320,13 @@ class RadioSettingValueString(RadioSettingValue):
     def set_value(self, value):
         if len(value) < self._minlength or len(value) > self._maxlength:
             raise InvalidValueError(
-                "Value %r must be between %i and %i chars" % (
+                _("Value %r must be between %i and %i chars") % (
                     value, self._minlength, self._maxlength))
         for char in value:
             if char not in self._charset:
-                raise InvalidValueError(("Value %r contains invalid "
-                                         "character `%s'") % (value, char))
+                raise InvalidValueError(
+                    _("Value %r contains invalid character `%s'") %
+                    (value, char))
         if self._autopad:
             value = value.ljust(self._maxlength)
         RadioSettingValue.set_value(self, value)
@@ -360,8 +363,8 @@ class RadioSettingValueMap(RadioSettingValueList):
         # Catch bugs early by testing tuple geometry
         for map_entry in map_entries:
             if not len(map_entry) == 2:
-                raise InvalidValueError("map_entries must be 2 el tuples "
-                                        "instead of: %s" % str(map_entry))
+                raise InvalidValueError(_("map_entries must be 2 el tuples "
+                                          "instead of: %s") % str(map_entry))
         user_options = [e[0] for e in map_entries]
         self._mem_vals = [e[1] for e in map_entries]
         RadioSettingValueList.__init__(self, user_options, current_index=0)
@@ -385,7 +388,7 @@ class RadioSettingValueMap(RadioSettingValueList):
             self.set_value(self._options[index])
         else:
             raise InvalidValueError(
-                "%s is not valid for this setting" % mem_val)
+                _("%s is not valid for this setting") % mem_val)
 
     def get_mem_val(self):
         """Get the mem val corresponding to the currently selected user

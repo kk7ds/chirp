@@ -477,7 +477,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
             with open(filename, 'rb') as f:
 
                 if f.read(len(self._mdt_file_header)) != self._mdt_file_header:
-                    raise errors.ImageDetectFailed("Unknown file header")
+                    raise errors.ImageDetectFailed(_("Unknown file header"))
 
                 self._mmap = memmap.MemoryMapBytes(f.read(self._memsize))
                 LOG.info('Loaded TD-M11 .mdt file %s at offset 0x%04x' %
