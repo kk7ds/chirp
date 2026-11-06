@@ -16,6 +16,7 @@
 """Wouxun KG-UV8D radio management module"""
 
 import time
+import struct
 import logging
 from chirp import util, chirp_common, bitwise, memmap, errors, directory
 from chirp import checksum
@@ -24,14 +25,13 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
     RadioSettingValueInteger, RadioSettingValueString, \
     RadioSettings
 from chirp.kenwood_tone import KenwoodToneModel
-import struct
 
 LOG = logging.getLogger(__name__)
 
-CMD_ID = 128
-CMD_END = 129
-CMD_RD = 130
-CMD_WR = 131
+CMD_ID = 0x80
+CMD_END = 0x81
+CMD_RD = 0x82
+CMD_WR = 0x83
 
 MEM_VALID = 158
 
@@ -69,6 +69,26 @@ RPTMODE_LIST = ["Radio", "Repeater"]
 
 # memory slot 0 is not used, start at 1 (so need 1000 slots, not 999)
 # structure elements whose name starts with x are currently unidentified
+MEM_DEFS = """
+struct channel {
+    u32     rxfreq;
+    u32     txfreq;
+    u16     rxtone;
+    u16     txtone;
+    u8      scrambler:4,
+            unknown12:2,
+            power:1,
+            unknown12b:1;
+    u8      unknown13:2,
+            scan_add:1,
+            unknown13b:1,
+            compander:1,
+            mute_mode:2,
+            iswide:1;
+    u16     padding;
+};
+"""
+
 _MEM_FORMAT = """
     #seekto 0x0044;
     struct {
@@ -230,21 +250,7 @@ _MEM_FORMAT = """
     } vfob;
 
     #seekto 0x0900;
-    struct {
-        u32     rxfreq;
-        u32     txfreq;
-        u16     rxtone;
-        u16     txtone;
-        u8      unknown1:6,
-                power:1,
-                unknown2:1;
-        u8      unknown3:2,
-                scan_add:1,
-                unknown4:2,
-                mute_mode:2,
-                iswide:1;
-        u16     padding;
-    } memory[1000];
+    struct channel memory[1000];
 
     #seekto 0x4780;
     struct {
@@ -275,80 +281,69 @@ _MEM_FORMAT = """
 #  (2 bytes location + 64 bytes data).
 
 
-@directory.register
-class KGUV8DRadio(chirp_common.CloneModeRadio,
-                  chirp_common.ExperimentalRadio):
+class KGUV8Radio(chirp_common.CloneModeRadio):
+    """Common clone support for the Wouxun KG-UV8 family"""
 
-    """Wouxun KG-UV8D"""
-    VENDOR = "Wouxun"
-    MODEL = "KG-UV8D"
-    _model = b"KG-UV8D"
-    _file_ident = b"KGUV8D"
-    BAUD_RATE = 19200
-    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
-                    chirp_common.PowerLevel("H", watts=5)]
+    # Model string the radio sends back during identification
+    _model = b""
+    # First byte of every record on the wire
     _record_start = 0x7D
+    # Block sizes the radio accepts; these are not always the same
+    _read_block = 64
+    _write_block = 64
+    # Channel number to memory map index, the KG-UV8D and KG-UV8E start at 1
+    _channel_index_offset = 0
+    # Layout of the memory map, starting with MEM_DEFS
+    _MEM_FORMAT = MEM_DEFS
+    # Tone model parameters, the "no tone" value differs between models
+    _tone_dcs_base = 0x2800
+    _tone_pol_mask = 0x8000
+    _tone_init = 0x0000
 
     def __init__(self, pipe):
         super().__init__(pipe)
         self.tone_model = KenwoodToneModel(
-            dcs_base=0x2800,
-            pol_mask=0x8000,
-            tone_init=0xFFFF)
+            dcs_base=self._tone_dcs_base,
+            pol_mask=self._tone_pol_mask,
+            tone_init=self._tone_init
+        )
 
-    def _write_record(self, cmd, payload=None):
-        # build the packet
-        _length = 0
-        if payload:
-            _length = len(payload)
-        _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF, _length)
-        if payload:
-            # add the chars to the packet
-            _packet += payload
-        # calculate and add the checksum to the packet
-        _packet += bytes([checksum.checksum_8bit(_packet[1:])])
+    # ---- payload obfuscation, plain by default ----
+
+    def encrypt(self, data):
+        return data
+
+    def decrypt(self, data):
+        return data
+
+    # ---- record layer ----
+
+    def _write_record(self, cmd, payload=b""):
+        _packet = struct.pack('BBBB', self._record_start, cmd, 0xFF,
+                              len(payload))
+        cs = bytes([checksum.checksum_8bit(_packet[1:] + payload)])
+        _packet += self.encrypt(payload + cs)
         LOG.debug("Sent:\n%s" % util.hexprint(_packet))
         self.pipe.write(_packet)
 
     def _read_record(self):
-        # read 4 chars for the header
+        # 4 byte header: start, command, direction, length
         _header = self.pipe.read(4)
         if not _header:
             raise errors.RadioNoResponse()
         if len(_header) != 4:
             raise errors.RadioError('Radio sent short header')
         _length = struct.unpack('xxxB', _header)[0]
-        _packet = self.pipe.read(_length)
+        _packet = self.pipe.read(_length + 1)
+        if len(_packet) != _length + 1:
+            raise errors.RadioError('Radio sent short record')
+        _packet = self.decrypt(_packet)
         _cs = checksum.checksum_8bit(_header[1:])
-        _cs += checksum.checksum_8bit(_packet)
+        _cs += checksum.checksum_8bit(_packet[:-1])
         _cs %= 256
-        _rcs = self.pipe.read(1)[0]
         LOG.debug("_cs =%x", _cs)
-        LOG.debug("_rcs=%x", _rcs)
-        return (_rcs != _cs, _packet)
-
-# Identify the radio
-#
-# A Gotcha: the first identify packet returns a bad checksum, subsequent
-# attempts return the correct checksum... (well it does on my radio!)
-#
-# The ID record returned by the radio also includes the current frequency range
-# as 4 bytes big-endian in 10 Hz increments
-#
-# Offset
-#  0:10     Model, zero padded (Use first 7 chars for 'KG-UV8D')
-#  11:14    UHF rx lower limit (in units of 10 Hz)
-#  15:18    UHF rx upper limit
-#  19:22    UHF tx lower limit
-#  23:26    UHF tx upper limit
-#  27:30    VHF rx lower limit
-#  31:34    VHF rx upper limit
-#  35:38    VHF tx lower limit
-#  39:42    VHF tx upper limit
-#
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return cls._file_ident in filedata[0x400:0x408]
+        LOG.debug("_rcs=%x", _packet[-1])
+        return (_packet[-1] != _cs, _packet[:-1])
 
     def _identify(self):
         """Do the identification dance"""
@@ -360,19 +355,22 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 LOG.error("Checksum error: retrying ident...")
                 time.sleep(0.100)
                 continue
-            LOG.debug("Model %s" % util.hexprint(_resp[0:7]))
-            if _resp[0:7] == self._model:
+            LOG.debug("Model %s" % util.hexprint(_resp[0:len(self._model)]))
+            if _resp[0:len(self._model)] == self._model:
                 return
             if len(_resp) == 0:
                 raise errors.RadioNoResponse()
             else:
                 raise Exception("Unable to identify radio")
+        raise errors.RadioNoResponse()
 
     def _finish(self):
         self._write_record(CMD_END)
 
+    # ---- cloning ----
+
     def process_mmap(self):
-        self._memobj = bitwise.parse(_MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(self._MEM_FORMAT, self._mmap)
 
     def sync_in(self):
         try:
@@ -386,29 +384,32 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
     def sync_out(self):
         self._upload()
 
-    # TODO: This is a dumb, brute force method of downloading the memory.
-    # it would be smarter to only load the active areas and none of
-    # the padding/unused areas.
     def _download(self):
-        """Talk to a Wouxun KG-UV8D and do a download"""
         try:
             self._identify()
-            return self._do_download(0, 32768, 64)
+            return self._do_download(0, 32768, self._read_block)
         except errors.RadioError:
             raise
         except Exception as e:
             LOG.exception('Unknown error during download process')
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
+    def _upload(self):
+        try:
+            self._identify()
+            self._do_upload(0, 32768, self._write_block)
+        except errors.RadioError:
+            raise
+        except Exception as e:
+            raise errors.RadioError("Failed to communicate with radio: %s" % e)
+
     def _do_download(self, start, end, blocksize):
-        # allocate & fill memory
         image = b""
         for i in range(start, end, blocksize):
             req = struct.pack('>HB', i, blocksize)
             self._write_record(CMD_RD, req)
             cs_error, resp = self._read_record()
             if cs_error:
-                # TODO: probably should retry a few times here
                 LOG.debug(util.hexprint(resp))
                 raise Exception("Checksum error on read")
             LOG.debug("Got:\n%s" % util.hexprint(resp))
@@ -422,26 +423,13 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
         self._finish()
         return memmap.MemoryMapBytes(image)
 
-    def _upload(self):
-        """Talk to a Wouxun KG-UV8D and do a upload"""
-        try:
-            self._identify()
-            self._do_upload(0, 32768, 64)
-        except errors.RadioError:
-            raise
-        except Exception as e:
-            raise errors.RadioError("Failed to communicate with radio: %s" % e)
-        return
-
     def _do_upload(self, start, end, blocksize):
         ptr = start
         for i in range(start, end, blocksize):
             req = struct.pack('>H', i)
             chunk = self.get_mmap()[ptr:ptr + blocksize]
             self._write_record(CMD_WR, req + chunk)
-            LOG.debug(util.hexprint(req + chunk))
             cserr, ack = self._read_record()
-            LOG.debug(util.hexprint(ack))
             j = struct.unpack('>H', ack)[0]
             if cserr or j != ptr:
                 raise Exception("Radio did not ack block %i" % ptr)
@@ -453,6 +441,134 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                 status.msg = "Cloning to radio"
                 self.status_fn(status)
         self._finish()
+
+    # ---- channel memory, identical on every model ----
+
+    def _mem_index(self, number):
+        """Map a channel number to an index in the memory map"""
+        return number + self._channel_index_offset
+
+    def _get_name(self, _nam):
+        name = ""
+        for char in _nam.name:
+            if char:
+                name += chr(char)
+        return name.rstrip()
+
+    def _set_name(self, _nam, name):
+        for i in range(len(_nam.name)):
+            if i < len(name) and name[i]:
+                _nam.name[i] = ord(name[i])
+            else:
+                _nam.name[i] = 0x0
+
+    def _get_mode(self, _mem):
+        return "FM" if _mem.iswide else "NFM"
+
+    def _set_mode(self, _mem, mode):
+        _mem.iswide = 1 if mode == "FM" else 0
+
+    def _clear_options(self, _mem):
+        """Clear the per channel options that CHIRP does not model"""
+        _mem.mute_mode = 0
+
+    def get_raw_memory(self, number):
+        return repr(self._memobj.memory[self._mem_index(number)])
+
+    def get_memory(self, number):
+        idx = self._mem_index(number)
+        _mem = self._memobj.memory[idx]
+        _nam = self._memobj.names[idx]
+
+        mem = chirp_common.Memory()
+        mem.number = number
+        _valid = self._memobj.valid[idx]
+        LOG.debug("%d %s", number, _valid == MEM_VALID)
+        if _valid != MEM_VALID:
+            mem.empty = True
+            return mem
+        else:
+            mem.empty = False
+
+        mem.freq = int(_mem.rxfreq) * 10
+
+        if _mem.txfreq == 0xFFFFFFFF:
+            # TX freq not set
+            mem.duplex = "off"
+            mem.offset = 0
+        elif int(_mem.rxfreq) == int(_mem.txfreq):
+            mem.duplex = ""
+            mem.offset = 0
+        elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
+            mem.duplex = "split"
+            mem.offset = int(_mem.txfreq) * 10
+        else:
+            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
+            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
+
+        mem.name = self._get_name(_nam)
+
+        self.tone_model.get_tone(_mem, mem)
+
+        mem.skip = "" if bool(_mem.scan_add) else "S"
+
+        mem.power = self.POWER_LEVELS[_mem.power]
+        mem.mode = self._get_mode(_mem)
+        return mem
+
+    def set_memory(self, mem):
+        idx = self._mem_index(mem.number)
+
+        _mem = self._memobj.memory[idx]
+        _nam = self._memobj.names[idx]
+
+        if mem.empty:
+            _mem.set_raw(b"\x00" * (_mem.size() // 8))
+            self._memobj.valid[idx] = 0
+            _nam.set_raw(b"\x00" * (_nam.size() // 8))
+            return
+
+        _mem.rxfreq = int(mem.freq / 10)
+        if mem.duplex == "off":
+            _mem.txfreq = 0xFFFFFFFF
+        elif mem.duplex == "split":
+            _mem.txfreq = int(mem.offset / 10)
+        elif mem.duplex == "+":
+            _mem.txfreq = int(mem.freq / 10) + int(mem.offset / 10)
+        elif mem.duplex == "-":
+            _mem.txfreq = int(mem.freq / 10) - int(mem.offset / 10)
+        else:
+            _mem.txfreq = int(mem.freq / 10)
+        _mem.scan_add = int(mem.skip != "S")
+        self._set_mode(_mem, mem.mode)
+        self.tone_model.set_tone(mem, _mem)
+        if mem.power:
+            _mem.power = self.POWER_LEVELS.index(mem.power)
+        else:
+            _mem.power = True
+        self._clear_options(_mem)
+        self._set_name(_nam, mem.name)
+        self._memobj.valid[idx] = MEM_VALID
+
+
+@directory.register
+class KGUV8DRadio(KGUV8Radio, chirp_common.ExperimentalRadio):
+
+    """Wouxun KG-UV8D"""
+    VENDOR = "Wouxun"
+    MODEL = "KG-UV8D"
+    _model = b"KG-UV8D"
+    _file_ident = b"KGUV8D"
+    BAUD_RATE = 19200
+    POWER_LEVELS = [chirp_common.PowerLevel("L", watts=1),
+                    chirp_common.PowerLevel("H", watts=5)]
+    _record_start = 0x7D
+    _tone_init = 0xFFFF
+    _MEM_FORMAT = MEM_DEFS + _MEM_FORMAT
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return cls._file_ident in filedata[0x400:0x408]
 
     def get_features(self):
         # TODO: This probably needs to be setup correctly to match the true
@@ -494,99 +610,6 @@ class KGUV8DRadio(chirp_common.CloneModeRadio,
                            "There are no known issues with it, but you should "
                            "proceed with caution.")
         return rp
-
-    def get_raw_memory(self, number):
-        return repr(self._memobj.memory[number])
-
-    def get_memory(self, number):
-        _mem = self._memobj.memory[number]
-        _nam = self._memobj.names[number]
-
-        mem = chirp_common.Memory()
-        mem.number = number
-        _valid = self._memobj.valid[mem.number]
-
-        LOG.debug("%d %s", number, _valid == MEM_VALID)
-        if _valid != MEM_VALID:
-            mem.empty = True
-            return mem
-        else:
-            mem.empty = False
-
-        mem.freq = int(_mem.rxfreq) * 10
-
-        if _mem.txfreq == 0xFFFFFFFF:
-            # TX freq not set
-            mem.duplex = "off"
-            mem.offset = 0
-        elif int(_mem.rxfreq) == int(_mem.txfreq):
-            mem.duplex = ""
-            mem.offset = 0
-        elif abs(int(_mem.rxfreq) * 10 - int(_mem.txfreq) * 10) > 70000000:
-            mem.duplex = "split"
-            mem.offset = int(_mem.txfreq) * 10
-        else:
-            mem.duplex = int(_mem.rxfreq) > int(_mem.txfreq) and "-" or "+"
-            mem.offset = abs(int(_mem.rxfreq) - int(_mem.txfreq)) * 10
-
-        for char in _nam.name:
-            if char != 0:
-                mem.name += chr(char)
-        mem.name = mem.name.rstrip()
-
-        self.tone_model.get_tone(_mem, mem)
-
-        mem.skip = "" if bool(_mem.scan_add) else "S"
-
-        mem.power = self.POWER_LEVELS[_mem.power]
-        mem.mode = _mem.iswide and "FM" or "NFM"
-        return mem
-
-    def set_memory(self, mem):
-        number = mem.number
-
-        _mem = self._memobj.memory[number]
-        _nam = self._memobj.names[number]
-
-        if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() // 8))
-            self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
-            return
-
-        _mem.rxfreq = int(mem.freq / 10)
-        if mem.duplex == "off":
-            _mem.txfreq = 0xFFFFFFFF
-        elif mem.duplex == "split":
-            _mem.txfreq = int(mem.offset / 10)
-        elif mem.duplex == "off":
-            for i in range(0, 4):
-                _mem.txfreq[i].set_raw("\xFF")
-        elif mem.duplex == "+":
-            _mem.txfreq = int(mem.freq / 10) + int(mem.offset / 10)
-        elif mem.duplex == "-":
-            _mem.txfreq = int(mem.freq / 10) - int(mem.offset / 10)
-        else:
-            _mem.txfreq = int(mem.freq / 10)
-        _mem.scan_add = int(mem.skip != "S")
-        _mem.iswide = int(mem.mode == "FM")
-        # set the tone
-        self.tone_model.set_tone(mem, _mem)
-        # set the power
-        if mem.power:
-            _mem.power = self.POWER_LEVELS.index(mem.power)
-        else:
-            _mem.power = True
-        # TODO: set the correct mute mode, for now just
-        # set to mute mode to QT (not QT+DTMF or QT*DTMF)
-        _mem.mute_mode = 0
-
-        for i in range(0, len(_nam.name)):
-            if i < len(mem.name) and mem.name[i]:
-                _nam.name[i] = ord(mem.name[i])
-            else:
-                _nam.name[i] = 0x0
-        self._memobj.valid[mem.number] = MEM_VALID
 
     def _get_settings(self):
         _settings = self._memobj.settings
