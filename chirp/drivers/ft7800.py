@@ -1235,12 +1235,14 @@ struct mem_struct homes[7];
 
 #seekto 0x0288;
 struct {
-  u8 unknown_vfos[0x90];
+  struct mem_struct vfos[9];
   u8 left_mode;
   u8 unknown_mode[3];
   ul16 left_memory;
   u8 unknown_right[2];
-  u8 unknown_state[3];
+  u8 left_band;
+  u8 right_band;
+  u8 unknown_9a;
   u8 main_left:1,
      unknown_main:7;
   u8 unknown_9c;
@@ -1255,6 +1257,9 @@ struct mem_struct pms[10];
 u8 reserved[0x30];
 u8 checksum;
 """
+
+HYPER_VFO_LABELS_8900 = (
+    'L29', 'L50', 'L144', 'L350', 'L430', 'L850', 'R144', 'R430')
 
 
 @directory.register
@@ -1277,6 +1282,11 @@ class FT8900Radio(FTx800Radio):
         'HOME 29': 810, 'HOME 50': 811, 'HOME 144': 812,
         'HOME 350': 813, 'HOME 430': 814, 'HOME 850': 815,
     }
+    _SPECIAL_MEMORIES.update({
+        'H%i %s' % (slot, label): 816 + (slot - 1) * 8 + index
+        for slot in range(1, 7)
+        for index, label in enumerate(HYPER_VFO_LABELS_8900)
+    })
     # The 223 MHz record between 144 and 350 is not an operating band.
     _HOME_SLOTS = ((0, (28000000, 29700000)),
                    (1, (50000000, 54000000)),
@@ -1284,6 +1294,8 @@ class FT8900Radio(FTx800Radio):
                    (4, (320000000, 399999999)),
                    (5, (400000000, 480000000)),
                    (6, (700000000, 985000000)))
+    _HYPER_VFO_SLOTS = _HOME_SLOTS + (
+        (7, (108000000, 180000000)), (8, (400000000, 480000000)))
 
     @classmethod
     def get_prompts(cls):
@@ -1331,14 +1343,18 @@ class FT8900Radio(FTx800Radio):
 
     def _hyper_supported(self, hyper):
         index = int(hyper.left_memory)
-        # Only LEFT memory / RIGHT VFO was mapped with physical captures.
-        # Keep unverified mode combinations read-only, including variants
-        # distinguished by the adjacent, otherwise unknown state fields.
-        return (hyper.left_mode == 2 and
+        # Physical MR/VFO/MR captures established these paired mode fields.
+        # Right-side MR and other combinations remain unverified.
+        return ((int(hyper.left_mode), int(hyper.mode_flags)) in
+                ((0, 0), (2, 2)) and
                 not any(hyper.unknown_mode) and
                 not any(hyper.unknown_right) and
-                hyper.mode_flags == 2 and not hyper.unknown_scan and
-                0 <= index < 799 and not self.get_memory(index + 1).empty)
+                not hyper.unknown_scan and
+                int(hyper.left_band) in (0, 1, 2, 4, 5, 6) and
+                int(hyper.right_band) in (2, 5) and
+                (hyper.left_mode == 0 or
+                 (0 <= index < 799 and
+                  not self.get_memory(index + 1).empty)))
 
     def _hyper_channels(self):
         channels = {}
@@ -1368,7 +1384,8 @@ class FT8900Radio(FTx800Radio):
                 group.append(self._hyper_readonly(
                     f'hyper{slot}_status', 'Editing',
                     'Read only: this operating-mode pattern or stored channel '
-                    'is not supported. Configure LEFT memory / RIGHT VFO on '
+                    'is not supported. Configure LEFT VFO or memory / RIGHT '
+                    'VFO on '
                     'the radio and store the hyper memory first.'))
                 group.append(self._hyper_readonly(
                     f'hyper{slot}_main_view', 'MAIN (read only)',
@@ -1376,16 +1393,38 @@ class FT8900Radio(FTx800Radio):
                 groups.append(group)
                 continue
             current = int(hyper.left_memory) + 1
-            group.append(self._hyper_readonly(
-                f'hyper{slot}_mode', 'Left mode', 'Memory'))
+            mode = RadioSetting(
+                f'hyper{slot}_mode', 'Left mode',
+                RadioSettingValueList(['VFO', 'Memory'],
+                                      current_index=(
+                                          int(hyper.left_mode) // 2)))
+            mode.set_doc('Recall the saved left VFO band or a memory channel.')
+            group.append(mode)
+            choices = dict(channels)
+            if current not in choices:
+                choices[current] = '%03i (unavailable)' % current
             memory = RadioSetting(
                 f'hyper{slot}_memory', 'Left start channel',
                 RadioSettingValueMap(
-                    [(label, number) for number, label in channels.items()],
+                    [(label, number) for number, label in choices.items()],
                     mem_val=current))
-            memory.set_doc('Memory channel recalled on the left side. '
-                           'Only existing, non-empty channels are listed.')
+            memory.set_doc('Channel recalled in Memory mode. Choose an '
+                           'existing non-empty channel before enabling it.')
             group.append(memory)
+            left_bands = [(f'{label[1:]} MHz', index)
+                          for label, (index, band) in zip(
+                              HYPER_VFO_LABELS_8900[:6], self._HOME_SLOTS)]
+            for side, options in (
+                    ('left', left_bands),
+                    ('right', [('144 MHz', 2), ('430 MHz', 5)])):
+                band = RadioSetting(
+                    f'hyper{slot}_{side}_band', f'{side.title()} VFO band',
+                    RadioSettingValueMap(options, mem_val=int(
+                        getattr(hyper, f'{side}_band'))))
+                band.set_doc('Band recalled in VFO mode. Edit its saved '
+                             'frequency and repeater settings in the H%i '
+                             'memory-grid rows.' % slot)
+                group.append(band)
             main_setting = RadioSetting(
                 f'hyper{slot}_main', 'MAIN',
                 RadioSettingValueList(['Left', 'Right'], current_index=main))
@@ -1412,7 +1451,9 @@ class FT8900Radio(FTx800Radio):
             if not setting.changed():
                 continue
             name = setting.get_name()
-            match = re.fullmatch(r'hyper([1-6])[_](memory|main|scan)', name)
+            match = re.fullmatch(
+                r'hyper([1-6])[_](memory|main|scan|mode|left_band|right_band)',
+                name)
             if not match or name in seen:
                 raise errors.RadioError(
                     'Unsupported or duplicate hyper setting: %s' % name)
@@ -1434,6 +1475,20 @@ class FT8900Radio(FTx800Radio):
                     raise errors.RadioError(
                         'Choose an existing memory channel')
                 changes.append((hyper, 'left_memory', number - 1))
+            elif field == 'mode':
+                if value not in ('VFO', 'Memory'):
+                    raise errors.RadioError('Left mode must be VFO or Memory')
+                code = 2 if value == 'Memory' else 0
+                changes.extend([(hyper, 'left_mode', code),
+                                (hyper, 'mode_flags', code)])
+            elif field in ('left_band', 'right_band'):
+                if not isinstance(setting.value, RadioSettingValueMap):
+                    raise errors.RadioError('Choose an operating band')
+                band = setting.value.get_mem_val()
+                valid = (0, 1, 2, 4, 5, 6) if field == 'left_band' else (2, 5)
+                if band not in valid:
+                    raise errors.RadioError('Choose an operating band')
+                changes.append((hyper, field, band))
             elif field == 'main':
                 if value not in ('Left', 'Right'):
                     raise errors.RadioError('MAIN must be Left or Right')
@@ -1442,6 +1497,17 @@ class FT8900Radio(FTx800Radio):
                 if value not in ('MEM', 'MSM'):
                     raise errors.RadioError('Memory scan must be MEM or MSM')
                 changes.append((hyper, 'preferential_scan', value == 'MSM'))
+        for slot, hyper in enumerate(self._memobj.hyper, 1):
+            target = {field: value for record, field, value in changes
+                      if record is hyper}
+            if not target:
+                continue
+            mode = target.get('left_mode', int(hyper.left_mode))
+            channel = target.get('left_memory', int(hyper.left_memory)) + 1
+            if mode == 2 and channel not in channels:
+                raise errors.RadioError(
+                    'Choose an existing memory channel for Hyper Memory %i' %
+                    slot)
         # Validate all requested values before changing the mapped fields.
         for hyper, field, value in changes:
             setattr(hyper, field, value)
@@ -1466,6 +1532,11 @@ class FT8900Radio(FTx800Radio):
             index = number - 800
             return (number, labels[number], self._memobj.pms[index],
                     None)
+        if number >= 816:
+            slot, index = divmod(number - 816, 8)
+            record_index, band = self._HYPER_VFO_SLOTS[index]
+            return (number, labels[number],
+                    self._memobj.hyper[slot].vfos[record_index], band)
         index, band = self._HOME_SLOTS[number - 810]
         return (number, labels[number], self._memobj.homes[index],
                 band)
@@ -1497,6 +1568,17 @@ class FT8900Radio(FTx800Radio):
         ]
         if home_band:
             memory.immutable.extend(['empty', 'duplex'])
+        if number >= 816:
+            memory.immutable = []
+            memory.name = ''
+            memory.skip = ''
+            # VFO shifts use the BCD field that holds split TX frequencies
+            # in ordinary channels, not their packed name-byte offset.
+            memory.offset = int(record.split) * 10000
+            memory.immutable = [
+                'number', 'extd_number', 'name', 'skip', 'empty', 'ctone',
+                'rx_dtcs', 'cross_mode', 'dtcs_polarity', 'tuning_step',
+            ]
         return memory
 
     def _special_frequency_error(self, freq, home_band):
@@ -1505,6 +1587,18 @@ class FT8900Radio(FTx800Radio):
             return 'Frequency is outside this channel\'s operating band'
         if freq % 2500:
             return 'Frequency must be a multiple of 2.5 kHz'
+
+    def _special_power_index(self, power, frequency):
+        uhf = 400000000 <= frequency <= 480000000
+        # The common editor uses VHF power choices. Hi has the same radio
+        # encoding on UHF, but is rated at 35 W instead of 50 W.
+        if uhf and power == self.POWER_LEVELS_VHF[0]:
+            return 0
+        levels = self.POWER_LEVELS_UHF if uhf else self.POWER_LEVELS_VHF
+        try:
+            return levels.index(power)
+        except ValueError:
+            raise errors.RadioError('Unsupported power level')
 
     def validate_memory(self, memory):
         messages = super().validate_memory(memory)
@@ -1517,6 +1611,8 @@ class FT8900Radio(FTx800Radio):
 
     def _set_special_memory(self, memory, special):
         number, label, record, home_band = special
+        if number >= 816:
+            return self._set_hyper_vfo(memory, special)
         before = self.get_memory(number)
         if home_band and memory.empty:
             raise errors.RadioError('HOME channels cannot be deleted')
@@ -1540,12 +1636,8 @@ class FT8900Radio(FTx800Radio):
             raise errors.RadioError('PMS shifts may only be cleared')
         changes = {}
         if memory.power is not None:
-            levels = (self.POWER_LEVELS_UHF if 400000000 <= memory.freq <=
-                      480000000 else self.POWER_LEVELS_VHF)
-            try:
-                changes['power'] = levels.index(memory.power)
-            except ValueError:
-                raise errors.RadioError('Unsupported power level')
+            changes['power'] = self._special_power_index(
+                memory.power, memory.freq)
         if not home_band:
             changes['used'] = 1
             changes['sub_used'] = int(108000000 <= memory.freq <= 480000000)
@@ -1560,6 +1652,50 @@ class FT8900Radio(FTx800Radio):
         for field, value in changes.items():
             setattr(record, field, value)
         if frequency_changed or changes:
+            self.update_checksums()
+
+    def _set_hyper_vfo(self, memory, special):
+        number, label, record, band = special
+        before = self.get_memory(number)
+        for field in before.immutable:
+            if field == 'extd_number' and not memory.extd_number:
+                continue
+            if getattr(memory, field) != getattr(before, field):
+                raise errors.RadioError(
+                    'Editing %s is not supported on %s' % (field, label))
+        problem = self._special_frequency_error(memory.freq, band)
+        if problem:
+            raise errors.RadioError(problem)
+        if memory.duplex not in ('', '-', '+'):
+            raise errors.RadioError(
+                'VFO shifts must be simplex, minus or plus')
+        if not 0 <= memory.offset <= 99950000 or memory.offset % 50000:
+            raise errors.RadioError('VFO offset must use 50 kHz steps, up to '
+                                    '99.95 MHz')
+        try:
+            values = {
+                'mode': self.MODES.index(memory.mode),
+                'duplex': DUPLEX.index(memory.duplex),
+                'tmode': self.TMODES.index(memory.tmode),
+                'tone': chirp_common.TONES.index(memory.rtone),
+                'dtcs': chirp_common.DTCS_CODES.index(memory.dtcs),
+            }
+            if memory.power is not None:
+                values['power'] = self._special_power_index(
+                    memory.power, memory.freq)
+        except ValueError as exc:
+            raise errors.RadioError('Unsupported VFO setting: %s' % exc)
+        changes = {field: value for field, value in values.items()
+                   if int(getattr(record, field)) != value}
+        frequency_changed = before.freq != memory.freq
+        offset_changed = before.offset != memory.offset
+        if frequency_changed:
+            set_freq(memory.freq, record, 'freq')
+        if offset_changed:
+            record.split = memory.offset // 10000
+        for field, value in changes.items():
+            setattr(record, field, value)
+        if frequency_changed or offset_changed or changes:
             self.update_checksums()
 
     def _validate_pms_pairs(self):

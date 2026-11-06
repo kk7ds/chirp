@@ -61,19 +61,21 @@ class TestFT8900Hyper(unittest.TestCase):
     def assert_checksum(self, data):
         self.assertEqual(sum(data[:-1]) % 256, data[-1])
 
-    def test_existing_vfo_fixture_is_readonly_and_byte_identical(self):
+    def test_existing_vfo_fixture_is_available_and_byte_identical(self):
         radio = FT8900Radio(str(FIXTURE))
         settings = radio.get_settings()
         self.assertTrue(radio.get_features().has_settings)
         self.assertEqual(len(settings), 6)
-        self.assertFalse(any(s.value.get_mutable() for s in settings.walk()))
+        for slot in range(1, 7):
+            self.assertEqual(str(settings[f'hyper{slot}'][
+                f'hyper{slot}_mode'].value), 'VFO')
         radio.set_settings(settings)
         self.assertEqual(radio.get_mmap().get_packed(), self.stock_data)
 
     def test_supported_profiles_and_noop(self):
         settings = self.radio.get_settings()
         self.assertEqual(sum(s.value.get_mutable()
-                             for s in settings.walk()), 18)
+                             for s in settings.walk()), 36)
         for slot, channel in enumerate(CHANNELS, 1):
             group = settings[f'hyper{slot}']
             self.assertTrue(str(group[f'hyper{slot}_memory'].value).startswith(
@@ -176,7 +178,7 @@ class TestFT8900Hyper(unittest.TestCase):
                             ('hyper2_scan', 'invalid'),
                             ('hyper2_memory', '001 missing'),
                             ('hyper1_memory', 'duplicate'),
-                            ('hyper1_mode', 'VFO')):
+                            ('hyper1_mode', 'invalid')):
             with self.subTest(name=name):
                 settings = self.radio.get_settings()
                 choose_memory(settings, 1, 700)

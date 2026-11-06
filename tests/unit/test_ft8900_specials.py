@@ -181,7 +181,7 @@ class TestFT8900Specials(unittest.TestCase):
                                 for m in messages))
 
     def test_unknown_labels_and_numbers_rejected(self):
-        for number in ('L6', 'HOME 223', 0, 816, -1):
+        for number in ('L6', 'HOME 223', 0, 864, -1):
             with self.subTest(number=number):
                 with self.assertRaises(errors.InvalidMemoryLocation):
                     self.radio.get_memory(number)
