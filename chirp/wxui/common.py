@@ -369,7 +369,7 @@ class ChirpAsyncEditor(ChirpSyncEditor):
 
 class HexText(wx.propgrid.PGTextCtrlEditor):
     HEX_CODES = [ord(x) for x in '0123456789abcdefABCDEF']
-    SHIFTED_TO_INGNORE = [ord(x) for x in '1234567890']
+    SHIFTED_TO_IGNORE = [ord(x) for x in '1234567890']
 
     def CreateControls(self, propgrid, property, pos, size):
         r = super().CreateControls(propgrid, property, pos, size)
@@ -400,7 +400,7 @@ class HexText(wx.propgrid.PGTextCtrlEditor):
         key = event.GetKeyCode()
         pos = self._text.GetSelection()[1]  # get the right pos
 
-        if key in self.SHIFTED_TO_INGNORE and event.ShiftDown():
+        if key in self.SHIFTED_TO_IGNORE and event.ShiftDown():
             # ignore certian shifited-keys
             return
         elif key in [wx.WXK_HOME, wx.WXK_END,
@@ -413,8 +413,9 @@ class HexText(wx.propgrid.PGTextCtrlEditor):
                 return
             event.Skip()
         elif key in self.HEX_CODES:
-            # Hex values allowed, but not in the first two chars
-            if pos < 2:
+            # Hex values allowed, but not in the first two chars,
+            # only allow zero in first char to start a blank hex value (0x0)
+            if pos < 2 and key != ord('0'):
                 return
             event.Skip()
         else:
@@ -424,7 +425,7 @@ class HexText(wx.propgrid.PGTextCtrlEditor):
 
 class DTMFText(HexText):
     DTMF_CODES = [ord(x) for x in '0123456789abcdABCD#*']
-    SHIFTED_TO_INGNORE = [ord(x) for x in '12456790']
+    SHIFTED_TO_IGNORE = [ord(x) for x in '12456790']
 
     def _select_text(self):
         self._text.SetSelection(-1, -1)
@@ -436,7 +437,7 @@ class DTMFText(HexText):
 
     def _on_key(self, event):
         key = event.GetKeyCode()
-        if key in self.SHIFTED_TO_INGNORE and event.ShiftDown():
+        if key in self.SHIFTED_TO_IGNORE and event.ShiftDown():
             # ignore certian shifited-keys
             return
         elif key in [wx.WXK_HOME, wx.WXK_END,
