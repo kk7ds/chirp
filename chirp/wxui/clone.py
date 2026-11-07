@@ -155,10 +155,17 @@ class SettingsThread(threading.Thread):
 
 def open_serial(port, rclass):
     if port.startswith('Fake'):
+        # Duck-typed test doubles are not OS serial ports. They skip the
+        # timeout/flow setup below, same as before this default existed.
         return get_fakes()[port]()
+    # pyserial's default write_timeout is None, which waits forever if the
+    # peer stops reading (Bluetooth SPP, dead cable). 2s covers a normal
+    # write and is applied to every real port opened here.
+    write_timeout = 2
     if '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
+        pipe.write_timeout = write_timeout
         pipe.rtscts = rclass.HARDWARE_FLOW
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
@@ -167,7 +174,9 @@ def open_serial(port, rclass):
     else:
         pipe = serialtrace.SerialTrace(
             baudrate=rclass.BAUD_RATE,
-            rtscts=rclass.HARDWARE_FLOW, timeout=0.25)
+            rtscts=rclass.HARDWARE_FLOW,
+            timeout=0.25,
+            write_timeout=write_timeout)
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
         pipe.port = port
