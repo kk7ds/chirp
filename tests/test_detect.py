@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+from chirp import chirp_common
 from chirp import directory
 from chirp import logger
 from tests import base
@@ -11,6 +12,22 @@ from tests import base
 
 class TestCaseDetect(base.DriverTest):
     def test_detect(self):
+        real_load = chirp_common.CloneModeRadio.load_mmap
+
+        # This load_mmap() shim intercepts the load and mocks process_mmap()
+        # to avoid actually doing that work on the image
+        def fake_load(self_, filename):
+            with mock.patch.object(self_, 'process_mmap'):
+                real_load(self_, filename)
+
+        # Run the actual detect test with the base class load_mmap() mocked out
+        # to the above shim
+        with mock.patch.object(chirp_common.CloneModeRadio, 'load_mmap',
+                               autospec=True) as load:
+            load.side_effect = fake_load
+            self._test_detect()
+
+    def _test_detect(self):
         with logger.log_history(logging.WARNING, 'chirp.drivers') as history:
             radio = directory.get_radio_by_image(self.TEST_IMAGE)
             self.assertEqual([], history.get_history(),
