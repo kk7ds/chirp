@@ -223,12 +223,16 @@ def main(args=None):
             sys.exit(1)
     else:
         LOG.info("opening %s at %i" % (options.serial, rclass.BAUD_RATE))
+        # Same 2s write bound as wxui.clone.open_serial. pyserial's default
+        # (None) waits forever if the peer stops reading.
         if '://' in options.serial:
             s = serial.serial_for_url(options.serial, do_not_open=True)
             s.timeout = 0.5
+            s.write_timeout = 2
             s.open()
         else:
-            s = serial.Serial(port=options.serial, timeout=0.5)
+            s = serial.Serial(port=options.serial, timeout=0.5,
+                              write_timeout=2)
 
     radio = rclass(s)
 
