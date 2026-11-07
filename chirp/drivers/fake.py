@@ -217,3 +217,87 @@ def register_fakes():
     directory.register(FakeLiveSlowRadio)
     directory.register(FakeLiveRadioWithErrors)
     directory.register(FakeCloneFail)
+
+
+def encode_uvpro_rf_ch(idx, rx_hz, tx_hz, name='', byte13=0xC0):
+    """25-byte RfCh: FM, byte13 default 0xC0 = scan + High."""
+    bits = 0
+    for width, val in [(8, idx), (2, 0), (30, tx_hz), (2, 0), (30, rx_hz),
+                       (16, 0), (16, 0)]:
+        bits = (bits << width) | (val & ((1 << width) - 1))
+    head = bits.to_bytes(13, 'big')
+    return (head + bytes([byte13, 0]) +
+            name.encode('ascii')[:10].ljust(10, b'\x00'))
+
+
+class FakeUVProSerial:
+    """Enough GAIA for BTECH UV-PRO live download/upload in the GUI."""
+
+    def __init__(self, *a, **k):
+        self._rbuf = b''
+        self.sent = []
+        self._channels = {}
+        for i, (hz, nm) in enumerate([
+                (146520000, 'CALL'),
+                (146940000, 'RPT1'),
+                (147000000, 'RPT2'),
+                (446000000, 'UHF1')]):
+            self._channels[i] = encode_uvpro_rf_ch(i, hz, hz, nm)
+        self.soft_ver = 147
+        self.region_count = 6
+        self.curr_region = 1
+        self.region_name = b'Monmouth'
+        self.timeout = 0.25
+        self.write_timeout = 2
+
+    def _reply(self, cmd, body):
+        payload = struct.pack('>HH', 2, 0x8000 | cmd) + body
+        return bytes([0xFF, 0x01, 0x00, len(payload) - 4]) + payload
+
+    def write(self, buffer):
+        self.sent.append(bytes(buffer))
+        if not buffer.startswith(b'\xff\x01'):
+            return
+        grp, cmd = struct.unpack('>HH', buffer[4:8])
+        if cmd == 4:  # GET_DEV_INFO
+            d6 = (self.region_count >> 4) & 0x03
+            d7 = ((self.region_count & 0x0F) << 4)
+            info = (bytes([6]) + (260).to_bytes(2, 'big') + bytes([1]) +
+                    self.soft_ver.to_bytes(2, 'big') +
+                    bytes([d6, d7, 30, 0]))
+            self._rbuf += self._reply(4, b'\x00' + info)
+        elif cmd == 13:  # READ_RF_CH
+            ch = buffer[8]
+            if ch >= 30:
+                self._rbuf += self._reply(13, b'\x05')
+            elif ch in self._channels:
+                self._rbuf += self._reply(13, b'\x00' + self._channels[ch])
+            else:
+                self._rbuf += self._reply(
+                    13, b'\x00' + encode_uvpro_rf_ch(ch, 0, 0))
+        elif cmd == 14:  # WRITE_RF_CH
+            rec = bytes(buffer[8:33])
+            self._channels[rec[0]] = rec
+            self._rbuf += self._reply(14, bytes([0, rec[0]]))
+        elif cmd == 20:  # GET_HT_STATUS
+            s2 = (self.curr_region >> 2) & 0x0F
+            s3 = ((self.curr_region & 0x03) << 6)
+            self._rbuf += self._reply(20, b'\x00' + bytes([0x80, 0, s2, s3]))
+        elif cmd == 73:  # READ_REGION_NAME
+            idx = buffer[8] if len(buffer) > 8 else 0
+            name = self.region_name if idx == self.curr_region else b''
+            self._rbuf += self._reply(
+                73, b'\x00' + bytes([idx]) + name.ljust(10, b'\x00'))
+        else:
+            self._rbuf += self._reply(cmd, b'\x05')
+
+    def read(self, n):
+        ret = self._rbuf[:n]
+        self._rbuf = self._rbuf[n:]
+        return ret
+
+    def close(self):
+        pass
+
+    def log(self, msg):
+        pass
