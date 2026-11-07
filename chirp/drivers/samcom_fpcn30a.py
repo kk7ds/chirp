@@ -17,7 +17,8 @@
 
 The protocol was reverse engineered from the vendor programming tool
 (PocTools.exe, SAMCOM_Radio_FreqTools_V1.2-20231212) and checked against
-real FPCN30A radios (model ID "ZW_U5W"):
+real FPCN30A radios (model ID "ZW_U5W"). The full protocol description is
+in docs/samcom_fpcn30a_protocol.md. In short:
 
 - Channel frames are stored with RX in bytes 9-12 and TX in 13-16, the
   same order the radio reports them. (The vendor tool writes them the
