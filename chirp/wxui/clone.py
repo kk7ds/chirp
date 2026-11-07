@@ -62,6 +62,7 @@ def get_fakes():
         'Fake NOP': developer.FakeSerial,
         'Fake Echo NOP': developer.FakeEchoSerial,
         'Fake F7E': fake.FakeKenwoodSerial,
+        'Fake UV-PRO': fake.FakeUVProSerial,
         'Fake UV17': fake.FakeUV17Serial,
         'Fake UV17Pro': fake.FakeUV17ProSerial,
         'Fake AT778': developer.FakeAT778,
