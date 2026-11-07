@@ -1155,11 +1155,11 @@ msgstr "Усі підтримувані формати"
 
 #: ../drivers/ft450d.py:1646
 msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
-msgstr ""
+msgstr "Дозволяє зміщувати частоту від викликаної пам'яті чи каналу Home ручкою MAIN DIAL, як у VFO. Збережений канал не змінюється, доки ви не запишете в нього нові налаштування."
 
 #: ../drivers/baofeng_uv17Pro.py:743
 msgid "Always On keeps it lit all the time."
-msgstr ""
+msgstr "Always On залишає її ввімкненою постійно."
 
 #: ../wxui/clone.py:626
 msgid "Always start with recent list"
@@ -1179,7 +1179,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
-msgstr ""
+msgstr "Промовляє вголос номер каналу та інші дії під час користування радіостанцією. У тихому оточенні це може заважати."
 
 #: ../wxui/clone.py:145
 msgid "Applying settings"
@@ -1187,23 +1187,23 @@ msgstr "Застосування налаштувань"
 
 #: ../drivers/ft450d.py:1847
 msgid "Assigns one of the radio's functions to the DWN key of the microphone. DOWN, its normal function, steps the frequency or memory channel down."
-msgstr ""
+msgstr "Призначає одну з функцій радіостанції клавіші DWN мікрофона. DOWN, її звичайна функція, зменшує частоту або номер каналу пам'яті на один крок."
 
 #: ../drivers/ft450d.py:1855
 msgid "Assigns one of the radio's functions to the FST key of the microphone. FAST, its normal function, speeds up tuning like the front panel FAST button."
-msgstr ""
+msgstr "Призначає одну з функцій радіостанції клавіші FST мікрофона. FAST, її звичайна функція, пришвидшує налаштування, як кнопка FAST на передній панелі."
 
 #: ../drivers/ft450d.py:1863
 msgid "Assigns one of the radio's functions to the UP key of the microphone. UP, its normal function, steps the frequency or memory channel up."
-msgstr ""
+msgstr "Призначає одну з функцій радіостанції клавіші UP мікрофона. UP, її звичайна функція, збільшує частоту або номер каналу пам'яті на один крок."
 
 #: ../drivers/ft450d.py:1676
 msgid "Assigns one of the radio's functions to the front panel C.S/VOICE button, for example MONI to listen to your own transmission, SWR to transmit a 10 W carrier and measure the antenna SWR, or PLAY1 to send CW beacon message 1. Choices named after a front panel button act like that button."
-msgstr ""
+msgstr "Призначає одну з функцій радіостанції кнопці C.S/VOICE на передній панелі, наприклад MONI, щоб слухати власну передачу, SWR, щоб передати несучу потужністю 10 Вт і виміряти КСХ антени, або PLAY1, щоб передати CW-маякове повідомлення 1. Варіанти, названі за кнопкою на передній панелі, діють як ця кнопка."
 
 #: ../drivers/ft450d.py:1663
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
-msgstr ""
+msgstr "Призначає другу функцію ручки DSP/SEL після її короткого натискання: регулювання гучності тону самоконтролю CW, швидкості CW-кеєра, підсилення мікрофона чи РЧ-потужності або налаштування кроками по 100 кГц чи 1 МГц."
 
 #: ../wxui/query_sources.py:1136
 msgid "Attempting login..."
@@ -1215,7 +1215,7 @@ msgstr "Автоматично (з системи)"
 
 #: ../drivers/baofeng_uv17Pro.py:748
 msgid "Automatically locks the keypad to prevent accidental changes."
-msgstr ""
+msgstr "Автоматично блокує клавіатуру, щоб запобігти випадковим змінам."
 
 #: ../wxui/developer.py:665
 msgid "Available modules"
@@ -1240,7 +1240,7 @@ msgstr "Двійк."
 
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
-msgstr ""
+msgstr "Забороняє користуватися приймачем мовного FM-радіо. Коли параметр вимкнено, FM-радіо працює як звичайно."
 
 #: ../wxui/main.py:222
 msgid "Browser"
@@ -1273,15 +1273,15 @@ msgstr "Щоб зміни набули чинності, потрібно пер
 
 #: ../drivers/ft450d.py:1511
 msgid "CW beacon message 1, up to 40 characters, sent in CW mode by the PLAY1 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
-msgstr ""
+msgstr "CW-маякове повідомлення 1, до 40 символів, яке передається в режимі CW функцією PLAY1 програмованої кнопки. Радіостанція може передавати A–Z, 0–9, /, пробіл і @."
 
 #: ../drivers/ft450d.py:1520
 msgid "CW beacon message 2, up to 40 characters, sent in CW mode by the PLAY2 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
-msgstr ""
+msgstr "CW-маякове повідомлення 2, до 40 символів, яке передається в режимі CW функцією PLAY2 програмованої кнопки. Радіостанція може передавати A–Z, 0–9, /, пробіл і @."
 
 #: ../drivers/ft450d.py:1529
 msgid "CW beacon message 3, up to 40 characters, sent in CW mode by the PLAY3 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
-msgstr ""
+msgstr "CW-маякове повідомлення 3, до 40 символів, яке передається в режимі CW функцією PLAY3 програмованої кнопки. Радіостанція може передавати A–Z, 0–9, /, пробіл і @."
 
 #: ../wxui/query_sources.py:178
 #, python-format
@@ -1346,41 +1346,41 @@ msgstr "Виберіть модуль для завантаження із за�
 
 #: ../drivers/baofeng_uv17Pro.py:710
 msgid "Chooses the startup display, such as a logo or the battery voltage."
-msgstr ""
+msgstr "Вибирає, що показується під час запуску, наприклад логотип або напруга акумулятора."
 
 #: ../drivers/baofeng_uv17Pro.py:952
 #, python-format
 msgid "Chooses what a long press of side key %i does."
-msgstr ""
+msgstr "Вибирає дію, яку виконує довге натискання бічної клавіші %i."
 
 #: ../drivers/baofeng_uv17Pro.py:951
 #, python-format
 msgid "Chooses what a short press of side key %i does."
-msgstr ""
+msgstr "Вибирає дію, яку виконує коротке натискання бічної клавіші %i."
 
 #: ../drivers/ft450d.py:1594
 msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
-msgstr ""
+msgstr "Вибирає, чим керує ручка SQL/RF GAIN. RF-Gain встановлює підсилення РЧ- і ПЧ-каскадів приймача, Squelch вимикає звук приймача, поки немає сигналу. Для сканування потрібен Squelch, оскільки сканер зупиняється на сигналах, достатньо сильних, щоб відкрити шумозаглушення."
 
 #: ../drivers/baofeng_uv17Pro.py:858
 msgid "Chooses what the emergency alarm does. Local sounds the alarm on this radio only, Send Tone transmits a repeating alarm tone, and Send Code transmits the digits 119 followed by the ANI code."
-msgstr ""
+msgstr "Вибирає дію аварійної сигналізації. Local вмикає сигнал лише на цій радіостанції, Send Tone передає повторюваний сигнальний тон, а Send Code передає цифри 119 з наступним кодом ANI."
 
 #: ../drivers/baofeng_uv17Pro.py:900
 msgid "Chooses where a CTCSS or DCS code found by scanning in Frequency (VFO) mode is saved: Both saves it as the receive and transmit code, RX only as the receive code, and TX only as the transmit code."
-msgstr ""
+msgstr "Вибирає, куди зберігається код CTCSS або DCS, знайдений під час сканування в режимі Frequency (VFO): Both зберігає його як код прийому та передавання, RX only — лише як код прийому, TX only — лише як код передавання."
 
 #: ../drivers/ft450d.py:987
 msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
-msgstr ""
+msgstr "Вибирає, чи контурний фільтр підсилює (Peak), чи послаблює (Null) ту частину смуги пропускання, на яку його налаштовано."
 
 #: ../drivers/ft450d.py:1617
 msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
-msgstr ""
+msgstr "Вибирає, яка ручка встановлює зсув клариферу після натискання CLAR: MAIN DIAL чи DSP/SEL. Клариф зміщує частоту прийому, не змінюючи частоти передавання."
 
 #: ../drivers/baofeng_uv17Pro.py:830
 msgid "Chooses which transmitted DTMF tones are also heard through the radio speaker. Off mutes all; KB Side Tone sounds manually keyed tones; ANI Side Tone sounds automatic ANI/PTT-ID tones; KB + ANI Side Tone sounds both."
-msgstr ""
+msgstr "Вибирає, які передавані DTMF-тони також звучать у динаміку радіостанції. Off вимикає всі; KB Side Tone відтворює тони, набрані вручну; ANI Side Tone відтворює автоматичні тони ANI/PTT-ID; KB + ANI Side Tone відтворює обидва види."
 
 #: ../wxui/query_sources.py:563
 msgid "City"
@@ -1478,19 +1478,19 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
-msgstr ""
+msgstr "Визначає, що робить сканування після знаходження сигналу. Time відновлює сканування через задану тривалість, Carrier відновлює його після зникнення сигналу, а Search зупиняє сканування на виявленій частоті або каналі."
 
 #: ../drivers/baofeng_uv17Pro.py:642
 msgid "Controls when the ANI code is sent: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
-msgstr ""
+msgstr "Визначає, коли надсилається код ANI: BOT — після натискання PTT, EOT — після відпускання PTT, Both — в обидва моменти, або Off."
 
 #: ../drivers/baofeng_uv17Pro.py:1576
 msgid "Controls when this channel sends the selected DTMF PTT-ID: BOT when PTT is pressed, EOT when PTT is released, Both at both times, or Off."
-msgstr ""
+msgstr "Визначає, коли цей канал надсилає вибраний DTMF PTT-ID: BOT — після натискання PTT, EOT — після відпускання PTT, Both — в обидва моменти, або Off."
 
 #: ../drivers/baofeng_uv17Pro.py:1024
 msgid "Controls whether the radio's front-panel RESET menu is available. This does not reset the radio by itself."
-msgstr ""
+msgstr "Визначає, чи доступне меню RESET на передній панелі радіостанції. Саме по собі це не скидає налаштування радіостанції."
 
 #: ../wxui/query_sources.py:407
 msgid "Convert to FM"
@@ -1541,7 +1541,7 @@ msgstr "Вирізати пам'ять (%i)"
 
 #: ../drivers/baofeng_uv17Pro.py:800
 msgid "Cuts standby power consumption by switching the receiver off and on in a repeating cycle once no signal has been received for a few seconds. It considerably extends battery life, at the cost of occasionally clipping the first moment of an incoming transmission."
-msgstr ""
+msgstr "Зменшує споживання енергії в режимі очікування, циклічно вимикаючи та вмикаючи приймач, коли кілька секунд не надходило сигналу. Значно подовжує час роботи від акумулятора, але іноді обрізає початок вхідної передачі."
 
 #: ../wxui/memedit.py:620
 msgid "DTCS"
@@ -1597,7 +1597,7 @@ msgstr "Десятк."
 
 #: ../drivers/baofeng_uv17Pro.py:891
 msgid "Delays transmission of the automatic ANI/PTT-ID code after PTT is pressed, allowing the receiving path time to open before the code is sent."
-msgstr ""
+msgstr "Затримує передавання автоматичного коду ANI/PTT-ID після натискання PTT, щоб тракт прийому встиг відкритися до надсилання коду."
 
 #: ../wxui/memedit.py:2232
 msgid "Delete"
@@ -1669,7 +1669,7 @@ msgstr "Відстань"
 
 #: ../drivers/ft450d.py:1312
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
-msgstr ""
+msgstr "Ділить 500 звичайних каналів пам'яті на десять груп по 50 з нумерацією від M-01-01 до M-10-50. Канали тоді вибираються та скануються по одній групі."
 
 #: ../wxui/clone.py:207
 #, python-format
@@ -1786,15 +1786,15 @@ msgstr "Увімкнено"
 
 #: ../drivers/baofeng_uv17Pro.py:866
 msgid "Enables or disables the alarm sound."
-msgstr ""
+msgstr "Вмикає або вимикає звук сигналізації."
 
 #: ../drivers/ft450d.py:1284
 msgid "Enables the RTS line of the CAT jack. Turn it off when the computer or cable does not provide RTS. A radio that follows the frequency of another radio set to F-TRANS also needs it off."
-msgstr ""
+msgstr "Вмикає лінію RTS гнізда CAT. Вимкніть її, якщо комп'ютер або кабель не забезпечує RTS. Радіостанції, яка слідує за частотою іншої радіостанції з налаштуванням F-TRANS, її також потрібно вимкнути."
 
 #: ../drivers/ft450d.py:1353
 msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
-msgstr ""
+msgstr "Вмикає передавання та прийом на аварійному каналі Аляски, 5167,5 кГц, який тоді з'являється як MEM-EMG у режимі пам'яті. Ним можуть користуватися лише станції на Алясці або в межах 92,6 км від неї, і лише для аварійного зв'язку, пов'язаного з негайним захистом життя чи майна."
 
 #: ../wxui/memedit.py:404
 msgid "Enter Frequency"
@@ -2417,11 +2417,11 @@ msgstr "Приховати порожню пам'ять"
 
 #: ../drivers/baofeng_uv17Pro.py:874
 msgid "Hold the * key on the radio to lock or unlock the keypad."
-msgstr ""
+msgstr "Утримуйте клавішу * на радіостанції, щоб заблокувати або розблокувати клавіатуру."
 
 #: ../drivers/ft450d.py:1654
 msgid "Holds the peak S-meter reading for one second, which makes the meter easier to read."
-msgstr ""
+msgstr "Утримує піковий показ S-метра протягом однієї секунди, що полегшує його читання."
 
 #: ../drivers/retevis_rt98.py:998
 msgid "Honor the CTCSS/DCS receive squelch configuration when enabled, else only carrier squelch"
@@ -2429,7 +2429,7 @@ msgstr "Враховувати налаштування прийомного ш�
 
 #: ../drivers/baofeng_uv17Pro.py:1057
 msgid "How long the transmitter stays keyed after you stop speaking. A longer delay avoids dropping the transmission during natural pauses in speech."
-msgstr ""
+msgstr "Як довго передавач залишається ввімкненим після того, як ви перестали говорити. Довша затримка запобігає обриву передачі під час природних пауз у мовленні."
 
 #: ../wxui/memedit.py:165
 msgid "Human-readable comment (not stored in radio)"
@@ -2486,11 +2486,11 @@ msgstr "Імпорт не рекомендовано"
 
 #: ../drivers/baofeng_uv17Pro.py:777
 msgid "In channel mode, chooses whether display line A shows the memory channel number, its programmed name, or its frequency."
-msgstr ""
+msgstr "У режимі каналів вибирає, що показує рядок A дисплея: номер каналу пам'яті, його запрограмовану назву чи частоту."
 
 #: ../drivers/baofeng_uv17Pro.py:786
 msgid "In channel mode, chooses whether display line B shows the memory channel number, its programmed name, or its frequency."
-msgstr ""
+msgstr "У режимі каналів вибирає, що показує рядок B дисплея: номер каналу пам'яті, його запрограмовану назву чи частоту."
 
 #: ../wxui/query_sources.py:424
 msgid "Include Cached"
@@ -2499,12 +2499,12 @@ msgstr "Включно з кешованими"
 #: ../drivers/ft450d.py:1871
 #, python-format
 msgid "Includes %s in the modes the MODE buttons step through. Turn off the modes you never use to reach the others with fewer presses."
-msgstr ""
+msgstr "Включає %s до режимів, які перебирають кнопки MODE. Вимкніть режими, якими ви ніколи не користуєтеся, щоб досягати інших меншою кількістю натискань."
 
 #: ../drivers/ft450d.py:1914
 #, python-format
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
-msgstr ""
+msgstr "Включає діапазон %s до діапазонів, які перебирають кнопки BAND. Вимкніть діапазони, якими ви ніколи не користуєтеся, щоб досягати інших меншою кількістю натискань."
 
 #: ../wxui/bankedit.py:64
 msgid "Index"
@@ -2536,7 +2536,7 @@ msgstr "Взаємодія з драйвером"
 
 #: ../drivers/ft450d.py:959
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
-msgstr ""
+msgstr "Оптимізація точки перетину (IPO). Обходить РЧ-попередній підсилювач приймача, тож вхідний сигнал надходить одразу на перший змішувач. Це жертвує частиною чутливості заради кращої роботи із сильними сигналами та високим рівнем завад."
 
 #: ../wxui/clone.py:813
 msgid "Internal driver error"
@@ -2625,11 +2625,11 @@ msgstr "Довжина повинна дорівнювати %i"
 
 #: ../drivers/ft450d.py:1482
 msgid "Lets the KEY jack send CW while the radio is in SSB mode, so you can answer a station in CW without changing mode. When off, the KEY jack only works in CW mode."
-msgstr ""
+msgstr "Дозволяє гнізду KEY передавати CW, коли радіостанція в режимі SSB, тож можна відповісти станції телеграфом, не змінюючи режим. Коли вимкнено, гніздо KEY працює лише в режимі CW."
 
 #: ../drivers/ft450d.py:1541
 msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
-msgstr ""
+msgstr "Дозволяє ручці MAIN DIAL змінювати частоту в режимах AM і FM. Коли вимкнено, MAIN DIAL у цих режимах не налаштовує частоту."
 
 #: ../wxui/query_sources.py:395 ../wxui/query_sources.py:634
 #: ../wxui/query_sources.py:787
@@ -2663,7 +2663,7 @@ msgstr "Обмеження вимкнено для модифікованої п
 
 #: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
-msgstr ""
+msgstr "Обмежує тривалість однієї передачі. Коли час спливає, радіостанція припиняє передавати, доки PTT не буде відпущено, що запобігає перегріву та не дає застряглому PTT блокувати канал для всіх інших."
 
 #: ../drivers/generic_csv.py:240
 #, python-format
@@ -2719,7 +2719,7 @@ msgstr "Локатор"
 
 #: ../drivers/ft450d.py:1729
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
-msgstr ""
+msgstr "Блокує елементи керування, вибрані параметром Lock Mode, від випадкових змін, як це робить кнопка LOCK."
 
 #: ../wxui/query_sources.py:1086
 msgid "Log In"
@@ -2752,11 +2752,11 @@ msgstr "Довгота"
 
 #: ../drivers/ft450d.py:1447
 msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
-msgstr ""
+msgstr "Робить гучність тону самоконтролю CW залежною від ручки AF GAIN із зсувом, заданим пов'язаною гучністю тону самоконтролю CW. Коли вимкнено, тон звучить із фіксованою гучністю тону самоконтролю CW незалежно від AF GAIN."
 
 #: ../drivers/ft450d.py:1556
 msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
-msgstr ""
+msgstr "Робить гучність сигналу залежною від ручки AF GAIN із зсувом, заданим параметром Linked beep volume. Коли вимкнено, сигнал звучить із гучністю Fixed beep volume незалежно від AF GAIN."
 
 #: ../wxui/memedit.py:2061
 #, python-format
@@ -2866,7 +2866,7 @@ msgstr "Операції переміщення вимкнено, поки пе�
 
 #: ../drivers/ft450d.py:1003
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
-msgstr ""
+msgstr "Переміщує ту частину смуги пропускання, на яку діє контурний фільтр, від -2 на нижньому краї через Center до +2 на верхньому краї."
 
 #: ../wxui/memedit.py:1449
 msgid "Name"
@@ -2951,15 +2951,15 @@ msgstr "Число"
 
 #: ../drivers/baofeng_uv17Pro.py:672
 msgid "Off is level 0."
-msgstr ""
+msgstr "Off відповідає рівню 0."
 
 #: ../drivers/baofeng_uv17Pro.py:867
 msgid "Off keeps the alarm silent on this radio's own speaker."
-msgstr ""
+msgstr "Off залишає сигналізацію беззвучною в динаміку цієї радіостанції."
 
 #: ../drivers/baofeng_uv17Pro.py:687
 msgid "Off places no limit on the length of a transmission."
-msgstr ""
+msgstr "Off не обмежує тривалість передачі."
 
 #: ../wxui/memedit.py:346
 msgid "Offset"
@@ -3142,11 +3142,11 @@ msgstr "Вставлена пам'ять перезапише пам'ять %s"
 
 #: ../drivers/baofeng_uv17Pro.py:697
 msgid "Periodically checks both the A and B displayed frequencies. When either receives a signal, the radio stays on it until that signal disappears."
-msgstr ""
+msgstr "Періодично перевіряє обидві відображувані частоти, A і B. Коли на одній із них з'являється сигнал, радіостанція залишається на ній, доки сигнал не зникне."
 
 #: ../drivers/ft450d.py:1023
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
-msgstr ""
+msgstr "Розміщує режекторний фільтр ПЧ нижче середини смуги пропускання, посередині або вище. Точну частоту режекції налаштовують на радіостанції ручкою DSP/SEL."
 
 #: ../wxui/main.py:2183
 msgid "Please be sure to quit CHIRP before installing the new version!"
@@ -3200,7 +3200,7 @@ msgstr "Натисніть Enter, щоб зберегти це значення"
 
 #: ../drivers/baofeng_uv17Pro.py:1568
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
-msgstr ""
+msgstr "Забороняє передавання на каналі, який уже зайнято. Натискання PTT на зайнятому каналі подає звуковий сигнал замість увімкнення передавача."
 
 #: ../wxui/main.py:761
 msgid "Print Preview"
@@ -3217,19 +3217,19 @@ msgstr ""
 #: ../drivers/baofeng_uv17Pro.py:572
 #, python-format
 msgid "Programs DTMF code %i. A channel or VFO can select this code as its PTT-ID and send it when PTT is pressed, released, or both."
-msgstr ""
+msgstr "Програмує DTMF-код %i. Канал або VFO може вибрати цей код як свій PTT-ID і надсилати його після натискання PTT, після відпускання або в обидва моменти."
 
 #: ../drivers/baofeng_uv17Pro.py:2697
 msgid "Programs the DTMF code sent at the beginning of a transmission (BOT)."
-msgstr ""
+msgstr "Програмує DTMF-код, що надсилається на початку передачі (BOT)."
 
 #: ../drivers/baofeng_uv17Pro.py:2708
 msgid "Programs the DTMF code sent at the end of a transmission (EOT)."
-msgstr ""
+msgstr "Програмує DTMF-код, що надсилається наприкінці передачі (EOT)."
 
 #: ../drivers/baofeng_uv17Pro.py:602
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
-msgstr ""
+msgstr "Програмує цифровий код автоматичної ідентифікації номера (ANI) радіостанції. ANI — це DTMF PTT-ID, за яким диспетчер або інше сумісне обладнання може ідентифікувати цю радіостанцію."
 
 #: ../wxui/clone.py:526
 msgid "Prolific USB device"
@@ -3367,7 +3367,7 @@ msgstr "Повторити"
 
 #: ../drivers/ft450d.py:968
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
-msgstr ""
+msgstr "Послаблює всі вхідні сигнали на 20 дБ; використовується, коли надзвичайно сильні станції поблизу або високий рівень завад погіршують прийом. У діапазоні від 30 кГц до 1,7 МГц радіостанція завжди послаблює сигнал незалежно від цього параметра."
 
 #: ../wxui/common.py:722
 msgid "Refresh required"
@@ -3545,102 +3545,102 @@ msgstr "Виберіть префікси"
 
 #: ../drivers/baofeng_uv17Pro.py:990
 msgid "Selects Frequency (VFO) mode for direct tuning or Channel (MR) mode for programmed memories on display A."
-msgstr ""
+msgstr "Вибирає для дисплея A режим Frequency (VFO) для безпосереднього налаштування або режим Channel (MR) для запрограмованих пам'ятей."
 
 #: ../drivers/baofeng_uv17Pro.py:999
 msgid "Selects Frequency (VFO) mode for direct tuning or Channel (MR) mode for programmed memories on display B."
-msgstr ""
+msgstr "Вибирає для дисплея B режим Frequency (VFO) для безпосереднього налаштування або режим Channel (MR) для запрограмованих пам'ятей."
 
 #: ../drivers/baofeng_uv17Pro.py:1211
 msgid "Selects VFO A's transmitter power. Use the lowest power that provides reliable communication."
-msgstr ""
+msgstr "Вибирає потужність передавача VFO A. Використовуйте найнижчу потужність, що забезпечує надійний зв'язок."
 
 #: ../drivers/baofeng_uv17Pro.py:1222
 msgid "Selects VFO B's transmitter power. Use the lowest power that provides reliable communication."
-msgstr ""
+msgstr "Вибирає потужність передавача VFO B. Використовуйте найнижчу потужність, що забезпечує надійний зв'язок."
 
 #: ../drivers/ft450d.py:1706
 msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
-msgstr ""
+msgstr "Вибирає, як швидко автоматичне регулювання підсилення відновлює чутливість приймача після сильного сигналу. Fast підходить для CW і даних, Slow — для SSB і AM, а Auto вибирає Slow для SSB і AM та Fast для інших режимів. Коли АРП вимкнено, S-метр перестає рухатися, а сильні сигнали, імовірно, спотворюються."
 
 #: ../drivers/ft450d.py:1817
 msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
-msgstr ""
+msgstr "Вибирає одну з десяти кривих DSP-еквалайзера для вашого переданого голосу. 0 — плоска, 1–3 послаблюють низькі, середні або високі частоти, а 4–6 підсилюють високі, середні або низькі частоти. 7 підсилює низькі й послаблює високі, 8 послаблює низькі й підсилює середні, а 9 послаблює низькі й підсилює високі."
 
 #: ../drivers/ft450d.py:1474
 msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
-msgstr ""
+msgstr "Вибирає символи, які передає функція CW-тренування: лише цифри, лише літери або обидва види впереміш. Тренування відтворює випадкові п'ятисимвольні групи Морзе через тон самоконтролю зі швидкістю CW, не передаючи в ефір."
 
 #: ../drivers/ft450d.py:949
 msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
-msgstr ""
+msgstr "Вибирає режим даних, який використовує канал DIG. RTTY — це FSK-радіотелетайп, що маніпулюється термінальним пристроєм або RTTY-програмою, а USER-L і USER-U передають аудіо-орієнтовані режими даних, як-от пакетний, на нижній або верхній бічній смузі. N/A призначено для каналів, що не перебувають у режимі DIG."
 
 #: ../drivers/baofeng_uv17Pro.py:722
 msgid "Selects the language of the menus and the spoken voice prompts."
-msgstr ""
+msgstr "Вибирає мову меню та голосових підказок."
 
 #: ../drivers/ft450d.py:1791
 msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
-msgstr ""
+msgstr "Вибирає тон марк для RTTY: 2125 Гц для роботи на високому тоні або 1275 Гц для роботи на низькому тоні."
 
 #: ../drivers/baofeng_uv17Pro.py:2686
 msgid "Selects the special DTMF digit interpreted as a group-call wildcard by the decoder. Off assigns no group-call digit."
-msgstr ""
+msgstr "Вибирає спеціальну DTMF-цифру, яку декодер сприймає як символ групового виклику. Off не призначає жодної цифри групового виклику."
 
 #: ../drivers/baofeng_uv17Pro.py:2678
 msgid "Selects the special DTMF digit interpreted as a separator by the decoder."
-msgstr ""
+msgstr "Вибирає спеціальну DTMF-цифру, яку декодер сприймає як роздільник."
 
 #: ../drivers/baofeng_uv17Pro.py:1008
 msgid "Selects the squelch-tail elimination setting used for communication through a compatible repeater. Use 0 ms when the repeater does not support this feature."
-msgstr ""
+msgstr "Вибирає налаштування усунення шумового «хвоста» шумозаглушення для зв'язку через сумісний ретранслятор. Використовуйте 0 мс, якщо ретранслятор не підтримує цю функцію."
 
 #: ../drivers/baofeng_uv17Pro.py:822
 msgid "Selects the tone-burst frequency sent for repeater access."
-msgstr ""
+msgstr "Вибирає частоту тонального виклику, що надсилається для доступу до ретранслятора."
 
 #: ../drivers/ft450d.py:1605
 msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
-msgstr ""
+msgstr "Вибирає, що блокує кнопка LOCK. Frequencies блокує елементи керування, які змінюють частоту, зокрема клавіші UP, DWN і FAST мікрофона. Panel блокує всі кнопки та ручки передньої панелі, а All блокує і передню панель, і клавіші мікрофона. POWER і LOCK завжди залишаються доступними."
 
 #: ../drivers/ft450d.py:1372
 msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
-msgstr ""
+msgstr "Вибирає, чим керує кнопка TUNE. ATAS — це додаткова антена з активним налаштуванням ATAS-100/-120, EXT ATU — додатковий зовнішній тюнер FC-40, INT ATU — вбудований тюнер, що діє лише на сигнал передавання, а INTRATU вмикає вбудований тюнер також у тракт прийому. F-TRANS натомість надсилає частоту цієї радіостанції на другу радіостанцію тієї самої моделі щоразу, коли натискається TUNE, для роботи одного оператора з двома радіостанціями (SO2R)."
 
 #: ../drivers/ft450d.py:1737
 msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
-msgstr ""
+msgstr "Вибирає, що показує індикатор під час передавання: PO — середню вихідну потужність, ALC — відносну напругу ALC, SWR — КСХ антени. Під час прийому він завжди показує рівень сигналу."
 
 #: ../drivers/baofeng_uv17Pro.py:1611
 msgid "Selects whether the radio uses DTMF codes, together with CTCSS or DCS, to decide when to unmute the speaker on this channel. Off unmutes it on the correct CTCSS or DCS alone."
-msgstr ""
+msgstr "Вибирає, чи використовує радіостанція DTMF-коди разом із CTCSS або DCS, щоб вирішити, коли відкривати динамік на цьому каналі. Off відкриває його лише за правильним CTCSS або DCS."
 
 #: ../drivers/baofeng_uv17Pro.py:1257
 #, python-format
 msgid "Selects which of the %i programmed DTMF PTT-ID codes VFO A uses. Edit the code itself under DTMF Encode Settings."
-msgstr ""
+msgstr "Вибирає, який із %i запрограмованих DTMF PTT-ID кодів використовує VFO A. Сам код редагується в розділі DTMF Encode Settings."
 
 #: ../drivers/baofeng_uv17Pro.py:1269
 #, python-format
 msgid "Selects which of the %i programmed DTMF PTT-ID codes VFO B uses. Edit the code itself under DTMF Encode Settings."
-msgstr ""
+msgstr "Вибирає, який із %i запрограмованих DTMF PTT-ID кодів використовує VFO B. Сам код редагується в розділі DTMF Encode Settings."
 
 #: ../drivers/baofeng_uv17Pro.py:1585
 #, python-format
 msgid "Selects which of the %i programmed DTMF PTT-ID codes this channel transmits. Edit the code itself under DTMF Encode Settings."
-msgstr ""
+msgstr "Вибирає, який із %i запрограмованих DTMF PTT-ID кодів передає цей канал. Сам код редагується в розділі DTMF Encode Settings."
 
 #: ../drivers/ft450d.py:1055
 msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
-msgstr ""
+msgstr "Вибирає, який із одинадцяти алгоритмів шумозаглушення використовується. Кожен розрахований на інший вид шуму, тож пробуйте їх по черзі, щоб знайти той, що найкраще пригнічує шум, який ви зараз чуєте. Off також вимикає DSP Noise Reduction."
 
 #: ../drivers/baofeng_uv17Pro.py:1233
 msgid "Selects wide or narrow FM for VFO A. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
-msgstr ""
+msgstr "Вибирає широкосмугову або вузькосмугову FM для VFO A. Використовуйте Narrow там, де цього вимагає частотний план, щоб зменшити завади сусіднім каналам."
 
 #: ../drivers/baofeng_uv17Pro.py:1245
 msgid "Selects wide or narrow FM for VFO B. Use Narrow where required by the channel plan to reduce interference to adjacent channels."
-msgstr ""
+msgstr "Вибирає широкосмугову або вузькосмугову FM для VFO B. Використовуйте Narrow там, де цього вимагає частотний план, щоб зменшити завади сусіднім каналам."
 
 #: ../wxui/bugreport.py:592
 msgid "Sending report..."
@@ -3648,7 +3648,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:769
 msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
-msgstr ""
+msgstr "Надсилає короткий тон наприкінці кожної передачі, щоб інші станції чули, що ви відпустили PTT."
 
 #: ../wxui/query_sources.py:357
 msgid "Service"
@@ -3656,55 +3656,55 @@ msgstr "Сервіс"
 
 #: ../drivers/baofeng_uv17Pro.py:1150
 msgid "Sets VFO A's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
-msgstr ""
+msgstr "Встановлює напрямок зсуву ретранслятора для VFO A. + передає вище частоти прийому, - передає нижче неї, а Off використовує однакову частоту для передавання та прийому."
 
 #: ../drivers/baofeng_uv17Pro.py:1163
 msgid "Sets VFO B's repeater shift direction. + transmits above the receive frequency, - transmits below it, and Off uses the same frequency for transmit and receive."
-msgstr ""
+msgstr "Встановлює напрямок зсуву ретранслятора для VFO B. + передає вище частоти прийому, - передає нижче неї, а Off використовує однакову частоту для передавання та прийому."
 
 #: ../drivers/baofeng_uv17Pro.py:1281
 msgid "Sets how far VFO A moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
-msgstr ""
+msgstr "Встановлює, на скільки зміщується VFO A за кожен крок налаштування та під час сканування в режимі Frequency. Виберіть крок, що використовується на частотах, які ви збираєтеся налаштовувати."
 
 #: ../drivers/baofeng_uv17Pro.py:1294
 msgid "Sets how far VFO B moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
-msgstr ""
+msgstr "Встановлює, на скільки зміщується VFO B за кожен крок налаштування та під час сканування в режимі Frequency. Виберіть крок, що використовується на частотах, які ви збираєтеся налаштовувати."
 
 #: ../drivers/ft450d.py:1630
 msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
-msgstr ""
+msgstr "Встановлює, на скільки змінюється частота за кожен крок ручки MAIN DIAL: 1, 10 або 20 Гц у SSB і CW, 100 або 200 Гц в AM і FM."
 
 #: ../drivers/ft450d.py:1639
 msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
-msgstr ""
+msgstr "Встановлює, як довго потрібно утримувати кнопку, щоб активувати її функцію натискання й утримання. Коротше натискання активує звичайну функцію кнопки."
 
 #: ../drivers/baofeng_uv17Pro.py:620
 msgid "Sets how long each DTMF tone is transmitted. Increase this if the receiving system does not reliably decode the digits."
-msgstr ""
+msgstr "Встановлює тривалість передавання кожного DTMF-тону. Збільште її, якщо приймальна система ненадійно декодує цифри."
 
 #: ../drivers/baofeng_uv17Pro.py:654
 msgid "Sets how long the DTMF decoder remains active after a valid code before returning to its normal state."
-msgstr ""
+msgstr "Встановлює, як довго DTMF-декодер залишається активним після дійсного коду, перш ніж повернутися до звичайного стану."
 
 #: ../drivers/baofeng_uv17Pro.py:882
 msgid "Sets how long the menu stays open without a key press before the radio leaves it."
-msgstr ""
+msgstr "Встановлює, як довго меню залишається відкритим без натискання клавіш, перш ніж радіостанція вийде з нього."
 
 #: ../drivers/ft450d.py:1397
 msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
-msgstr ""
+msgstr "Встановлює, як довго передавач залишається ввімкненим після того, як ви припинили передачу в CW з напівавтоматичним переходом на прийом, кроками по 10 мс, тож 25 означає 250 мс. Довша затримка підходить операторам, які часто роблять паузи під час передачі. Також можна вибрати FULL, повний перехід на прийом між знаками, який дає змогу чути ефір між символами, що ви передаєте."
 
 #: ../drivers/ft450d.py:1749
 msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
-msgstr ""
+msgstr "Встановлює, як довго передавач залишається ввімкненим після того, як ви перестали говорити в режимі VOX, кроками по 100 мс, тож 5 означає 500 мс. Довша затримка не дає коротким паузам у мовленні повертати радіостанцію на прийом."
 
 #: ../drivers/baofeng_uv17Pro.py:741
 msgid "Sets how many seconds the display backlight remains on after a key press or radio activity."
-msgstr ""
+msgstr "Встановлює, скільки секунд підсвітка дисплея залишається ввімкненою після натискання клавіші або активності радіостанції."
 
 #: ../drivers/baofeng_uv17Pro.py:666
 msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
-msgstr ""
+msgstr "Встановлює, наскільки сильним має бути прийнятий сигнал, щоб динамік відкрився. 0 залишає шумозаглушення відкритим, тож шум чути постійно; вищі значення відсікають більше слабких сигналів і шуму. Збільште значення, якщо динамік постійно відкривається від завад, і зменште, якщо віддалені станції обрізаються."
 
 #: ../drivers/ft450d.py:995
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
@@ -3720,7 +3720,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1041
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
-msgstr ""
+msgstr "Встановлює чутливість VOX. Надто висока чутливість вмикає передавач від шуму навколо радіостанції, надто низька не вловлює ваш голос."
 
 #: ../drivers/ft450d.py:1758
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
@@ -3745,7 +3745,7 @@ msgstr ""
 #: ../drivers/baofeng_uv17Pro.py:592
 #, python-format
 msgid "Sets the call name for DTMF code %i, up to 10 characters long."
-msgstr ""
+msgstr "Встановлює назву виклику для DTMF-коду %i, до 10 символів."
 
 #: ../drivers/ft450d.py:1579
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
@@ -3753,11 +3753,11 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:873
 msgid "Sets the current keypad-lock state."
-msgstr ""
+msgstr "Встановлює поточний стан блокування клавіатури."
 
 #: ../drivers/baofeng_uv17Pro.py:1017
 msgid "Sets the delay before repeater squelch-tail elimination is applied. Match this timing to the repeater; use 0 ms when the feature is not required."
-msgstr ""
+msgstr "Встановлює затримку перед застосуванням усунення шумового «хвоста» ретранслятора. Узгодьте цей час із ретранслятором; використовуйте 0 мс, якщо функція не потрібна."
 
 #: ../drivers/ft450d.py:1438
 msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
@@ -3765,11 +3765,11 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1186
 msgid "Sets the difference in MHz between VFO A's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
-msgstr ""
+msgstr "Встановлює різницю в МГц між частотами прийому та передавання VFO A. Параметр Shift визначає, додається цей зсув чи віднімається."
 
 #: ../drivers/baofeng_uv17Pro.py:1197
 msgid "Sets the difference in MHz between VFO B's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
-msgstr ""
+msgstr "Встановлює різницю в МГц між частотами прийому та передавання VFO B. Параметр Shift визначає, додається цей зсув чи віднімається."
 
 #: ../drivers/ft450d.py:1429
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
@@ -3801,11 +3801,11 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1130
 msgid "Sets the receive frequency shown on display line A in Frequency (VFO) mode."
-msgstr ""
+msgstr "Встановлює частоту прийому, що показується в рядку A дисплея в режимі Frequency (VFO)."
 
 #: ../drivers/baofeng_uv17Pro.py:1139
 msgid "Sets the receive frequency shown on display line B in Frequency (VFO) mode."
-msgstr ""
+msgstr "Встановлює частоту прийому, що показується в рядку B дисплея в режимі Frequency (VFO)."
 
 #: ../drivers/ft450d.py:1417
 msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
@@ -3817,7 +3817,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:632
 msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the receiving system cannot separate adjacent digits."
-msgstr ""
+msgstr "Встановлює тихий проміжок між переданими DTMF-тонами. Збільште його, якщо приймальна система не розрізняє сусідні цифри."
 
 #: ../drivers/ft450d.py:1294
 msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off."
@@ -3940,7 +3940,7 @@ msgstr "Впорядкування"
 
 #: ../drivers/baofeng_uv17Pro.py:762
 msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
-msgstr ""
+msgstr "Подає короткий підтверджувальний звук під час роботи з радіостанцією. Вимкніть його, якщо радіостанцією потрібно користуватися непомітно."
 
 #: ../drivers/ft450d.py:1723
 msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
@@ -4279,7 +4279,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:839
 msgid "Transmits a special end-of-transmission signal intended to reduce the squelch burst heard by another compatible handheld."
-msgstr ""
+msgstr "Передає спеціальний сигнал завершення передачі, призначений зменшити шумовий сплеск шумозаглушення, який чує інша сумісна портативна радіостанція."
 
 #: ../wxui/memedit.py:462 ../wxui/memedit.py:1464
 msgid "Tuning Step"
@@ -4296,7 +4296,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1083
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
-msgstr ""
+msgstr "Вмикає Bluetooth, щоб радіостанцію можна було програмувати бездротово із застосунку на телефоні."
 
 #: ../drivers/ft450d.py:1337
 msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
@@ -4324,7 +4324,7 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1619
 msgid "Turns on the privacy function the manual calls Encryption for this channel. Other radios can only understand the conversation if they have it turned on as well and use the same DCS code."
-msgstr ""
+msgstr "Вмикає для цього каналу функцію конфіденційності, яку в посібнику названо Encryption. Інші радіостанції зможуть розуміти розмову, лише якщо в них вона теж увімкнена та використовується той самий код DCS."
 
 #: ../drivers/ft450d.py:1261
 msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
@@ -4475,7 +4475,7 @@ msgstr "Використовувати робочий процес із част
 
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
-msgstr ""
+msgstr "Використовуйте щонайбільше 3 цифри."
 
 #: ../wxui/main.py:836
 msgid "Use fixed-width font"
@@ -4561,7 +4561,7 @@ msgstr "Вигляд"
 
 #: ../drivers/baofeng_uv17Pro.py:1031
 msgid "Voice operated transmit. The radio starts transmitting when you speak towards the microphone, so hands-free conversation is possible without pressing PTT."
-msgstr ""
+msgstr "Передавання за голосом. Радіостанція починає передавати, коли ви говорите в мікрофон, тож розмова можлива без рук і без натискання PTT."
 
 #: ../wxui/common.py:707
 msgid "WARNING!"
@@ -4579,7 +4579,7 @@ msgstr "Попередження: %s"
 
 #: ../drivers/baofeng_uv17Pro.py:812
 msgid "Warns you the selected number of seconds before the time-out timer ends a transmission. Off turns the warning off."
-msgstr ""
+msgstr "Попереджає за вибрану кількість секунд до того, як таймер обмеження часу завершить передачу. Off вимикає попередження."
 
 #: ../wxui/main.py:462
 msgid "Welcome"
@@ -4587,7 +4587,7 @@ msgstr "Ласкаво просимо"
 
 #: ../drivers/baofeng_uv17Pro.py:750
 msgid "When it is off, the keypad can still be locked by hand."
-msgstr ""
+msgstr "Коли параметр вимкнено, клавіатуру все одно можна заблокувати вручну."
 
 #: ../drivers/ft450d.py:1838
 msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
