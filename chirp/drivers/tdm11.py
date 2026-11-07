@@ -484,7 +484,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
                          (filename, self._mdt_offset))
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith('.mdt'):
@@ -493,7 +493,7 @@ class TDM11_22(chirp_common.CloneModeRadio):
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote TD-M11 .mdt file % s' % filename)
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
     def _decode_tone(self, val):
         if val == 16665 or val == 0:

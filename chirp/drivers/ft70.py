@@ -1241,7 +1241,7 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
                 LOG.info('Loaded ADMS file')
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith(self._adms_ext):
@@ -1252,4 +1252,4 @@ class FT70Radio(yaesu_clone.YaesuCloneModeRadio):
                 f.write(self._mmap.get_packed()[5:])
                 LOG.info('Wrote file')
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)

@@ -699,7 +699,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
             self.process_mmap()
         else:
             self._dat_header_mmap = None
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith('.dat'):
@@ -708,7 +708,7 @@ class Kenwoodx90(chirp_common.CloneModeRadio, chirp_common.ExperimentalRadio):
                 f.write(datHeader.get_packed())
                 f.write(self._mmap.get_packed())
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
     def _prep_dat_header(self):
         # if we changed head type, the RID changed too

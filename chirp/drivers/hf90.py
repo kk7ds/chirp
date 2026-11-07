@@ -514,7 +514,7 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
             setattr(_mem, setting.get_name(), int(setting.value))
 
     def validate_memory(self, mem):
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+        msgs = super().validate_memory(mem)
 
         if 0 < self._get_tx_freq(mem) < self._min_tx_freq:
             msgs.append(chirp_common.ValidationWarning(
