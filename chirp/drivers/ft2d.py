@@ -171,7 +171,7 @@ class FT3D(FT2D):
                 LOG.info('Loaded ADMS-11 file at offset 0x18C')
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith(self._adms_ext):
@@ -182,7 +182,7 @@ class FT3D(FT2D):
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote ADMS-11 file')
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
 
 @directory.register
@@ -208,7 +208,7 @@ class FT5D(FT2D):
                 LOG.info('Loaded ADMS-14 file at offset 0x18C')
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith(self._adms_ext):
@@ -219,4 +219,4 @@ class FT5D(FT2D):
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote ADMS-14 file')
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)

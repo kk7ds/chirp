@@ -1014,13 +1014,13 @@ class IcomCloneModeRadio(chirp_common.CloneModeRadio):
                                                             self._icf_data))
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith('.icf'):
             write_file(self, filename)
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
     @classmethod
     def match_model(cls, filedata, filename):

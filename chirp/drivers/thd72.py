@@ -758,7 +758,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 LOG.info('Loaded MCP file at offset 0x100')
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith('.mc4'):
@@ -767,7 +767,7 @@ class THD72Radio(chirp_common.CloneModeRadio):
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote MCP file')
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
     @classmethod
     def match_model(cls, filedata, filename):

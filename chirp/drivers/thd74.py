@@ -360,7 +360,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
                 LOG.info('Loaded MCP d74 file at offset 0x100')
             self.process_mmap()
         else:
-            chirp_common.CloneModeRadio.load_mmap(self, filename)
+            super().load_mmap(filename)
 
     def save_mmap(self, filename):
         if filename.lower().endswith('.d74'):
@@ -369,7 +369,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
                 f.write(self._mmap.get_packed())
                 LOG.info('Wrote MCP d74 file')
         else:
-            chirp_common.CloneModeRadio.save_mmap(self, filename)
+            super().save_mmap(filename)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()

@@ -1073,7 +1073,7 @@ class RadioddityMU5(RadioddityGM30):
             if self._is_murs_narrowband(mem.number) and mem.mode != "NFM":
                 return [chirp_common.ValidationError(
                     f'MURS Channel {mem.number} must be narrowband (NFM)')]
-        return chirp_common.CloneModeRadio.validate_memory(self, mem)
+        return super().validate_memory(mem)
 
     def set_memory(self, mem):
         # For MURS channels 1-20, write 0xFFFFFFFF for rx/tx freq

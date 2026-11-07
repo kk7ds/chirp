@@ -894,7 +894,7 @@ class KenwoodTKx180Radio(ZoneMemoryMixin, KenwoodOSTMixin,
 
     def __init__(self, *a, **k):
         self._zones = []
-        chirp_common.CloneModeRadio.__init__(self, *a, **k)
+        super().__init__(*a, **k)
         self._dat_header = (b'KPG89D\xFF\xFF\xFF\xFFV1.61' + self._model +
                             (b'\xFF' * 11) + (b'\xFF' * 32))
 

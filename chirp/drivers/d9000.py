@@ -461,7 +461,7 @@ class D9000Radio(chirp_common.CloneModeRadio):
                 .encode("latin-1").hex(" "))
 
     def validate_memory(self, mem):
-        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
+        msgs = super().validate_memory(mem)
         if not mem.empty:
             used = len(mem.name.encode("gbk", "replace"))
             if used > NAME_BYTES:
