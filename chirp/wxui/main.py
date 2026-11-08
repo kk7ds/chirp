@@ -19,7 +19,6 @@ import hashlib
 from importlib import resources
 import logging
 import os
-import pickle
 import platform
 import sys
 import time
@@ -63,7 +62,6 @@ EMPTY_MENU_LABEL = '(none)'
 KEEP_RECENT = 8
 OPEN_RECENT_MENU = None
 OPEN_STOCK_CONFIG_MENU = None
-CHIRP_TAB_DF = wx.DataFormat('x-chirp/file-tab')
 ALL_MAIN_WINDOWS = []
 REVEAL_STOCK_DIR = wx.NewId()
 
@@ -73,69 +71,6 @@ def get_stock_configs():
                       "stock_configs")
     prefs_dir = CONF.get('stock_configs', 'prefs')
     return prefs_dir or default_dir
-
-
-class ChirpDropTarget(wx.DropTarget):
-    def __init__(self, chirpmain):
-        super().__init__()
-        self._main = chirpmain
-        self.data = wx.DataObjectComposite()
-        tab_df = wx.CustomDataObject(CHIRP_TAB_DF)
-        self.data.Add(tab_df)
-        self.SetDataObject(self.data)
-        self.SetDefaultAction(wx.DragMove)
-
-    def move_tab(self, source_window, index, target_index):
-        LOG.debug('Moving page %i to %i', index, target_index)
-        source = source_window._editors
-        eset = source.GetPage(index)
-        source.RemovePage(index)
-        eset.Reparent(self._main._editors)
-        self._main.add_editorset(eset, atindex=(
-            target_index if target_index >= 0 else None))
-
-    def handle_tab_data(self, x, y):
-        tab_data = self.data.GetObject(CHIRP_TAB_DF)
-        src_wid, index = pickle.loads(tab_data.GetData().tobytes())
-        source_window = self._main.FindWindowById(src_wid)
-        try:
-            target_index, flags = self._main._editors.HitTest(wx.Point(x, y))
-        except wx._core.wxAssertionError:
-            # Apparently AUINotebook has no HitTest implementation on Linux
-            LOG.warning('Unable to perform HitTest on target: '
-                        'no reordering possible')
-            if source_window is self._main:
-                # Defeat drag-to-self on this platform entirely since it is
-                # meaningless
-                return wx.DragNone
-            # Default to append since we cannot define an order
-            target_index = -1
-        if source_window is self._main and index == target_index:
-            LOG.debug('Drag to self without reorder')
-            return wx.DragNone
-        self.move_tab(source_window, index, target_index)
-        return wx.DragMove
-
-    def OnData(self, x, y, defResult):
-        if self.GetData():
-            format = self.data.GetReceivedFormat().GetId()
-            if format == CHIRP_TAB_DF.GetId():
-                return self.handle_tab_data(x, y)
-
-        return wx.DragNone
-
-    def OnDrop(self, x, y):
-        self._main.add_tab_panel.Hide()
-        return True
-
-    def OnEnter(self, x, y, defResult):
-        self._main.add_tab_panel.SetSize(self._main._editors.GetSize())
-        self._main.add_tab_panel.Show()
-        return defResult
-
-    def OnLeave(self):
-        self._main.add_tab_panel.Hide()
-        return super().OnLeave()
 
 
 class ChirpEditorSet(wx.Panel):
@@ -162,6 +97,10 @@ class ChirpEditorSet(wx.Panel):
 
     def __init__(self, radio, filename, *a, **k):
         super(ChirpEditorSet, self).__init__(*a, **k)
+        self._chirp_main_window = None
+        self._chirp_editor_changed_handler = None
+        self._chirp_status_handler = None
+        self._chirp_refresh_handler = None
         self._radio = radio
         if filename is None:
             filename = self.tab_name
@@ -437,8 +376,12 @@ class ChirpMain(wx.Frame):
             wx.CallAfter(self._menu_about, None)
 
         self.set_icon()
-        self._drop_target = ChirpDropTarget(self)
-        self.SetDropTarget(self._drop_target)
+        self._dragged_editorset = None
+        self._dragged_tab_ctrl = None
+        self._tab_drag_target = None
+        self._tab_drag_active = False
+        self._cursor_hand = wx.Cursor(wx.CURSOR_HAND)
+        self._cursor_arrow = wx.Cursor(wx.CURSOR_ARROW)
 
         d = CONF.get('last_dir', 'state')
         if d and os.path.isdir(d):
@@ -450,11 +393,11 @@ class ChirpMain(wx.Frame):
         # so punt on this for the moment.
         # self.make_toolbar()
 
-        self._editors = wx.aui.AuiNotebook(
-            self,
-            style=(wx.aui.AUI_NB_CLOSE_ON_ALL_TABS |
-                   wx.aui.AUI_NB_SCROLL_BUTTONS |
-                   wx.aui.AUI_NB_WINDOWLIST_BUTTON))
+        editor_style = (wx.aui.AUI_NB_CLOSE_ON_ALL_TABS |
+                        wx.aui.AUI_NB_SCROLL_BUTTONS |
+                        wx.aui.AUI_NB_WINDOWLIST_BUTTON |
+                        wx.aui.AUI_NB_TAB_MOVE)
+        self._editors = wx.aui.AuiNotebook(self, style=editor_style)
 
         if len(ALL_MAIN_WINDOWS) == 1:
             # Only add the welcome page to the first window opened
@@ -464,13 +407,19 @@ class ChirpMain(wx.Frame):
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self._editor_close)
         self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED,
                   self._editor_page_changed)
-        if sys.platform == 'darwin':
-            LOG.warning('Disabling tab drag on macos because of bug 12665')
-        else:
-            self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_BEGIN_DRAG,
-                               self._tab_drag)
+        self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_BEGIN_DRAG,
+                           self._tab_drag_begin)
+        self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_DRAG_MOTION,
+                           self._tab_drag_motion)
+        self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_DRAG_DONE,
+                           self._tab_drag_done)
+        cancel_event = getattr(wx.aui,
+                               'EVT_AUINOTEBOOK_CANCEL_DRAG', None)
+        if cancel_event:
+            self._editors.Bind(cancel_event, self._tab_drag_cancel)
         self._editors.Bind(wx.aui.EVT_AUINOTEBOOK_TAB_RIGHT_DOWN,
                            self._tab_rclick)
+        self.Bind(wx.EVT_ACTIVATE, self._window_activate)
         self.Bind(wx.EVT_CLOSE, self._window_close)
         self.Bind(common.EVT_CROSS_EDITOR_ACTION, self._editor_cross_action)
 
@@ -483,27 +432,23 @@ class ChirpMain(wx.Frame):
         self.SetSizer(vbox)
         vbox.Add(self._editors, 1, flag=wx.EXPAND)
 
-        self.add_tab_panel = wx.Panel(self, pos=(0, 0), size=(600, 600))
-        self.add_tab_panel.Hide()
-
-        with resources.as_file(
-            resources.files('chirp.share').joinpath('plus-icon.png')
-        ) as icon:
-            self.add_tab_bm = wx.Bitmap(str(icon), wx.BITMAP_TYPE_ANY)
-
-        self.add_tab_panel.Bind(wx.EVT_PAINT, self._paint_add_tab_panel)
-
-    def _paint_add_tab_panel(self, event):
-        panel = event.GetEventObject()
-        dc = wx.PaintDC(panel)
-        dc.SetBackground(wx.Brush("BLACK"))
-
-        img_size = self.add_tab_bm.GetSize()
-        my_size = panel.GetSize()
-        x = (my_size.width // 2) - (img_size.width // 2)
-        y = (my_size.height // 2) - (img_size.width // 2)
-
-        dc.DrawBitmap(self.add_tab_bm, x, y, True)
+        self._tab_drop_panel = wx.Panel(self, style=wx.BORDER_SIMPLE)
+        self._tab_drop_panel.SetBackgroundColour(wx.Colour(36, 67, 91))
+        self._tab_drop_label = wx.StaticText(
+            self._tab_drop_panel, label=_('Drop tab to move it here'),
+            style=wx.ALIGN_CENTER)
+        self._tab_drop_label.SetForegroundColour(wx.Colour(255, 255, 255))
+        label_font = self._tab_drop_label.GetFont()
+        label_font.SetPointSize(label_font.GetPointSize() + 4)
+        label_font.SetWeight(wx.FONTWEIGHT_BOLD)
+        self._tab_drop_label.SetFont(label_font)
+        drop_sizer = wx.BoxSizer(wx.VERTICAL)
+        drop_sizer.AddStretchSpacer()
+        drop_sizer.Add(self._tab_drop_label, 0,
+                       wx.ALIGN_CENTER | wx.ALL, 12)
+        drop_sizer.AddStretchSpacer()
+        self._tab_drop_panel.SetSizer(drop_sizer)
+        self._tab_drop_panel.Hide()
 
     def _remove_welcome_page(self):
         def remove():
@@ -513,24 +458,150 @@ class ChirpMain(wx.Frame):
                     break
         wx.CallAfter(remove)
 
-    def _tab_drag(self, event):
+    def _tab_drag_begin(self, event):
+        self._clear_tab_drag_feedback()
+        self._mark_window_frontmost()
         event.Skip()
-        d = wx.CustomDataObject(CHIRP_TAB_DF)
-        index = self._editors.GetSelection()
-        if isinstance(self._editors.GetPage(index), ChirpWelcomePanel):
-            # Don't allow moving the welcome panels
-            return
-        d.SetData(pickle.dumps((self.GetId(), index)))
-        data = wx.DataObjectComposite()
-        data.Add(d)
-        ds = wx.DropSource(self)
-        ds.SetData(data)
-        result = ds.DoDragDrop(wx.Drag_AllowMove)
-        if result == wx.DragMove:
-            LOG.debug('Target took our window')
-            self._update_window_for_editor()
+        self._tab_drag_active = True
+        index = event.GetSelection()
+        if 0 <= index < self._editors.GetPageCount():
+            self._dragged_editorset = self._editors.GetPage(index)
         else:
-            LOG.debug('Target rejected our window')
+            self._dragged_editorset = None
+        self._dragged_tab_ctrl = self._find_tab_ctrl_at(
+            wx.GetMousePosition())
+        self._apply_tab_drag_cursor()
+        wx.CallAfter(self._apply_tab_drag_cursor)
+
+    def _find_main_window_at(self, point):
+        # AUI keeps the source tab control in mouse capture during the drag,
+        # which makes FindWindowAtPoint unreliable for overlapping frames.
+        # The source window is frontmost while the drag is in progress, and
+        # the remaining windows are checked in most-recently-activated order.
+        if self._window_contains_point(self, point):
+            return self
+
+        for window in reversed(ALL_MAIN_WINDOWS):
+            if window is self:
+                continue
+            if self._window_contains_point(window, point):
+                return window
+
+    @staticmethod
+    def _window_contains_point(window, point):
+        return (window.IsShown() and not window.IsIconized() and
+                window.GetScreenRect().Contains(point))
+
+    def _mark_window_frontmost(self):
+        if self in ALL_MAIN_WINDOWS:
+            ALL_MAIN_WINDOWS.remove(self)
+            ALL_MAIN_WINDOWS.append(self)
+
+    def _window_activate(self, event):
+        if event.GetActive():
+            self._mark_window_frontmost()
+        event.Skip()
+
+    def _find_tab_ctrl_at(self, point):
+        tab_ctrls = [child for child in self._editors.GetChildren()
+                     if child.GetName() == 'wxAuiTabCtrl']
+        for tab_ctrl in tab_ctrls:
+            if tab_ctrl.GetScreenRect().Contains(point):
+                return tab_ctrl
+        return tab_ctrls[0] if tab_ctrls else None
+
+    def _tab_drag_motion(self, event):
+        event.Skip()
+        target = self._find_main_window_at(wx.GetMousePosition())
+        if (target is self or
+                isinstance(self._dragged_editorset, ChirpWelcomePanel)):
+            target = None
+
+        previous_target = self._tab_drag_target
+        if previous_target is not target:
+            if previous_target:
+                previous_target._hide_tab_drop_feedback()
+            self._tab_drag_target = target
+            if target:
+                target._show_tab_drop_feedback()
+
+        self._apply_tab_drag_cursor()
+        wx.CallAfter(self._apply_tab_drag_cursor)
+
+    def _apply_tab_drag_cursor(self):
+        if not self._tab_drag_active:
+            return
+        cursor_window = self._dragged_tab_ctrl or self._editors
+        cursor_window.SetCursor(self._cursor_hand)
+
+    def _tab_drag_cancel(self, event):
+        event.Skip()
+        self._clear_tab_drag_feedback()
+        self._dragged_editorset = None
+
+    def _show_tab_drop_feedback(self):
+        self._tab_drop_panel.SetPosition(self._editors.GetPosition())
+        self._tab_drop_panel.SetSize(self._editors.GetSize())
+        self._tab_drop_panel.Raise()
+        self._tab_drop_panel.Show()
+        self._tab_drop_panel.SetCursor(self._cursor_hand)
+        self._tab_drop_label.SetCursor(self._cursor_hand)
+
+    def _hide_tab_drop_feedback(self):
+        self._tab_drop_panel.Hide()
+        self._tab_drop_panel.SetCursor(self._cursor_arrow)
+        self._tab_drop_label.SetCursor(self._cursor_arrow)
+
+    def _clear_tab_drag_feedback(self):
+        self._tab_drag_active = False
+        if self._tab_drag_target:
+            self._tab_drag_target._hide_tab_drop_feedback()
+            self._tab_drag_target = None
+        if self._dragged_tab_ctrl:
+            self._dragged_tab_ctrl.SetCursor(self._cursor_arrow)
+            self._dragged_tab_ctrl = None
+        self._editors.SetCursor(self._cursor_arrow)
+
+    def _tab_drag_done(self, event):
+        event.Skip()
+        editorset = self._dragged_editorset
+        self._dragged_editorset = None
+        mouse_pos = wx.GetMousePosition()
+        target = self._find_main_window_at(mouse_pos)
+        self._clear_tab_drag_feedback()
+        if editorset is None or isinstance(editorset, ChirpWelcomePanel):
+            return
+
+        # AUI handles reordering within this notebook. If the drag ends over
+        # another CHIRP window, transfer the page there after AUI releases the
+        # mouse capture.
+        if target is None or target is self:
+            self._update_window_for_editor()
+            return
+
+        try:
+            target_index, _flags = target._editors.HitTest(
+                target._editors.ScreenToClient(mouse_pos))
+        except wx._core.wxAssertionError:
+            # Some wx ports do not implement AuiNotebook.HitTest.
+            target_index = -1
+
+        source_index = self._editors.GetPageIndex(editorset)
+        if source_index == wx.NOT_FOUND:
+            return
+
+        target._move_tab(self, source_index, target_index)
+        self._update_window_for_editor()
+        target._update_window_for_editor()
+
+    def _move_tab(self, source_window, index, target_index):
+        LOG.debug('Moving page %i to %i', index, target_index)
+        source = source_window._editors
+        editorset = source.GetPage(index)
+        source.RemovePage(index)
+        editorset.Reparent(self._editors)
+        self.add_editorset(editorset, atindex=(
+            target_index if target_index >= 0 else None))
 
     def _tab_rclick(self, event):
         selected = event.GetSelection()
@@ -609,10 +680,31 @@ class ChirpMain(wx.Frame):
                                      editorset,
                                      os.path.basename(editorset.filename),
                                      select=select)
-        self.Bind(EVT_EDITORSET_CHANGED, self._editor_changed, editorset)
-        self.Bind(common.EVT_STATUS_MESSAGE, self._editor_status, editorset)
-        editorset.Bind(common.EVT_EDITOR_REFRESH,
-                       lambda e: self._reload_editorset(e, editorset))
+        previous_main = editorset._chirp_main_window
+        if previous_main is not None and previous_main is not self:
+            previous_main.Unbind(
+                EVT_EDITORSET_CHANGED,
+                handler=editorset._chirp_editor_changed_handler,
+                source=editorset)
+            previous_main.Unbind(
+                common.EVT_STATUS_MESSAGE,
+                handler=editorset._chirp_status_handler,
+                source=editorset)
+            editorset.Unbind(
+                common.EVT_EDITOR_REFRESH,
+                handler=editorset._chirp_refresh_handler)
+
+        changed_handler = self._editor_changed
+        status_handler = self._editor_status
+        self.Bind(EVT_EDITORSET_CHANGED, changed_handler, editorset)
+        self.Bind(common.EVT_STATUS_MESSAGE, status_handler, editorset)
+        refresh_handler = functools.partial(self._reload_editorset,
+                                            editorset=editorset)
+        editorset.Bind(common.EVT_EDITOR_REFRESH, refresh_handler)
+        editorset._chirp_main_window = self
+        editorset._chirp_editor_changed_handler = changed_handler
+        editorset._chirp_status_handler = status_handler
+        editorset._chirp_refresh_handler = refresh_handler
         self._update_editorset_title(editorset)
         editorset.selected()
 

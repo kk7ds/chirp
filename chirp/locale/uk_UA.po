@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 18:59-0800\n"
+"POT-Creation-Date: 2026-11-08 09:31-0800\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: Oleksandr Kravchuk <open.source@oleksandr-kravchuk.com>\n"
 "Language: uk_UA\n"
@@ -50,7 +50,7 @@ msgstr[2] "%i пам'ятей (та зсунути блок вгору)"
 msgid "%s %s, row %d"
 msgstr "%s %s, рядок %d"
 
-#: ../wxui/main.py:1540
+#: ../wxui/main.py:1632
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "Файл %s не збережено. Зберегти перед закриттям?"
@@ -1117,7 +1117,7 @@ msgstr ""
 msgid "A floating point value is required"
 msgstr ""
 
-#: ../wxui/main.py:2177
+#: ../wxui/main.py:2269
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Доступна нова версія CHIRP. Будь ласка, якнайшвидше відвідайте сайт, щоб її завантажити!"
 
@@ -1125,15 +1125,15 @@ msgstr "Доступна нова версія CHIRP. Будь ласка, як�
 msgid "AM mode does not allow duplex or tone"
 msgstr "Режим AM не допускає дуплекс або тон"
 
-#: ../wxui/main.py:981
+#: ../wxui/main.py:1073
 msgid "About"
 msgstr "Про програму"
 
-#: ../wxui/main.py:1931
+#: ../wxui/main.py:2023
 msgid "About CHIRP"
 msgstr "Про CHIRP"
 
-#: ../wxui/main.py:1986
+#: ../wxui/main.py:2078
 msgid "Agree"
 msgstr "Погоджуюсь"
 
@@ -1145,11 +1145,11 @@ msgstr "Авіаційні частоти повинні бути кратні 2
 msgid "All"
 msgstr "Все"
 
-#: ../wxui/main.py:1369
+#: ../wxui/main.py:1461
 msgid "All Files"
 msgstr "Усі файли"
 
-#: ../wxui/main.py:1380
+#: ../wxui/main.py:1472
 msgid "All supported formats"
 msgstr "Усі підтримувані формати"
 
@@ -1161,7 +1161,7 @@ msgstr "Дозволяє зміщувати частоту від виклика
 msgid "Always On keeps it lit all the time."
 msgstr "Always On залишає її ввімкненою постійно."
 
-#: ../wxui/clone.py:626
+#: ../wxui/clone.py:635
 msgid "Always start with recent list"
 msgstr "Завжди починати зі списку нещодавніх"
 
@@ -1209,7 +1209,7 @@ msgstr "Призначає другу функцію ручки DSP/SEL післ
 msgid "Attempting login..."
 msgstr ""
 
-#: ../wxui/main.py:1637
+#: ../wxui/main.py:1729
 msgid "Automatic from system"
 msgstr "Автоматично (з системи)"
 
@@ -1221,7 +1221,7 @@ msgstr "Автоматично блокує клавіатуру, щоб зап�
 msgid "Available modules"
 msgstr "Доступні модулі"
 
-#: ../wxui/main.py:2101
+#: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr "План діапазонів"
 
@@ -1230,7 +1230,7 @@ msgstr "План діапазонів"
 msgid "Bands"
 msgstr "Діапазони"
 
-#: ../wxui/main.py:211
+#: ../wxui/main.py:150
 msgid "Banks"
 msgstr "Банки"
 
@@ -1242,7 +1242,7 @@ msgstr "Двійк."
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
 msgstr "Забороняє користуватися приймачем мовного FM-радіо. Коли параметр вимкнено, FM-радіо працює як звичайно."
 
-#: ../wxui/main.py:222
+#: ../wxui/main.py:161
 msgid "Browser"
 msgstr "Оглядач"
 
@@ -1267,7 +1267,7 @@ msgstr "Тема задачі:"
 msgid "Building Radio Browser"
 msgstr "Формування переліку радіостанцій"
 
-#: ../wxui/main.py:1666
+#: ../wxui/main.py:1758
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "Щоб зміни набули чинності, потрібно перезапустити CHIRP"
 
@@ -1305,7 +1305,7 @@ msgstr "Частоти каналів вказано з погляду ретр�
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Канали з однаковими TX і RX %s представлені тоновим режимом \"%s\""
 
-#: ../wxui/main.py:1368
+#: ../wxui/main.py:1460
 msgid "Chirp Image Files"
 msgstr "Файли образів CHIRP"
 
@@ -1327,11 +1327,11 @@ msgstr "Виберіть тон %s"
 msgid "Choose Cross Mode"
 msgstr "Виберіть кросрежим"
 
-#: ../wxui/main.py:1205
+#: ../wxui/main.py:1297
 msgid "Choose Diff Target"
 msgstr "Оберіть ціль для порівняння"
 
-#: ../wxui/clone.py:607
+#: ../wxui/clone.py:616
 msgid "Choose a recent model"
 msgstr "Виберіть нещодавню модель"
 
@@ -1386,11 +1386,11 @@ msgstr "Вибирає, які передавані DTMF-тони також з�
 msgid "City"
 msgstr "Місто"
 
-#: ../wxui/main.py:1972
+#: ../wxui/main.py:2064
 msgid "Click here for full license text"
 msgstr "Натисніть тут, щоб переглянути повний текст ліцензії"
 
-#: ../wxui/main.py:1951
+#: ../wxui/main.py:2043
 msgid "Click here for online documentation"
 msgstr "Натисніть тут, щоб переглянути онлайн-документацію"
 
@@ -1428,7 +1428,7 @@ msgstr "Клонування з радіостанції"
 msgid "Cloning to radio"
 msgstr "Клонування в радіостанцію"
 
-#: ../wxui/main.py:1079 ../wxui/main.py:1987
+#: ../wxui/main.py:1171 ../wxui/main.py:2079
 msgid "Close"
 msgstr "Закрити"
 
@@ -1436,7 +1436,7 @@ msgstr "Закрити"
 msgid "Close String"
 msgstr "Закрити рядок"
 
-#: ../wxui/main.py:1080
+#: ../wxui/main.py:1172
 msgid "Close file"
 msgstr "Закрити файл"
 
@@ -1456,7 +1456,7 @@ msgstr[2] "Згрупувати %i пам'ятей"
 msgid "Comment"
 msgstr "Коментар"
 
-#: ../wxui/clone.py:319
+#: ../wxui/clone.py:328
 msgid "Communicate with radio"
 msgstr "Обмін даними з радіостанцією"
 
@@ -1522,7 +1522,7 @@ msgstr "Кросрежим"
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:568
+#: ../wxui/clone.py:577
 msgid "Custom Port"
 msgstr "Власний порт"
 
@@ -1587,7 +1587,7 @@ msgstr "Декодування DTMF"
 msgid "DV Memory"
 msgstr "DV-пам'ять"
 
-#: ../wxui/main.py:2010
+#: ../wxui/main.py:2102
 msgid "Danger Ahead"
 msgstr "Увага, небезпека"
 
@@ -1625,11 +1625,11 @@ msgstr ""
 msgid "Detailed information"
 msgstr "Детальна інформація"
 
-#: ../wxui/main.py:986
+#: ../wxui/main.py:1078
 msgid "Developer Mode"
 msgstr "Режим розробника"
 
-#: ../wxui/main.py:2019
+#: ../wxui/main.py:2111
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Режим розробника тепер %s. Щоб зміни набули чинності, потрібно перезапустити CHIRP"
@@ -1650,7 +1650,7 @@ msgstr "Цифровий код"
 msgid "Digital Modes"
 msgstr "Цифрові режими"
 
-#: ../wxui/main.py:2032
+#: ../wxui/main.py:2124
 msgid "Disable reporting"
 msgstr "Вимкнути звітування"
 
@@ -1671,12 +1671,12 @@ msgstr "Відстань"
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr "Ділить 500 звичайних каналів пам'яті на десять груп по 50 з нумерацією від M-01-01 до M-10-50. Канали тоді вибираються та скануються по одній групі."
 
-#: ../wxui/clone.py:207
+#: ../wxui/clone.py:216
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Більше не запитувати про %s"
 
-#: ../wxui/clone.py:204
+#: ../wxui/clone.py:213
 msgid "Do you accept the risk?"
 msgstr "Ви приймаєте цей ризик?"
 
@@ -1688,7 +1688,7 @@ msgstr ""
 msgid "Double-click to change bank name"
 msgstr "Двічі клацніть, щоб змінити назву банку"
 
-#: ../wxui/main.py:1081
+#: ../wxui/main.py:1173
 msgid "Download"
 msgstr "Завантажити"
 
@@ -1696,15 +1696,15 @@ msgstr "Завантажити"
 msgid "Download complete"
 msgstr ""
 
-#: ../wxui/main.py:1082
+#: ../wxui/main.py:1174
 msgid "Download from radio"
 msgstr "Скопіювати з радіостанції"
 
-#: ../wxui/main.py:872
+#: ../wxui/main.py:964
 msgid "Download from radio..."
 msgstr "Скопіювати з радіостанції..."
 
-#: ../wxui/clone.py:791
+#: ../wxui/clone.py:800
 msgid "Download instructions"
 msgstr "Інструкції із завантаження"
 
@@ -1732,9 +1732,13 @@ msgstr "Драйвер"
 msgid "Driver information"
 msgstr "Інформація про драйвер"
 
-#: ../wxui/main.py:578
+#: ../wxui/main.py:649
 msgid "Driver messages"
 msgstr "Повідомлення драйвера"
+
+#: ../wxui/main.py:438
+msgid "Drop tab to move it here"
+msgstr ""
 
 #: ../chirp_common.py:576
 msgid "DtcsPolarity is not valid"
@@ -1776,7 +1780,7 @@ msgstr "Редагувати подробиці пам'яті (%i)"
 msgid "Edit details for memory %i"
 msgstr "Редагувати подробиці пам'яті %i"
 
-#: ../wxui/main.py:930
+#: ../wxui/main.py:1022
 msgid "Enable Automatic Edits"
 msgstr "Увімкнути автоматичне редагування"
 
@@ -1813,7 +1817,7 @@ msgstr "Введіть частоту передавання (МГц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Введіть нову назву для банку %s:"
 
-#: ../wxui/clone.py:567
+#: ../wxui/clone.py:576
 msgid "Enter custom port:"
 msgstr "Введіть власний порт:"
 
@@ -1850,7 +1854,7 @@ msgstr "Помилка застосування фільтра"
 msgid "Error applying settings"
 msgstr "Помилка застосування налаштувань"
 
-#: ../wxui/clone.py:696
+#: ../wxui/clone.py:705
 msgid "Error communicating with radio"
 msgstr "Помилка обміну даними з радіостанцією"
 
@@ -1895,7 +1899,7 @@ msgstr "Виключити приватні та закриті ретрансл
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:750
+#: ../wxui/clone.py:759
 msgid "Experimental driver"
 msgstr "Експериментальний драйвер"
 
@@ -1903,11 +1907,11 @@ msgstr "Експериментальний драйвер"
 msgid "Export can only write CSV files"
 msgstr "Експорт може записувати лише файли CSV"
 
-#: ../wxui/main.py:1525
+#: ../wxui/main.py:1617
 msgid "Export to CSV"
 msgstr "Експорт у CSV"
 
-#: ../wxui/main.py:744
+#: ../wxui/main.py:836
 msgid "Export to CSV..."
 msgstr "Експорт у CSV..."
 
@@ -1990,13 +1994,13 @@ msgstr ""
 msgid "File a new bug"
 msgstr "Створити нову задачу"
 
-#: ../wxui/main.py:585
+#: ../wxui/main.py:656
 #, python-format
 msgid "File does not exist: %s"
 msgstr "Файл не існує: %s"
 
-#: ../wxui/main.py:1372 ../wxui/main.py:1452 ../wxui/main.py:1462
-#: ../wxui/main.py:1521 ../wxui/main.py:1901 ../wxui/main.py:1902
+#: ../wxui/main.py:1464 ../wxui/main.py:1544 ../wxui/main.py:1554
+#: ../wxui/main.py:1613 ../wxui/main.py:1993 ../wxui/main.py:1994
 msgid "Files"
 msgstr "Файли"
 
@@ -2016,15 +2020,15 @@ msgstr "Фільтрувати результати за розташуванн�
 msgid "Filter..."
 msgstr "Фільтр..."
 
-#: ../wxui/main.py:1595
+#: ../wxui/main.py:1687
 msgid "Find"
 msgstr "Знайти"
 
-#: ../wxui/main.py:812
+#: ../wxui/main.py:904
 msgid "Find Next"
 msgstr "Знайти далі"
 
-#: ../wxui/main.py:798
+#: ../wxui/main.py:890
 msgid "Find..."
 msgstr "Знайти..."
 
@@ -2399,7 +2403,7 @@ msgstr "Група: %s"
 msgid "Header line has unknown field %r"
 msgstr ""
 
-#: ../wxui/main.py:1047
+#: ../wxui/main.py:1139
 msgid "Help"
 msgstr "Довідка"
 
@@ -2463,7 +2467,7 @@ msgstr ""
 msgid "Image is %(image)i bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares and writing there can destroy the radio. Use an image that stops before it."
 msgstr "Образ має розмір %(image)i байт, але цей драйвер записує лише нижче 0x%(limit)x; починаючи з 0x%(limit)x розташовано мультизавантажувач цих прошивок, і запис туди може знищити радіостанцію. Використовуйте образ, що закінчується до цієї адреси."
 
-#: ../wxui/main.py:1507
+#: ../wxui/main.py:1599
 msgid "Import"
 msgstr "Імпорт"
 
@@ -2472,15 +2476,15 @@ msgstr "Імпорт"
 msgid "Import %i memories"
 msgstr "Імпортувати пам'ять (%i)"
 
-#: ../wxui/main.py:738
+#: ../wxui/main.py:830
 msgid "Import from file..."
 msgstr "Імпортувати з файлу..."
 
-#: ../wxui/main.py:1511
+#: ../wxui/main.py:1603
 msgid "Import messages"
 msgstr "Повідомлення імпорту"
 
-#: ../wxui/main.py:1505
+#: ../wxui/main.py:1597
 msgid "Import not recommended"
 msgstr "Імпорт не рекомендовано"
 
@@ -2510,7 +2514,7 @@ msgstr "Включає діапазон %s до діапазонів, які п�
 msgid "Index"
 msgstr "Індекс"
 
-#: ../wxui/main.py:224
+#: ../wxui/main.py:163
 msgid "Info"
 msgstr "Інформація"
 
@@ -2530,7 +2534,7 @@ msgstr ""
 msgid "Install desktop icon?"
 msgstr "Встановити іконку на робочому столі?"
 
-#: ../wxui/main.py:970
+#: ../wxui/main.py:1062
 msgid "Interact with driver"
 msgstr "Взаємодія з драйвером"
 
@@ -2538,7 +2542,7 @@ msgstr "Взаємодія з драйвером"
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr "Оптимізація точки перетину (IPO). Обходить РЧ-попередній підсилювач приймача, тож вхідний сигнал надходить одразу на перший змішувач. Це жертвує частиною чутливості заради кращої роботи із сильними сигналами та високим рівнем завад."
 
-#: ../wxui/clone.py:813
+#: ../wxui/clone.py:822
 msgid "Internal driver error"
 msgstr "Внутрішня помилка драйвера"
 
@@ -2582,7 +2586,7 @@ msgstr ""
 msgid "Invalid locator"
 msgstr "Неприпустимий локатор"
 
-#: ../wxui/main.py:1898
+#: ../wxui/main.py:1990
 msgid "Invalid or unsupported module file"
 msgstr "Недійсний або непідтримуваний файл модуля"
 
@@ -2605,11 +2609,11 @@ msgstr "Задача %i не перебуває в стані, придатно�
 msgid "Issue number:"
 msgstr "Номер задачі:"
 
-#: ../wxui/main.py:353
+#: ../wxui/main.py:292
 msgid "LIVE"
 msgstr "НАЖИВО"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:858 ../wxui/main.py:1651
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:950 ../wxui/main.py:1743
 msgid "Language"
 msgstr "Мова"
 
@@ -2675,11 +2679,11 @@ msgstr ""
 msgid "Line %i: %s"
 msgstr ""
 
-#: ../wxui/main.py:1753
+#: ../wxui/main.py:1845
 msgid "Live Radio"
 msgstr "Радіостанція наживо"
 
-#: ../wxui/main.py:750
+#: ../wxui/main.py:842
 msgid "Load Module..."
 msgstr "Завантажити модуль..."
 
@@ -2687,15 +2691,15 @@ msgstr "Завантажити модуль..."
 msgid "Load module from issue"
 msgstr "Завантажити модуль із задачі"
 
-#: ../wxui/main.py:1023
+#: ../wxui/main.py:1115
 msgid "Load module from issue..."
 msgstr "Завантажити модуль із задачі..."
 
-#: ../wxui/main.py:2068
+#: ../wxui/main.py:2160
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "Завантаження модуля не впливає на вже відкриті вкладки. Рекомендується (якщо не вказано інше) закрити всі вкладки перед завантаженням модуля."
 
-#: ../wxui/main.py:1905
+#: ../wxui/main.py:1997
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Завантаження модулів може бути надзвичайно небезпечним і призвести до пошкодження вашого комп'ютера, радіостанції або обох. НІКОЛИ не завантажуйте модуль із джерела, якому ви не довіряєте, і особливо не з жодного іншого сайту, окрім офіційного сайту CHIRP (chirpmyradio.com). Завантаження модуля з іншого джерела рівнозначне наданню прямого доступу до вашого комп'ютера і всього, що на ньому! Продовжити, попри цей ризик?"
 
@@ -2763,7 +2767,7 @@ msgstr "Робить гучність сигналу залежною від р�
 msgid "Manual edit of memory %i"
 msgstr "Ручне редагування пам'яті %i"
 
-#: ../wxui/main.py:203
+#: ../wxui/main.py:142
 msgid "Memories"
 msgstr "Пам'ять"
 
@@ -2818,7 +2822,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:357
+#: ../wxui/clone.py:366
 msgid "Model"
 msgstr "Модель"
 
@@ -2826,15 +2830,15 @@ msgstr "Модель"
 msgid "Modes"
 msgstr "Режими"
 
-#: ../wxui/main.py:1902
+#: ../wxui/main.py:1994
 msgid "Module"
 msgstr "Модуль"
 
-#: ../wxui/main.py:1874
+#: ../wxui/main.py:1966
 msgid "Module Loaded"
 msgstr "Модуль завантажено"
 
-#: ../wxui/main.py:2079
+#: ../wxui/main.py:2171
 msgid "Module loaded successfully"
 msgstr "Модуль успішно завантажено"
 
@@ -2842,7 +2846,7 @@ msgstr "Модуль успішно завантажено"
 msgid "More Info"
 msgstr "Докладніше"
 
-#: ../wxui/clone.py:515
+#: ../wxui/clone.py:524
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Знайдено кілька портів: %s"
@@ -2881,11 +2885,11 @@ msgstr ""
 msgid "Network source is immutable"
 msgstr ""
 
-#: ../wxui/main.py:696
+#: ../wxui/main.py:788
 msgid "New Window"
 msgstr "Нове вікно"
 
-#: ../wxui/main.py:2179
+#: ../wxui/main.py:2271
 msgid "New version available"
 msgstr "Доступна нова версія"
 
@@ -2933,7 +2937,7 @@ msgstr "Немає результатів!"
 msgid "No room to add callsign %s"
 msgstr ""
 
-#: ../wxui/main.py:2089
+#: ../wxui/main.py:2181
 msgid "No traces stored"
 msgstr "Трасування не збережено"
 
@@ -2995,7 +2999,7 @@ msgstr "Лише певні режими"
 msgid "Only certain prefixes"
 msgstr "Лише певні префікси"
 
-#: ../wxui/main.py:334
+#: ../wxui/main.py:273
 msgid "Only memory tabs may be exported"
 msgstr "Експортувати можна лише вкладки пам'яті"
 
@@ -3003,35 +3007,35 @@ msgstr "Експортувати можна лише вкладки пам'ят�
 msgid "Only working repeaters"
 msgstr "Лише робочі ретранслятори"
 
-#: ../wxui/main.py:1075 ../wxui/main.py:1507
+#: ../wxui/main.py:1167 ../wxui/main.py:1599
 msgid "Open"
 msgstr "Відкрити"
 
-#: ../wxui/main.py:725
+#: ../wxui/main.py:817
 msgid "Open Recent"
 msgstr "Відкрити нещодавні"
 
-#: ../wxui/main.py:707
+#: ../wxui/main.py:799
 msgid "Open Stock Config"
 msgstr "Відкрити заводські налаштування"
 
-#: ../wxui/main.py:1076 ../wxui/main.py:1383
+#: ../wxui/main.py:1168 ../wxui/main.py:1475
 msgid "Open a file"
 msgstr "Відкрити файл"
 
-#: ../wxui/main.py:1920
+#: ../wxui/main.py:2012
 msgid "Open a module"
 msgstr "Відкрити модуль"
 
-#: ../wxui/main.py:1007
+#: ../wxui/main.py:1099
 msgid "Open debug log"
 msgstr "Відкрити журнал налагодження"
 
-#: ../wxui/main.py:549
+#: ../wxui/main.py:620
 msgid "Open in new window"
 msgstr "Відкрити у новому вікні"
 
-#: ../wxui/main.py:1038
+#: ../wxui/main.py:1130
 msgid "Open last serial trace"
 msgstr "Відкрити останнє трасування послідовного порту"
 
@@ -3039,7 +3043,7 @@ msgstr "Відкрити останнє трасування послідовн�
 msgid "Open repeaters only"
 msgstr "Лише відкриті ретранслятори"
 
-#: ../wxui/main.py:654
+#: ../wxui/main.py:746
 msgid "Open stock config directory"
 msgstr "Відкрити каталог заводських конфігурацій"
 
@@ -3148,7 +3152,7 @@ msgstr "Періодично перевіряє обидві відображу�
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
 msgstr "Розміщує режекторний фільтр ПЧ нижче середини смуги пропускання, посередині або вище. Точну частоту режекції налаштовують на радіостанції ручкою DSP/SEL."
 
-#: ../wxui/main.py:2183
+#: ../wxui/main.py:2275
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Будь ласка, закрийте CHIRP перед встановленням нової версії!"
 
@@ -3156,7 +3160,7 @@ msgstr "Будь ласка, закрийте CHIRP перед встановл�
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr "Будь ласка, перевірте номер задачі та спробуйте ще раз. Якщо ви справді хочете повідомити про цю помилку, залишіть коментар на сайті та попросіть знову відкрити задачу."
 
-#: ../wxui/main.py:2004
+#: ../wxui/main.py:2096
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "Зверніть увагу, що режим розробника призначений для розробників проєкту CHIRP або для використання під їхнім керівництвом. Він вмикає поведінку та функції, які можуть пошкодити ваш комп'ютер і радіостанцію, якщо не використовується з НАДЗВИЧАЙНОЮ обережністю. Вас попереджено! Продовжити попри це?"
 
@@ -3164,7 +3168,7 @@ msgstr "Зверніть увагу, що режим розробника при
 msgid "Please wait"
 msgstr "Будь ласка, зачекайте"
 
-#: ../wxui/clone.py:492
+#: ../wxui/clone.py:501
 msgid "Plug in your cable and then click OK"
 msgstr "Підключіть кабель і натисніть OK"
 
@@ -3172,7 +3176,7 @@ msgstr "Підключіть кабель і натисніть OK"
 msgid "Polish repeaters database"
 msgstr "База даних польських ретрансляторів"
 
-#: ../wxui/clone.py:342
+#: ../wxui/clone.py:351
 msgid "Port"
 msgstr "Порт"
 
@@ -3202,7 +3206,7 @@ msgstr "Натисніть Enter, щоб зберегти це значення"
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
 msgstr "Забороняє передавання на каналі, який уже зайнято. Натискання PTT на зайнятому каналі подає звуковий сигнал замість увімкнення передавача."
 
-#: ../wxui/main.py:761
+#: ../wxui/main.py:853
 msgid "Print Preview"
 msgstr "Попередній перегляд друку"
 
@@ -3231,7 +3235,7 @@ msgstr "Програмує DTMF-код, що надсилається напри
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr "Програмує цифровий код автоматичної ідентифікації номера (ANI) радіостанції. ANI — це DTMF PTT-ID, за яким диспетчер або інше сумісне обладнання може ідентифікувати цю радіостанцію."
 
-#: ../wxui/clone.py:526
+#: ../wxui/clone.py:535
 msgid "Prolific USB device"
 msgstr "USB-пристрій Prolific"
 
@@ -3255,12 +3259,12 @@ msgstr ""
 msgid "QTH Locator"
 msgstr "Локатор QTH"
 
-#: ../wxui/main.py:2117
+#: ../wxui/main.py:2209
 #, python-format
 msgid "Query %s"
 msgstr "Запит %s"
 
-#: ../wxui/main.py:886
+#: ../wxui/main.py:978
 msgid "Query Source"
 msgstr "Джерело запиту"
 
@@ -3289,7 +3293,7 @@ msgstr ""
 msgid "RX DTCS"
 msgstr "DTCS приймання"
 
-#: ../wxui/main.py:1046
+#: ../wxui/main.py:1138
 msgid "Radio"
 msgstr "Радіо"
 
@@ -3315,7 +3319,7 @@ msgstr "Інформація про радіостанцію: метадані �
 msgid "Radio did not ack block %i"
 msgstr "Радіостанція не підтвердила блок %i"
 
-#: ../wxui/clone.py:783 ../wxui/clone.py:883
+#: ../wxui/clone.py:792 ../wxui/clone.py:892
 msgid "Radio information"
 msgstr "Інформація про радіостанцію"
 
@@ -3349,11 +3353,11 @@ msgstr "Код DTCS приймання"
 msgid "Receive frequency"
 msgstr "Частота приймання"
 
-#: ../wxui/clone.py:608
+#: ../wxui/clone.py:617
 msgid "Recent"
 msgstr "Нещодавні"
 
-#: ../wxui/clone.py:349
+#: ../wxui/clone.py:358
 msgid "Recent..."
 msgstr "Нещодавні..."
 
@@ -3388,11 +3392,11 @@ msgstr "Відмова читати 0x%4.4x..0x%4.4x: цей драйвер чи
 msgid "Refusing to write 0x%4.4x..0x%4.4x: 0x%4.4x is the start of the multi-bootloader on this firmware and writing there can destroy the radio"
 msgstr "Відмова записувати 0x%4.4x..0x%4.4x: 0x%4.4x є початком мультизавантажувача цієї прошивки, і запис туди може знищити радіостанцію"
 
-#: ../wxui/main.py:947
+#: ../wxui/main.py:1039
 msgid "Reload Driver"
 msgstr "Перезавантажити драйвер"
 
-#: ../wxui/main.py:956
+#: ../wxui/main.py:1048
 msgid "Reload Driver and File"
 msgstr "Перезавантажити драйвер і файл"
 
@@ -3400,11 +3404,11 @@ msgstr "Перезавантажити драйвер і файл"
 msgid "Reload required"
 msgstr "Потрібне перезавантаження"
 
-#: ../wxui/clone.py:628
+#: ../wxui/clone.py:637
 msgid "Remove"
 msgstr "Вилучити"
 
-#: ../wxui/clone.py:629
+#: ../wxui/clone.py:638
 msgid "Remove selected model from list"
 msgstr "Вилучити вибрану модель зі списку"
 
@@ -3425,7 +3429,7 @@ msgstr ""
 msgid "RepeaterBook returned invalid response"
 msgstr ""
 
-#: ../wxui/main.py:1029
+#: ../wxui/main.py:1121
 msgid "Report or update a bug..."
 msgstr "Повідомити про помилку або оновити звіт..."
 
@@ -3434,19 +3438,19 @@ msgstr "Повідомити про помилку або оновити зві�
 msgid "Reporting a new bug: %r"
 msgstr "Повідомлення про нову помилку: %r"
 
-#: ../wxui/main.py:995
+#: ../wxui/main.py:1087
 msgid "Reporting enabled"
 msgstr "Звітування ввімкнено"
 
-#: ../wxui/main.py:2028
+#: ../wxui/main.py:2120
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "Звітування допомагає проєкту CHIRP визначити, на які моделі радіостанцій та операційні системи спрямувати обмежені ресурси. Ми будемо вдячні, якщо ви залишите цю функцію увімкненою. Дійсно вимкнути звітування?"
 
-#: ../wxui/main.py:1668 ../wxui/main.py:2021
+#: ../wxui/main.py:1760 ../wxui/main.py:2113
 msgid "Restart Required"
 msgstr "Потрібен перезапуск"
 
-#: ../wxui/main.py:719
+#: ../wxui/main.py:811
 #, python-format
 msgid "Restore %i tab"
 msgid_plural "Restore %i tabs"
@@ -3454,7 +3458,7 @@ msgstr[0] "Відновити %i вкладку"
 msgstr[1] "Відновити %i вкладки"
 msgstr[2] "Відновити %i вкладок"
 
-#: ../wxui/main.py:851
+#: ../wxui/main.py:943
 msgid "Restore tabs on start"
 msgstr "Відновлювати вкладки під час запуску"
 
@@ -3478,15 +3482,15 @@ msgstr ""
 "до API SatNOGS, щоб отримати найдетальніші та\n"
 "найактуальніші дані про передавачі."
 
-#: ../wxui/main.py:1077
+#: ../wxui/main.py:1169
 msgid "Save"
 msgstr "Зберегти"
 
-#: ../wxui/main.py:1542
+#: ../wxui/main.py:1634
 msgid "Save before closing?"
 msgstr "Зберегти перед закриттям?"
 
-#: ../wxui/main.py:1078 ../wxui/main.py:1466
+#: ../wxui/main.py:1170 ../wxui/main.py:1558
 msgid "Save file"
 msgstr "Зберегти файл"
 
@@ -3510,7 +3514,7 @@ msgstr "Скремблер"
 msgid "Security Risk"
 msgstr "Ризик безпеки"
 
-#: ../wxui/main.py:937
+#: ../wxui/main.py:1029
 msgid "Select Bandplan..."
 msgstr "Виберіть план діапазонів..."
 
@@ -3519,7 +3523,7 @@ msgstr "Виберіть план діапазонів..."
 msgid "Select Bands"
 msgstr "Виберіть діапазони"
 
-#: ../wxui/main.py:1651
+#: ../wxui/main.py:1743
 msgid "Select Language"
 msgstr "Виберіть мову"
 
@@ -3531,11 +3535,11 @@ msgstr "Виберіть режими"
 msgid "Select Modes to Import"
 msgstr "Виберіть режими для імпорту"
 
-#: ../wxui/main.py:2100
+#: ../wxui/main.py:2192
 msgid "Select a bandplan"
 msgstr "Оберіть план діапазонів"
 
-#: ../wxui/main.py:1209
+#: ../wxui/main.py:1301
 msgid "Select a tab and memory to diff"
 msgstr "Оберіть вкладку та пам'ять для порівняння"
 
@@ -3835,7 +3839,7 @@ msgstr ""
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
 msgstr ""
 
-#: ../wxui/main.py:216
+#: ../wxui/main.py:155
 msgid "Settings"
 msgstr "Налаштування"
 
@@ -3864,7 +3868,7 @@ msgstr ""
 msgid "Show Raw Memory"
 msgstr "Показати необроблену пам'ять"
 
-#: ../wxui/main.py:1013
+#: ../wxui/main.py:1105
 msgid "Show debug log location"
 msgstr "Показати розташування журналу налагодження"
 
@@ -3872,7 +3876,7 @@ msgstr "Показати розташування журналу налагод�
 msgid "Show extra fields"
 msgstr "Показати додаткові поля"
 
-#: ../wxui/main.py:1018
+#: ../wxui/main.py:1110
 msgid "Show image backup location"
 msgstr "Показати розташування резервної копії образу"
 
@@ -3954,7 +3958,7 @@ msgstr "Штат"
 msgid "State/Province"
 msgstr "Штат/провінція"
 
-#: ../wxui/main.py:2080
+#: ../wxui/main.py:2172
 msgid "Success"
 msgstr "Успішно"
 
@@ -4073,7 +4077,7 @@ msgstr "Для імені потрібно більше байт, ніж вмі�
 msgid "The profile %(profile)s suggests %(default)i bytes; this is only a guess and the radio is the authority. A loaded image sets this automatically, and anything at or above 0x%(limit)x is refused because that is the multi-bootloader region."
 msgstr "Профіль %(profile)s вказує на %(default)i байт; це лише припущення, а остаточне слово за радіостанцією. Завантажений образ встановлює це автоматично, а все, що починається з 0x%(limit)x і вище, відхиляється, бо це область мультизавантажувача."
 
-#: ../wxui/main.py:1498
+#: ../wxui/main.py:1590
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "Рекомендований спосіб імпорту пам'яті — відкрити вихідний файл і скопіювати потрібну пам'ять із нього до цільового образу. Якщо ви продовжите цю функцію імпорту, CHIRP замінить усю пам'ять у поточно відкритому файлі на пам'ять із %(file)s. Бажаєте відкрити цей файл, щоб скопіювати пам'ять вручну, чи продовжити імпорт?"
@@ -4103,11 +4107,11 @@ msgstr "У цьому образі відсутня інформація про 
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr "Цей образ доступний лише для читання, оскільки він походить із радіостанції з непідтримуваною прошивкою"
 
-#: ../wxui/main.py:1750
+#: ../wxui/main.py:1842
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr "Ця радіостанція працює в режимі реального часу, тобто зміни надсилаються на радіостанцію одразу, як тільки ви їх вносите. Запис не потрібен!"
 
-#: ../wxui/main.py:1756
+#: ../wxui/main.py:1848
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "Цей файл не прив'язаний до конкретної радіостанції, тому його не можна записати безпосередньо на радіостанцію. Відкрийте образ радіостанції (або завантажте його з радіостанції), а потім скопіюйте елементи з цієї вкладки в ту, щоб записати їх"
 
@@ -4339,8 +4343,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Введіть простий рядок пошуку або форматований запит і натисніть Enter"
 
-#: ../wxui/clone.py:486 ../wxui/clone.py:493 ../wxui/clone.py:504
-#: ../wxui/clone.py:512 ../wxui/clone.py:516
+#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
+#: ../wxui/clone.py:521 ../wxui/clone.py:525
 msgid "USB Port Finder"
 msgstr "Пошук USB-порту"
 
@@ -4349,7 +4353,7 @@ msgstr "Пошук USB-порту"
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:502
+#: ../wxui/clone.py:511
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Не вдалося визначити порт для вашого кабелю. Перевірте драйвери та з'єднання."
 
@@ -4362,7 +4366,7 @@ msgstr "Не вдається редагувати пам'ять, доки ра�
 msgid "Unable to find a supported tuning step for %s"
 msgstr ""
 
-#: ../wxui/main.py:1424
+#: ../wxui/main.py:1516
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "Не вдається знайти заводську конфігурацію %r"
@@ -4398,7 +4402,7 @@ msgstr "Не вдається показати %s у цій системі"
 msgid "Unable to set %s on this memory"
 msgstr "Не вдається встановити %s для цієї пам'яті"
 
-#: ../wxui/main.py:1760
+#: ../wxui/main.py:1852
 msgid "Unable to upload this file"
 msgstr "Не вдається надіслати цей файл"
 
@@ -4422,7 +4426,7 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:485
+#: ../wxui/clone.py:494
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Від'єднайте кабель (за потреби) і натисніть OK"
 
@@ -4444,11 +4448,11 @@ msgstr "Оновити наявну задачу"
 msgid "Updating bug %s"
 msgstr "Оновлення задачі %s"
 
-#: ../wxui/main.py:1083
+#: ../wxui/main.py:1175
 msgid "Upload"
 msgstr ""
 
-#: ../wxui/clone.py:898
+#: ../wxui/clone.py:907
 msgid "Upload instructions"
 msgstr "Інструкції із запису"
 
@@ -4456,11 +4460,11 @@ msgstr "Інструкції із запису"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Запис вимкнено через непідтримувану версію прошивки"
 
-#: ../wxui/main.py:1084
+#: ../wxui/main.py:1176
 msgid "Upload to radio"
 msgstr "Записати в радіостанцію"
 
-#: ../wxui/main.py:880
+#: ../wxui/main.py:972
 msgid "Upload to radio..."
 msgstr "Записати в радіостанцію..."
 
@@ -4477,11 +4481,11 @@ msgstr "Використовувати робочий процес із част
 msgid "Use at most 3 digits."
 msgstr "Використовуйте щонайбільше 3 цифри."
 
-#: ../wxui/main.py:836
+#: ../wxui/main.py:928
 msgid "Use fixed-width font"
 msgstr "Використовувати моноширинний шрифт"
 
-#: ../wxui/main.py:844
+#: ../wxui/main.py:936
 msgid "Use larger font"
 msgstr "Використовувати більший шрифт"
 
@@ -4551,11 +4555,11 @@ msgstr "Значення для пошуку в полі пам'яті"
 msgid "Values"
 msgstr "Значення"
 
-#: ../wxui/clone.py:353
+#: ../wxui/clone.py:362
 msgid "Vendor"
 msgstr "Виробник"
 
-#: ../wxui/main.py:1045
+#: ../wxui/main.py:1137
 msgid "View"
 msgstr "Вигляд"
 
@@ -4567,8 +4571,8 @@ msgstr "Передавання за голосом. Радіостанція п�
 msgid "WARNING!"
 msgstr "ПОПЕРЕДЖЕННЯ!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1914
-#: ../wxui/main.py:2072
+#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:2006
+#: ../wxui/main.py:2164
 msgid "Warning"
 msgstr "Попередження"
 
@@ -4581,7 +4585,7 @@ msgstr "Попередження: %s"
 msgid "Warns you the selected number of seconds before the time-out timer ends a transmission. Off turns the warning off."
 msgstr "Попереджає за вибрану кількість секунд до того, як таймер обмеження часу завершить передачу. Off вимикає попередження."
 
-#: ../wxui/main.py:462
+#: ../wxui/main.py:405
 msgid "Welcome"
 msgstr "Ласкаво просимо"
 
@@ -4605,7 +4609,7 @@ msgstr "Бажаєте, щоб CHIRP встановив для вас іконк
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "Ви створили кілька задач протягом останнього тижня. CHIRP обмежує кількість задач, які можна створити, щоб запобігти зловживанням. Якщо вам справді потрібно створити ще одну, зробіть це через сайт."
 
-#: ../wxui/clone.py:523
+#: ../wxui/clone.py:532
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Ваш USB-пристрій на базі Prolific не працюватиме без повернення до старішої версії драйвера. Відвідати сайт CHIRP, щоб дізнатися більше про те, як це вирішити?"
 
@@ -4613,7 +4617,7 @@ msgstr "Ваш USB-пристрій на базі Prolific не працюват
 msgid "Your QTH Locator"
 msgstr "Ваш локатор QTH"
 
-#: ../wxui/clone.py:510
+#: ../wxui/clone.py:519
 msgid "Your cable appears to be on port:"
 msgstr "Ваш кабель, схоже, під'єднано до порту:"
 
@@ -4649,7 +4653,7 @@ msgstr "прапорець"
 msgid "checked"
 msgstr "позначено"
 
-#: ../wxui/main.py:2001
+#: ../wxui/main.py:2093
 msgid "disabled"
 msgstr "вимкнено"
 
@@ -4657,7 +4661,7 @@ msgstr "вимкнено"
 msgid "empty"
 msgstr "порожньо"
 
-#: ../wxui/main.py:2001
+#: ../wxui/main.py:2093
 msgid "enabled"
 msgstr "увімкнено"
 
