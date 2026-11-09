@@ -246,10 +246,19 @@ class D9000Radio(chirp_common.CloneModeRadio):
         self.pipe.write(TX_FINISH)
         self._expect(RX_ACK)
 
-    def _read_image(self, status=None):
+    def _progress(self, msg, done, total):
+        """Hand clone progress to the UI."""
+        status = chirp_common.Status()
+        status.cur = done
+        status.max = total
+        status.msg = msg
+        self.status_fn(status)
+
+    def _read_image(self):
         self._connect()
         self._get_band()
         img = bytearray(IMAGE_SIZE)
+        total = len(READ_BLOCKS)
         for i, (addr, length) in enumerate(READ_BLOCKS):
             frame = _read_frame(addr, length)
             for _ in range(4):
@@ -271,14 +280,14 @@ class D9000Radio(chirp_common.CloneModeRadio):
             else:
                 raise errors.RadioError(
                     "Failed to read block at 0x%04X" % addr)
-            if status and i % 32 == 0:
-                status("Reading", i * 100 // len(READ_BLOCKS))
+            self._progress("Reading from radio", i + 1, total)
         self._finish()
         return bytes(img)
 
-    def _write_image(self, img, status=None):
+    def _write_image(self, img):
         self._connect()
         self._get_band()
+        total = len(WRITE_BLOCKS)
         for i, (addr, length) in enumerate(WRITE_BLOCKS):
             frame = _write_frame(addr, img[addr:addr + length])
             for _ in range(6):
@@ -291,8 +300,7 @@ class D9000Radio(chirp_common.CloneModeRadio):
             else:
                 raise errors.RadioError(
                     "Failed to write block at 0x%04X" % addr)
-            if status and i % 32 == 0:
-                status("Writing", i * 100 // len(WRITE_BLOCKS))
+            self._progress("Writing to radio", i + 1, total)
         self._finish()
 
     def sync_in(self):
@@ -461,7 +469,7 @@ class D9000Radio(chirp_common.CloneModeRadio):
                 .encode("latin-1").hex(" "))
 
     def validate_memory(self, mem):
-        msgs = super().validate_memory(mem)
+        msgs = chirp_common.CloneModeRadio.validate_memory(self, mem)
         if not mem.empty:
             used = len(mem.name.encode("gbk", "replace"))
             if used > NAME_BYTES:
