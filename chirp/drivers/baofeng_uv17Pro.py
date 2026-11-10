@@ -103,34 +103,50 @@ def _crypt(symbol_index, buffer):
     return dec_buffer
 
 
-def _sendmagic(radio, magic, response_len):
-    bfc._rawsend(radio, magic)
-    return bfc._rawrecv(radio, response_len)
+def _sendmagic(pipe, magic, response_len):
+    try:
+        pipe.write(magic)
+    except Exception:
+        raise errors.RadioError("Error sending data to radio")
+
+    try:
+        ack = pipe.read(response_len)
+    except Exception:
+        msg = "Generic error reading data from radio; check your cable."
+        raise errors.RadioError(msg)
+
+    if not ack:
+        raise errors.RadioNoContactLikelyK1()
+    elif len(ack) != response_len:
+        msg = "Error reading data from radio: not the amount of data we want."
+        raise errors.RadioError(msg)
+
+    return ack
 
 
-def _do_ident(radio):
+def _do_ident(radio_class, pipe):
     saw_data = False
-    for ident in radio._idents:
+    for ident in radio_class._idents:
         # Flush input buffer
-        bfc._clean_buffer(radio)
+        pipe.reset_input_buffer()
 
         # Ident radio
         LOG.debug('Sending ident magic: %r', ident)
         try:
-            ack = _sendmagic(radio, ident, len(radio._fingerprint))
+            ack = _sendmagic(pipe, ident, len(radio_class._fingerprint))
             if ack:
                 saw_data = True
-            if not ack.startswith(radio._fingerprint):
+            if not ack.startswith(radio_class._fingerprint):
                 LOG.debug('Ack %r did not match fingerprint: %r', ack,
-                          radio._fingerprint)
+                          radio_class._fingerprint)
                 continue
         except errors.RadioError:
             # This is the timeout or invalid response length case
             LOG.debug('Radio did not respond to ident magic: %r', ident)
             continue
 
-        for magic, resplen in radio._magics:
-            _sendmagic(radio, magic, resplen)
+        for magic, resplen in radio_class._magics:
+            _sendmagic(pipe, magic, resplen)
         return True
 
     if saw_data:
@@ -141,8 +157,12 @@ def _do_ident(radio):
 def _download(radio):
     """Get the memory map"""
 
-    # Put radio in program mode and identify it
-    _do_ident(radio)
+    if radio.detected_models():
+        # Ident will have already been called by the serial detection
+        pass
+    else:
+        # Put radio in program mode and identify it
+        _do_ident(radio)
     data = b""
 
     # UI progress
@@ -180,7 +200,7 @@ def _download(radio):
 
 def _upload(radio):
     # Put radio in program mode and identify it
-    _do_ident(radio)
+    _do_ident(radio.__class__, radio.pipe)
     data = b""
 
     # UI progress
@@ -1959,6 +1979,23 @@ class BaofengUV5RMPlus(BF5RM):
     _has_send_id_delay = True
     _has_scramble = True
 
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        try:
+            # If we succeed at a uv17Pro ident with our fingerprint then we
+            # are a v1 radio (this class)
+            _do_ident(cls, pipe)
+            return cls
+        except errors.RadioError:
+            # If we got an error above, assume we're a v2 radio and just
+            # return that class to let it try. If this is ever more than
+            # just one either-or situation, this will require more logic.
+            models = cls.detected_models(include_self=False)
+            if len(models) != 1:
+                LOG.error('FIXME: this logic assumes a single other detected '
+                          'driver!')
+            return models[0]
+
 
 @directory.register
 class GM5RH(UV17Pro):
@@ -2602,7 +2639,7 @@ class UV5RMini(UV17Pro):
         """Upload to UV5R Mini (over BLE or USB/Serial)"""
         # Put radio in program mode and identify it and
         # determine if on BLE or USB/Serial connection
-        _do_ident(radio)
+        _do_ident(radio.__class__, radio.pipe)
 
         if radio._is_on_ble:  # BLE upload needs a diff blocksize
             _blocksize = radio.BLE_UP_BLOCK_SIZE
