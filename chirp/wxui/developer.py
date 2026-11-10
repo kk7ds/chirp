@@ -477,7 +477,7 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
             # https://github.com/wxWidgets/Phoenix/issues/918
             view = self._treebook.GetChildren()[0]
 
-        view.SetMinSize((250, 0))
+        view.SetMinClientSize((250, 0))
 
         self._treebook.Bind(wx.EVT_TREEBOOK_PAGE_CHANGED,
                             self.page_selected)
@@ -504,6 +504,10 @@ class ChirpRadioBrowser(common.ChirpEditor, common.ChirpSyncEditor):
             self.stop_wait_dialog()
         if self._treebook.GetPageCount():
             self._treebook.ExpandNode(0)
+            # Recalculate the treebook's controller size after populating it.
+            # Otherwise the tree can retain the narrow size from its initial
+            # empty layout until the window is resized.
+            self._treebook.SendSizeEvent()
 
     def page_selected(self, event):
         page = self._treebook.GetPage(event.GetSelection())
