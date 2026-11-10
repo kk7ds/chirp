@@ -1300,7 +1300,7 @@ msgstr "Cambiar este ajuste requiere actualizar los ajustes desde la imagen, lo 
 
 #: ../drivers/retevis_rt97s.py:213
 msgid "Channel frequencies are from the repeater's point of view. The receive frequency is the 467 MHz input. Duplex is minus and the offset is 5 MHz, so the repeater transmits on the 462 MHz output. A station using this repeater listens on the repeater output and transmits on the input."
-msgstr "Las frecuencias de canales son desde el punto de vista del repetidor. La frecuencia de recepción es la entrada de 467 MHz. Dúplex es menos y el desplazamiento es 5 MHz, por lo que el repetidor transmite en la salida de 462 MHz. Una estación usando este repetidor escucha en la salida de repetidor y transmite en la entrada."
+msgstr "Las frecuencias de canales son desde el punto de vista del repetidor. La frecuencia recibida es la entrada de 467 MHz. Dúplex es menos y el desplazamiento es 5 MHz, por lo que el repetidor transmite en la salida de 462 MHz. Una estación usando este repetidor escucha en la salida de repetidor y transmite en la entrada."
 
 #: ../wxui/memedit.py:1884
 #, python-format
@@ -1801,7 +1801,7 @@ msgstr "Habilita la línea RTS del conector CAT. Apágala cuando el computador o
 
 #: ../drivers/ft450d.py:1353
 msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
-msgstr "Habilita transmitir y recibir en el canal de emergencia de Alaska, 5167,5 kHz, el cual entonces aparece como MEM-EMG en el modo Memoria. Solo puede ser usado por estaciones situadas en o entre 92,6 km de Alaska, y solo para comunicaciones de emergencia involucrando la protección inmediata de vidas o propiedad."
+msgstr "Habilita la transmisión y recepción en el canal de emergencia de Alaska, 5167,5 kHz, el cual entonces aparece como MEM-EMG en el modo Memoria. Solo puede ser usado por estaciones situadas en o entre 92,6 km de Alaska, y solo para comunicaciones de emergencia involucrando la protección inmediata de vidas o propiedad."
 
 #: ../wxui/memedit.py:404
 msgid "Enter Frequency"
@@ -3567,11 +3567,11 @@ msgstr "Seleccionas la potencia de transmisión del VFO B. Usa la potencia más 
 
 #: ../drivers/ft450d.py:1706
 msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
-msgstr ""
+msgstr "Seleccionas que tan rápido el control de ganancia automático permite al receptor recuperarse después de una señal fuerte. Rápido es adecuado para CW y datos, Lento es adecuado para SSB y AM, y Auto usa Lento para SSB y AM y Rápido para otros modos. Con AGC apagado el medidor S no se moverá más y las señales fuertes tenderán a distorsionarse."
 
 #: ../drivers/ft450d.py:1817
 msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
-msgstr ""
+msgstr "Seleccionas una de las diez curvas del ecualizador DSP para tu voz transmitida. 0 es plano, 1 a 3 reduce las frecuencias bajas, medias o altas, y 4 a 6 aumenta las frecuencias altas, medias y bajas. 7 aumenta las bajas y reduce las altas, 8 reduce las bajas y aumenta las medias, y 9 reduce las bajas y aumenta las altas."
 
 #: ../drivers/ft450d.py:1474
 msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
@@ -3579,7 +3579,7 @@ msgstr "Seleccionas los caracteres que la característica de entrenamiento de CW
 
 #: ../drivers/ft450d.py:949
 msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
-msgstr ""
+msgstr "Seleccionas el modo de datos que un canal DIG usa. RTTY es una radioteletipo FSK tecleado mediante una unidad terminal o un software de RTTY, mientras USER-L y USER-U portan modos de datos basados en audio tales como el modo de paquetes en la banda lateral inferior o superior. N/A es para los canales que no están en modo DIG."
 
 #: ../drivers/baofeng_uv17Pro.py:722
 msgid "Selects the language of the menus and the spoken voice prompts."
@@ -3607,11 +3607,11 @@ msgstr "Seleccionas la ráfaga de tono de frecuencia enviada para acceso al repe
 
 #: ../drivers/ft450d.py:1605
 msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
-msgstr ""
+msgstr "Seleccionas lo que el botón LOCK bloquea. Frecuencias bloquea los controles que cambian la frecuencia, incluyendo la teclas UP, DWN y FAST del micrófono. Panel bloquea todas las teclas del panel frontal y perillas, y Todo bloquea ambas el panel frontal y las teclas del micrófono. POWER y LOCK siempre serán usables."
 
 #: ../drivers/ft450d.py:1372
 msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
-msgstr ""
+msgstr "Seleccionas lo que controla el botón TUNE. ATAS es la antena de sintonización activa opcional ATAS-100/-120, EXT ATU el sintonizador externo opcional FC-40, y INT ATU el sintonizador integrado que actúa únicamente sobre la señal de transmisión, mientras que INTRATU también pone al sintonizador integrado en la ruta de recepción."
 
 #: ../drivers/ft450d.py:1737
 msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
@@ -3710,7 +3710,7 @@ msgstr "Estableces cuántos segundos permanece encendida la retroiluminación de
 
 #: ../drivers/baofeng_uv17Pro.py:666
 msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
-msgstr ""
+msgstr "Estableces que tan fuerte debe ser una señal recibida antes de que el parlante se desenmudezca. 0 deja el silenciador abierto por lo que escucharas ruido todo el tiempo, valores altos rechazan mas señales débiles y ruido. Incrementa este valor si el parlante sigue desenmudeciéndose en interferencia, disminúyelo si estaciones distantes están siendo cortadas."
 
 #: ../drivers/ft450d.py:995
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
@@ -3734,7 +3734,7 @@ msgstr "Estableces la sensibilidad de VOX. Un ajuste muy sensible hace que el tr
 
 #: ../drivers/ft450d.py:1303
 msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
-msgstr ""
+msgstr "Estableces la velocidad en baudios del conecto CAT, la cual debe coincidir con la configurada en el software de control del computador. Data convierte el conector CAT en una interfaz RTTY: el software RTTY teclea al desplazamiento FSK a través de la entrada de datos serie y usa la señal RTS como PTT."
 
 #: ../drivers/ft450d.py:1564
 msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
@@ -3787,11 +3787,11 @@ msgstr "Estableces el desplazamiento de frecuencia entre los tonos de la marca y
 
 #: ../drivers/ft450d.py:1829
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
-msgstr ""
+msgstr "Estableces la ganancia del micrófono para SSB, AM y FM. Usa Baja con un micrófono que tenga una salida alta, Normal con el micrófono de mano suministrado y Alta con un micrófono que tenga salida baja. El procesador de voz está apagado en Baja y encendido en los otros ajustes."
 
 #: ../drivers/ft450d.py:1345
 msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
-msgstr ""
+msgstr "Estableces el desplazamiento que el Quick Split aplica. Manteniendo SPLIT/STEP por un segundo establece al VFO de transmisión a la frecuencia recibida más dicho desplazamiento, en el mismo modo que el VFO de recepción, y enciende la operación en modo dividido."
 
 #: ../drivers/ft450d.py:1501
 msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
@@ -3799,7 +3799,7 @@ msgstr "Estableces la pausa en segundos entre las repeticiones de un mensaje de 
 
 #: ../drivers/ft450d.py:1409
 msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
-msgstr ""
+msgstr "Estableces el nivel del tono lateral de CW, el cual es también el desplazamiento de la portadora transmitida y el centro del filtro de recepción de CW. Sintonizando en una estación hasta que su tono coincida con el que el tono lateral pone en su frecuencia."
 
 #: ../drivers/ft450d.py:1550
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
@@ -3815,7 +3815,7 @@ msgstr "Estableces la frecuencia recibida mostrada en la línea B de la pantalla
 
 #: ../drivers/ft450d.py:1417
 msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
-msgstr ""
+msgstr "Estableces la velocidad de envío del tecleador electrónico integrado en palabras por minuto. La radio también puede mostrarla en caracteres por minuto, cinco veces la velocidad de wpm. Con una demora en en QSK de CW de 25 ms lo mantienen en 50 wpm o menos, y con 30 ms en 42 wpm o menos, de lo contrario, el equipo no podrá transmitir."
 
 #: ../drivers/ft450d.py:1456
 msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
@@ -3827,7 +3827,7 @@ msgstr "Estableces la brecha de silencio entre los tonos DTMF transmitidos. Incr
 
 #: ../drivers/ft450d.py:1294
 msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off. The radio shows the shortest setting as 10 ms."
-msgstr ""
+msgstr "Estableces el temporizador de tiempo fuera para los comandos de control de la computadora que llegan al conector CAT. La entrada de comando que continúa durante más tiempo que este tiempo se corta. La radio muestra el ajuste más corto como 10 ms."
 
 #: ../drivers/ft450d.py:1385
 msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
@@ -3835,11 +3835,11 @@ msgstr "Estableces la potencia de transmisión en watts. Usas la potencia más b
 
 #: ../drivers/ft450d.py:1033
 msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
-msgstr ""
+msgstr "Estableces el ancho del filtro de FI DSP. Un filtro más estrecho rechaza las interferencias cercanas a la señal, uno más ancho suena más natural cuando la banda está tranquila. Los anchos dependen del modo: 1,8, 2,4 o 3,0 kHz para SSB, 300 Hz, 500 Hz o 2,4 kHz para CW, 300 Hz, 2,4 o 3,0 kHz para DIG, 3,0, 6,0 o 9,0 kHz para AM, y 2,5 o 5,0 kHz para FM. Un ancho que el modo no ofrezca se reemplazara por el más cercano que lo haga."
 
 #: ../drivers/ft450d.py:1319
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
-msgstr ""
+msgstr "Estableces cuándo se reanuda el escaneo tras haberse pausado en una señal. 1 al 10 reanuda después de esos cuantos segundos, 0 elije BUSY, lo cual espera hasta que la señal desaparece. En SSB, CW y otros modos de datos basados en SSB el escáner da pasos lentamente sobre la señal, dándote tiempo a detenerlo."
 
 #: ../wxui/main.py:155
 msgid "Settings"
@@ -4321,7 +4321,7 @@ msgstr "Enciende el blanqueador de ruido IF, el cual reduce los pulsos cortos de
 
 #: ../drivers/ft450d.py:1010
 msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
-msgstr "Activa el filtro notch del IF, un filtro angosto y profundo que remueve una portadora interferente o un silbido dentro de la banda de paso de recepción."
+msgstr "Activa el filtro notch del IF, un filtro angosto y profundo que remueve una portadora interferente o un silbido dentro de la banda de paso banda recibida."
 
 #: ../drivers/ft450d.py:1716
 msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
