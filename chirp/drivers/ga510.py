@@ -375,11 +375,11 @@ class RadioddityGA510Radio(chirp_common.CloneModeRadio):
         saw_data = False
         for rcls in reversed(cls.detected_models()):
             pipe.baudrate = rcls.BAUD_RATE
-            radio = rcls(pipe)
             try:
-                if isinstance(radio, baofeng_uv17Pro.UV17Pro):
-                    ident = baofeng_uv17Pro._do_ident(radio)
+                if issubclass(rcls, baofeng_uv17Pro.UV17Pro):
+                    ident = baofeng_uv17Pro._do_ident(rcls, pipe)
                 else:
+                    radio = rcls(pipe)
                     ident = start_program(radio)
             except errors.RadioNoResponse:
                 LOG.debug('No response from radio with %s', rcls)
