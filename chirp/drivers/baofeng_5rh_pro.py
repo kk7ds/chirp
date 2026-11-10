@@ -21,6 +21,7 @@ import time
 from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
+from chirp.drivers import baofeng_uv17Pro
 from chirp import errors
 from chirp import kenwood_tone
 from chirp import memmap
@@ -984,6 +985,7 @@ class BaofengUV5RHPlus(Baofeng5RHPro):
 
 
 @directory.register
+@directory.detected_by(baofeng_uv17Pro.BaofengUV5RMPlus)
 class BaofengUV5RMPlusV2(Baofeng5RHPro):
     # baofeng_uv17Pro.py already registers "UV-5RM Plus" for the older
     # firmware, so the generation goes in VARIANT to keep the two apart.

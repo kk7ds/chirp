@@ -157,8 +157,12 @@ def _do_ident(radio_class, pipe):
 def _download(radio):
     """Get the memory map"""
 
-    # Put radio in program mode and identify it
-    _do_ident(radio.__class__, radio.pipe)
+    if radio.detected_models():
+        # Ident will have already been called by the serial detection
+        pass
+    else:
+        # Put radio in program mode and identify it
+        _do_ident(radio)
     data = b""
 
     # UI progress
@@ -1974,6 +1978,23 @@ class BaofengUV5RMPlus(BF5RM):
     _has_pilot_tone = True
     _has_send_id_delay = True
     _has_scramble = True
+
+    @classmethod
+    def detect_from_serial(cls, pipe):
+        try:
+            # If we succeed at a uv17Pro ident with our fingerprint then we
+            # are a v1 radio (this class)
+            _do_ident(cls, pipe)
+            return cls
+        except errors.RadioError:
+            # If we got an error above, assume we're a v2 radio and just
+            # return that class to let it try. If this is ever more than
+            # just one either-or situation, this will require more logic.
+            models = cls.detected_models(include_self=False)
+            if len(models) != 1:
+                LOG.error('FIXME: this logic assumes a single other detected '
+                          'driver!')
+            return models[0]
 
 
 @directory.register
