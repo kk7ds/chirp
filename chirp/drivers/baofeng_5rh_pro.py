@@ -16,6 +16,7 @@
 """Baofeng 5RH Chirp driver"""
 
 import logging
+import time
 
 from chirp import bitwise
 from chirp import chirp_common
@@ -230,6 +231,7 @@ def _announce(radio):
                 return
             LOG.info('No announce reply at %i baud (got %s)', baudrate,
                      resp and '0x%02X' % resp[0] or 'nothing')
+            time.sleep(1)
     finally:
         port.timeout = timeout
 
