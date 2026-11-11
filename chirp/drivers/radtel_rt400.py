@@ -2,29 +2,28 @@
 # Licensed under the GNU General Public License, version 3 or later.
 """Radtel RT-400 clone driver, based on CPS IL, USB capture, and live backups.
 
-Standalone CHIRP module: no local helper modules or external data files needed.
+Uses the RT-470X_BT clone protocol with an RT-400 memory map and settings.
 Only OEM-observed addresses are uploaded. Unedited raw bytes are preserved.
 """
 import logging
-import struct
 import time
 from decimal import Decimal, InvalidOperation
 
 from chirp import bitwise, chirp_common, directory, errors, memmap
+from chirp.drivers import mml_jc8810
 from chirp.settings import (RadioSettings, RadioSetting, RadioSettingGroup,
                             RadioSettingValueBoolean, RadioSettingValueInteger,
                             RadioSettingValueList, RadioSettingValueString)
 
 LOG = logging.getLogger(__name__)
-MAGIC = b'PROGRAMJC81U'
-IDENT = bytes.fromhex('0136018004000520')
-BLOCK_SIZE = 64
-IMAGE_SIZE = 0xB300
-ADDRESSES = (tuple(range(0, 0x2000, 64)) + (0x8000, 0x9000) +
-             tuple(range(0xA000, 0xA140, 64)) +
-             tuple(range(0xB000, 0xB300, 64)))
-# The RT-400 adds D645 to the standard CHIRP list (105 codes total).
-DCS_CODES = tuple(sorted(chirp_common.DTCS_CODES + (645,)))
+_FAMILY = mml_jc8810.RT470XPlusRadio
+MAGIC = _FAMILY._magic
+IDENT, = _FAMILY._fingerprint
+BLOCK_SIZE = _FAMILY.BLOCK_SIZE
+IMAGE_SIZE = _FAMILY._memsize
+ADDRESSES = tuple(address for start, end in _FAMILY._ranges
+                  for address in range(start, end, BLOCK_SIZE))
+DCS_CODES = mml_jc8810.DTCS
 PTT_ID = ['Off', 'Beginning', 'End', 'Both']
 SCRAMBLER = ['Off', 'Scrambler 1', 'Scrambler 2']
 FHSS = ['Off', 'DCP 1', 'DCP 2', 'DCP 3']
@@ -40,7 +39,7 @@ DTMF_CHARS = '0123456789ABCD*#'
 KEYS = ['Off', 'Radio', 'Tx Power', 'Scan', 'Search', 'Light',
         'NOAA', 'Monitor', 'SOS', 'Spectrum', 'PTT B']
 KEY_CODES = [255, 7, 10, 28, 29, 8, 12, 5, 3, 36, 1]
-DRIVER_REVISION = '2026-11-04.1'
+DRIVER_REVISION = '2026-11-11.1'
 AIRBAND = (108000000, 136000000)
 TX_BANDS = [(136000000, 174000000), (220000000, 235000000),
             (350000000, 390000000), (400000000, 470000000)]
@@ -279,14 +278,14 @@ class _Protocol:
         self.entered = False
         self.received_any = False
 
-    def send(self, data):
+    def write(self, data):
         count = self.pipe.write(data)
         if count not in (None, len(data)):
             raise errors.RadioError('Short write to the programming cable')
         if hasattr(self.pipe, 'flush'):
             self.pipe.flush()
 
-    def receive(self, count):
+    def read(self, count):
         data = bytearray()
         deadline = time.monotonic() + 2.0
         while len(data) < count:
@@ -300,8 +299,8 @@ class _Protocol:
                 raise errors.RadioError('Incomplete reply from the RT-400')
         return bytes(data)
 
-    def enter(self):
-        self.pipe.baudrate = 57600
+    def enter(self, radio):
+        self.pipe.baudrate = radio.BAUD_RATE
         self.pipe.bytesize = 8
         self.pipe.parity = 'N'
         self.pipe.stopbits = 1
@@ -316,36 +315,19 @@ class _Protocol:
         time.sleep(0.15)
         if hasattr(self.pipe, 'reset_input_buffer'):
             self.pipe.reset_input_buffer()
-        self.send(MAGIC)
-        if self.receive(1) != b'\x06':
+        self.write(radio._magic)
+        if self.read(1) != mml_jc8810.CMD_ACK:
             raise errors.RadioError(
                 'RT-400 rejected the programming handshake')
         self.entered = True
-        self.send(b'F')
-        if self.receive(8) != IDENT:
+        self.write(b'F')
+        if self.read(8) not in radio._fingerprint:
             raise errors.RadioError(
                 'Radio identity does not match this RT-400 driver')
 
-    def read_block(self, address):
-        header = b'R' + struct.pack('>HB', address, BLOCK_SIZE)
-        self.send(header)
-        response = self.receive(68)
-        if response[:4] != header:
-            raise errors.RadioError('Wrong block header at 0x%04X' % address)
-        time.sleep(0.003)
-        return response[4:]
-
-    def write_block(self, address, data):
-        if address not in ADDRESSES or len(data) != BLOCK_SIZE:
-            raise errors.RadioError('Refusing a write outside the RT-400 map')
-        self.send(b'W' + struct.pack('>HB', address, BLOCK_SIZE) + data)
-        if self.receive(1) != b'\x06':
-            raise errors.RadioError('RT-400 rejected block 0x%04X' % address)
-        time.sleep(0.003)
-
     def finish_read(self):
         if self.entered:
-            self.send(b'E')
+            self.write(b'E')
             self.entered = False
             time.sleep(0.25)
 
@@ -402,12 +384,11 @@ BOOL_SETTINGS = [
 
 
 @directory.register
-class RadtelRT400Radio(chirp_common.CloneModeRadio):
+class RadtelRT400Radio(mml_jc8810.RT470XPlusRadio):
     VENDOR = 'Radtel'
     MODEL = 'RT-400'
-    BAUD_RATE = 57600
     HARDWARE_FLOW = False
-    _memsize = IMAGE_SIZE
+    POWER_LEVELS = POWER_LEVELS
 
     @classmethod
     def get_prompts(cls):
@@ -423,12 +404,6 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
             'RT-400 off and on. Download again to independently verify edits.')
         return prompts
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        # Native CHIRP images are identified by their metadata, not size
-        # guesses.
-        return False
-
     def process_mmap(self):
         if len(self._mmap) != IMAGE_SIZE:
             raise errors.InvalidDataError(
@@ -441,32 +416,12 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
         cached = getattr(self, '_rt400_features', None)
         if cached is not None:
             return cached
-        rf = chirp_common.RadioFeatures()
-        rf.has_bank = False
-        rf.has_settings = True
-        rf.has_tuning_step = False
+        rf = super().get_features()
         rf.has_nostep_tuning = True
-        rf.has_ctone = True
-        rf.has_cross = True
-        rf.has_rx_dtcs = True
-        rf.has_dtcs_polarity = True
-        rf.can_odd_split = True
-        rf.memory_bounds = (1, 256)
-        rf.valid_name_length = 12
         rf.valid_characters = _name_charset()
         rf.valid_modes = ['FM', 'NFM', 'AM']
-        rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
-        rf.valid_duplexes = ['', '-', '+', 'split', 'off']
-        rf.valid_cross_modes = ['Tone->Tone', 'Tone->DTCS', 'DTCS->Tone',
-                                'DTCS->DTCS', '->Tone', '->DTCS',
-                                'DTCS->', 'Tone->']
-        rf.valid_dtcs_codes = list(DCS_CODES)
+        rf.valid_cross_modes = rf.valid_cross_modes + ['Tone->']
         rf.valid_tuning_steps = STEPS
-        # Encoding/CPS entry limits; validate_memory warns outside published
-        # bands.
-        rf.valid_bands = [(18000000, 1000000000)]
-        rf.valid_power_levels = POWER_LEVELS
-        rf.valid_skips = ['', 'S']
         self._rt400_features = rf
         return rf
 
@@ -480,9 +435,12 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
         data = bytearray(b'\xff' * IMAGE_SIZE)
         primary = None
         try:
-            protocol.enter()
+            protocol.enter(self)
             for index, address in enumerate(ADDRESSES, 1):
-                data[address:address + 64] = protocol.read_block(address)
+                block = mml_jc8810._read_block(
+                    self, address, self.BLOCK_SIZE, serial=protocol)
+                data[address:address + self.BLOCK_SIZE] = block
+                time.sleep(0.003)
                 self._status(message, index)
             return bytes(data)
         except Exception as exc:
@@ -517,10 +475,12 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
             time.sleep(0.15)
             protocol = _Protocol(self.pipe)
             try:
-                protocol.enter()
+                protocol.enter(self)
                 # Reproduce the complete observed CPS upload sequence.
                 for index, address in enumerate(ADDRESSES, 1):
-                    protocol.write_block(address, target[address:address + 64])
+                    mml_jc8810._write_block(
+                        self, address, self.BLOCK_SIZE_UP, serial=protocol)
+                    time.sleep(0.003)
                     self._status('Writing RT-400', index)
             finally:
                 # The hardware accepts a new clone session only after restart.
@@ -604,7 +564,7 @@ class RadtelRT400Radio(chirp_common.CloneModeRadio):
         return mem
 
     def validate_memory(self, mem):
-        messages = super().validate_memory(mem)
+        messages = chirp_common.CloneModeRadio.validate_memory(self, mem)
         if mem.empty:
             return messages
         try:
