@@ -31,9 +31,9 @@ from chirp import CHIRP_VERSION
 from chirp import chirp_common
 from chirp import logger
 from chirp import platform as chirp_platform
+from chirp import serialtrace
 from chirp.wxui import common
 from chirp.wxui import config
-from chirp.wxui import serialtrace
 from chirp.wxui import report
 
 
