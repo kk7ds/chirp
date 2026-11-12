@@ -633,7 +633,7 @@ class TestFT8000R(unittest.TestCase):
         class TracePort(Port):
             def write(self, data):
                 super().write(data)
-                # Same return behavior as wxui.serialtrace.SerialTrace.
+                # Same return behavior as chir[].serialtrace.SerialTrace.
                 return None
         for echo in (True, False):
             port = TracePort(self.clock, echo=echo)

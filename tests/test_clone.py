@@ -5,7 +5,7 @@ from unittest import mock
 
 from chirp import chirp_common
 from chirp import errors
-from chirp.wxui import serialtrace
+from chirp import serialtrace
 from tests import base
 
 LOG = logging.getLogger(__name__)

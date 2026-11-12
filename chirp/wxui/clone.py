@@ -30,10 +30,10 @@ from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import fake
 from chirp import errors
+from chirp import serialtrace
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
-from chirp.wxui import serialtrace
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
