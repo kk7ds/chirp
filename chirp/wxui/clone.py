@@ -170,7 +170,11 @@ def open_serial(port, rclass):
         pipe.rtscts = rclass.HARDWARE_FLOW
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
-        pipe.open()
+        try:
+            pipe.open()
+        except NotImplementedError:
+            pipe.write_timeout = None
+            pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
         pipe = serialtrace.SerialTrace(
