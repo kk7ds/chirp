@@ -324,9 +324,8 @@ def _exit_programming_mode(radio):
         raise errors.RadioError("Radio refused to exit programming mode")
 
 
-def _read_block(radio, block_addr, block_size, serial=None):
-    if serial is None:
-        serial = radio.pipe
+def _read_block(radio, block_addr, block_size):
+    serial = radio.pipe
 
     cmd = struct.pack(">cHb", b'R', block_addr, block_size)
     expectedresponse = b"R" + cmd[1:]
@@ -335,8 +334,7 @@ def _read_block(radio, block_addr, block_size, serial=None):
     try:
         serial.write(cmd)
         response = serial.read(4 + block_size)
-        if (len(response) != 4 + block_size or
-                response[:4] != expectedresponse):
+        if response[:4] != expectedresponse:
             raise Exception("Error reading block %04x." % (block_addr))
 
         block_data = response[4:]
@@ -346,9 +344,8 @@ def _read_block(radio, block_addr, block_size, serial=None):
     return block_data
 
 
-def _write_block(radio, block_addr, block_size, serial=None):
-    if serial is None:
-        serial = radio.pipe
+def _write_block(radio, block_addr, block_size):
+    serial = radio.pipe
 
     cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]

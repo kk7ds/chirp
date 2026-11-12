@@ -6,23 +6,15 @@ Uses the RT-470X_BT clone protocol with an RT-400 memory map and settings.
 Only OEM-observed addresses are uploaded. Unedited raw bytes are preserved.
 """
 import logging
-import time
 from decimal import Decimal, InvalidOperation
 
-from chirp import bitwise, chirp_common, directory, errors, memmap
+from chirp import bitwise, chirp_common, directory, errors
 from chirp.drivers import mml_jc8810
 from chirp.settings import (RadioSettings, RadioSetting, RadioSettingGroup,
                             RadioSettingValueBoolean, RadioSettingValueInteger,
                             RadioSettingValueList, RadioSettingValueString)
 
 LOG = logging.getLogger(__name__)
-_FAMILY = mml_jc8810.RT470XPlusRadio
-MAGIC = _FAMILY._magic
-IDENT, = _FAMILY._fingerprint
-BLOCK_SIZE = _FAMILY.BLOCK_SIZE
-IMAGE_SIZE = _FAMILY._memsize
-ADDRESSES = tuple(address for start, end in _FAMILY._ranges
-                  for address in range(start, end, BLOCK_SIZE))
 DCS_CODES = mml_jc8810.DTCS
 PTT_ID = ['Off', 'Beginning', 'End', 'Both']
 SCRAMBLER = ['Off', 'Scrambler 1', 'Scrambler 2']
@@ -39,7 +31,7 @@ DTMF_CHARS = '0123456789ABCD*#'
 KEYS = ['Off', 'Radio', 'Tx Power', 'Scan', 'Search', 'Light',
         'NOAA', 'Monitor', 'SOS', 'Spectrum', 'PTT B']
 KEY_CODES = [255, 7, 10, 28, 29, 8, 12, 5, 3, 36, 1]
-DRIVER_REVISION = '2026-11-11.1'
+DRIVER_REVISION = '2026-11-12.1'
 AIRBAND = (108000000, 136000000)
 TX_BANDS = [(136000000, 174000000), (220000000, 235000000),
             (350000000, 390000000), (400000000, 470000000)]
@@ -272,66 +264,6 @@ def _digit_values(text, count, multiplier):
     return [int(c) for c in ('%0*d' % (count, int(n)))]
 
 
-class _Protocol:
-    def __init__(self, pipe):
-        self.pipe = pipe
-        self.entered = False
-        self.received_any = False
-
-    def write(self, data):
-        count = self.pipe.write(data)
-        if count not in (None, len(data)):
-            raise errors.RadioError('Short write to the programming cable')
-        if hasattr(self.pipe, 'flush'):
-            self.pipe.flush()
-
-    def read(self, count):
-        data = bytearray()
-        deadline = time.monotonic() + 2.0
-        while len(data) < count:
-            chunk = self.pipe.read(count - len(data))
-            if chunk:
-                self.received_any = True
-                data.extend(chunk)
-            if time.monotonic() >= deadline and len(data) < count:
-                if not self.received_any:
-                    raise errors.RadioNoResponse()
-                raise errors.RadioError('Incomplete reply from the RT-400')
-        return bytes(data)
-
-    def enter(self, radio):
-        self.pipe.baudrate = radio.BAUD_RATE
-        self.pipe.bytesize = 8
-        self.pipe.parity = 'N'
-        self.pipe.stopbits = 1
-        self.pipe.timeout = 0.1
-        self.pipe.write_timeout = 2
-        self.pipe.xonxoff = False
-        self.pipe.rtscts = False
-        self.pipe.dsrdtr = False
-        self.pipe.rts = False
-        self.pipe.dtr = False
-        # Late exit ACKs must not be mistaken for the new handshake ACK.
-        time.sleep(0.15)
-        if hasattr(self.pipe, 'reset_input_buffer'):
-            self.pipe.reset_input_buffer()
-        self.write(radio._magic)
-        if self.read(1) != mml_jc8810.CMD_ACK:
-            raise errors.RadioError(
-                'RT-400 rejected the programming handshake')
-        self.entered = True
-        self.write(b'F')
-        if self.read(8) not in radio._fingerprint:
-            raise errors.RadioError(
-                'Radio identity does not match this RT-400 driver')
-
-    def finish_read(self):
-        if self.entered:
-            self.write(b'E')
-            self.entered = False
-            time.sleep(0.25)
-
-
 # Settings UI labels and menu order; MEM_FORMAT defines storage types.
 GENERAL = [
     ('sql', 'Squelch', [str(i) for i in range(10)]),
@@ -387,7 +319,6 @@ BOOL_SETTINGS = [
 class RadtelRT400Radio(mml_jc8810.RT470XPlusRadio):
     VENDOR = 'Radtel'
     MODEL = 'RT-400'
-    HARDWARE_FLOW = False
     POWER_LEVELS = POWER_LEVELS
 
     @classmethod
@@ -405,7 +336,7 @@ class RadtelRT400Radio(mml_jc8810.RT470XPlusRadio):
         return prompts
 
     def process_mmap(self):
-        if len(self._mmap) != IMAGE_SIZE:
+        if len(self._mmap) != self._memsize:
             raise errors.InvalidDataError(
                 'RT-400 image must contain 0xB300 bytes')
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
@@ -424,75 +355,6 @@ class RadtelRT400Radio(mml_jc8810.RT470XPlusRadio):
         rf.valid_tuning_steps = STEPS
         self._rt400_features = rf
         return rf
-
-    def _status(self, message, current, maximum=147):
-        status = chirp_common.Status()
-        status.msg, status.cur, status.max = message, current, maximum
-        self.status_fn(status)
-
-    def _download(self, message):
-        protocol = _Protocol(self.pipe)
-        data = bytearray(b'\xff' * IMAGE_SIZE)
-        primary = None
-        try:
-            protocol.enter(self)
-            for index, address in enumerate(ADDRESSES, 1):
-                block = mml_jc8810._read_block(
-                    self, address, self.BLOCK_SIZE, serial=protocol)
-                data[address:address + self.BLOCK_SIZE] = block
-                time.sleep(0.003)
-                self._status(message, index)
-            return bytes(data)
-        except Exception as exc:
-            primary = exc
-            raise
-        finally:
-            try:
-                protocol.finish_read()
-            except Exception:
-                if primary is None:
-                    raise
-                LOG.warning('Could not exit RT-400 read mode after an error')
-
-    def sync_in(self):
-        try:
-            data = self._download('Reading RT-400')
-            self._mmap = memmap.MemoryMapBytes(data)
-            self.process_mmap()
-        except errors.RadioError:
-            raise
-        except Exception as exc:
-            raise errors.RadioError('Unable to read RT-400: %s' % exc) from exc
-
-    def sync_out(self):
-        self.process_mmap()
-        target = self._mmap.get_packed()
-        try:
-            current = self._download('Checking RT-400 before upload')
-            if all(current[a:a + 64] == target[a:a + 64] for a in ADDRESSES):
-                self._status('RT-400 already matches this image', 147)
-                return
-            time.sleep(0.15)
-            protocol = _Protocol(self.pipe)
-            try:
-                protocol.enter(self)
-                # Reproduce the complete observed CPS upload sequence.
-                for index, address in enumerate(ADDRESSES, 1):
-                    mml_jc8810._write_block(
-                        self, address, self.BLOCK_SIZE_UP, serial=protocol)
-                    time.sleep(0.003)
-                    self._status('Writing RT-400', index)
-            finally:
-                # The hardware accepts a new clone session only after restart.
-                # Match the CPS: close after the final ACK; do not send E.
-                self.pipe.close()
-            self._status('Upload complete; restart the RT-400', 147)
-        except errors.RadioError:
-            raise
-        except Exception as exc:
-            raise errors.RadioError(
-                'Unable to upload RT-400: %s' %
-                exc) from exc
 
     def _channel(self, number):
         if not isinstance(number, int) or not 1 <= number <= 256:
