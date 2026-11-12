@@ -326,7 +326,7 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         het_mode = RadioSetting("heterodyne_mode", "Heterodyne Mode",
                                 RadioSettingValueList(
                                     self.HET_MODE_MAP,
-                                    current=self.HET_MODE_MAP[0]
+                                    current_index=0
                                 ))
         het_mode.set_doc("Heterodyne Mode")
 
@@ -345,19 +345,19 @@ class AlincoDR735T(chirp_common.CloneModeRadio):
         stby_screen = RadioSetting("stby_screen", "Standby Screen Color",
                                    RadioSettingValueList(
                                        self.SCREEN_COLOR_MAP,
-                                       current=self.SCREEN_COLOR_MAP[0]))
+                                       current_index=0))
         stby_screen.set_doc("Standby Screen Color")
 
         rx_screen = RadioSetting("rx_screen", "RX Screen Color",
                                  RadioSettingValueList(
                                      self.SCREEN_COLOR_MAP,
-                                     current=self.SCREEN_COLOR_MAP[0]))
+                                     current_index=0))
         rx_screen.set_doc("RX Screen Color")
 
         tx_screen = RadioSetting("tx_screen", "TX Screen Color",
                                  RadioSettingValueList(
                                      self.SCREEN_COLOR_MAP,
-                                     current=self.SCREEN_COLOR_MAP[0]))
+                                     current_index=0))
 
         tx_screen.set_doc("TX Screen Color")
 
