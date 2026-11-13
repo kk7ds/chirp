@@ -546,11 +546,12 @@ class AnyTone5888UVRadio(chirp_common.CloneModeRadio,
                                                 current_index=_mem.optsig))
         mem.extra.append(rs)
 
+        sql_mode = SQL_MODES[_mem.sqlMode]
         rs = RadioSetting("OPTSIGSQL", "Squelch w/Opt Signaling",
                           RadioSettingValueList(
-                              OPT_SIG_SQL, SQL_MODES[_mem.sqlMode]
-                              if SQL_MODES[_mem.sqlMode] in OPT_SIG_SQL
-                              else "Off"))
+                              OPT_SIG_SQL,
+                              current_index=OPT_SIG_SQL.index(sql_mode)
+                              if sql_mode in OPT_SIG_SQL else 0))
         mem.extra.append(rs)
 
         rs = RadioSetting(
