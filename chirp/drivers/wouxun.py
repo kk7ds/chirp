@@ -1185,10 +1185,11 @@ class KGUV6DRadio(KGUVD1PRadio):
                               current_index=self._memobj.settings.roger_beep))
         cfg_s.append(rs)
         options = ["%s" % x for x in range(15, 615, 15)]
-        transmit_time_out = options[self._memobj.settings.transmit_time_out]
         rs = RadioSetting("transmit_time_out", "TX Time-out Timer",
                           RadioSettingValueList(
-                              options, transmit_time_out))
+                              options,
+                              current_index=(
+                                  self._memobj.settings.transmit_time_out)))
         cfg_s.append(rs)
         rs = RadioSetting("tx_time_out_alert", "TX Time-out Alert",
                           RadioSettingValueInteger(
