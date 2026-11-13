@@ -36,6 +36,13 @@ D74_FILE_HEADER = (
     b'\xFF' * (5 * 16) +
     b'K2' + (b'\xFF' * 14) +
     b'\xFF' * (7 * 16))
+D75_FILE_HEADER = (
+    b'MCP-D75\xFFV1.00\xFF\xFF\xFF' +
+    b'TH-D75' + (b'\xFF' * 10) +
+    b'\x00' + (b'\xFF' * 15) +
+    b'\xFF' * (5 * 16) +
+    b'K2' + (b'\xFF' * 14) +
+    b'\xFF' * (7 * 16))
 GROUP_NAME_OFFSET = 1152
 
 MEM_FORMAT = """
@@ -186,6 +193,12 @@ class THD74Radio(chirp_common.CloneModeRadio,
     BAUD_RATE = 9600
     HARDWARE_FLOW = sys.platform == "darwin"  # only OS X driver needs hw flow
     FORMATS = [directory.register_format('Kenwood MCP-D74', '*.d74')]
+    TUNE_STEPS = TUNE_STEPS
+    MCP_FILE_EXTENSION = '.d74'
+    MCP_FILE_HEADER = D74_FILE_HEADER
+    MCP_FILE_HEADER_SIZE = len(D74_FILE_HEADER)
+    MCP_FILE_DATA_SIZE = None
+    MCP_FILE_SIGNATURES = ((0, b'MCP-D74'),)
 
     _memsize = 0x7A300
 
@@ -352,28 +365,76 @@ class THD74Radio(chirp_common.CloneModeRadio,
         self._detect_baud()
         self.upload()
 
-    def load_mmap(self, filename):
-        if filename.lower().endswith('.d74'):
-            with open(filename, 'rb') as f:
-                f.seek(0x100)
-                self._mmap = memmap.MemoryMapBytes(f.read())
-                LOG.info('Loaded MCP d74 file at offset 0x100')
-            self.process_mmap()
-        else:
-            super().load_mmap(filename)
-
     def save_mmap(self, filename):
-        if filename.lower().endswith('.d74'):
-            with open(filename, 'wb') as f:
-                f.write(D74_FILE_HEADER)
-                f.write(self._mmap.get_packed())
-                LOG.info('Wrote MCP d74 file')
-        else:
-            super().save_mmap(filename)
+        if not filename.lower().endswith(self.MCP_FILE_EXTENSION):
+            self._mcp_file_header = None
+            self._mcp_file_tail = b''
+            return super().save_mmap(filename)
+
+        if self._mmap is None or len(self._mmap) != self._memsize:
+            raise errors.RadioError(
+                '%s image must be exactly 0x%X bytes' %
+                (self.MODEL, self._memsize))
+
+        header = getattr(self, '_mcp_file_header', None)
+        if header is None:
+            header = self.MCP_FILE_HEADER
+        if header is None or len(header) != self.MCP_FILE_HEADER_SIZE:
+            raise errors.RadioError(
+                'Cannot save %s without a valid MCP file header' %
+                self.MODEL)
+
+        tail = getattr(self, '_mcp_file_tail', b'')
+        if self.MCP_FILE_DATA_SIZE is not None:
+            # Pad out the MCP data file to match OEM behavior
+            minimum_tail = max(0, self.MCP_FILE_DATA_SIZE - self._memsize)
+            if len(tail) < minimum_tail:
+                tail += b'\xFF' * (minimum_tail - len(tail))
+
+        with open(filename, 'wb') as fileobj:
+            fileobj.write(header)
+            fileobj.write(self._mmap.get_packed())
+            fileobj.write(tail)
+        LOG.info('Wrote MCP %s file', self.MCP_FILE_EXTENSION)
+
+    def load_mmap(self, filename):
+        if not filename.lower().endswith(self.MCP_FILE_EXTENSION):
+            self._mcp_file_header = None
+            self._mcp_file_tail = b''
+            return super().load_mmap(filename)
+
+        with open(filename, 'rb') as fileobj:
+            filedata = fileobj.read()
+
+        if not self.match_model(filedata, filename):
+            raise errors.RadioError('Not a valid %s MCP image' % self.MODEL)
+
+        header = filedata[:self.MCP_FILE_HEADER_SIZE]
+        data = filedata[self.MCP_FILE_HEADER_SIZE:]
+        if len(data) < self._memsize:
+            raise errors.RadioError(
+                '%s image is too short: got 0x%X bytes, expected at least '
+                '0x%X' % (self.MODEL, len(data), self._memsize))
+
+        self._mcp_file_header = header
+        self._mcp_file_tail = data[self._memsize:]
+        self._mmap = memmap.MemoryMapBytes(data[:self._memsize])
+        LOG.info('Loaded MCP %s file with header 0x%X bytes',
+                 self.MCP_FILE_EXTENSION, self.MCP_FILE_HEADER_SIZE)
+        self.process_mmap()
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        if not filename.lower().endswith(cls.MCP_FILE_EXTENSION):
+            return False
+        if len(filedata) < cls.MCP_FILE_HEADER_SIZE + cls._memsize:
+            return False
+        return all(filedata[offset:offset + len(signature)] == signature
+                   for offset, signature in cls.MCP_FILE_SIGNATURES)
 
     def get_features(self):
         rf = chirp_common.RadioFeatures()
-        rf.valid_tuning_steps = list(TUNE_STEPS)
+        rf.valid_tuning_steps = list(self.TUNE_STEPS)
         rf.valid_tmodes = ['', 'Tone', 'TSQL', 'DTCS', 'Cross']
         rf.valid_cross_modes = list(CROSS_MODES)
         rf.valid_duplexes = DUPLEX + ['split']
@@ -431,7 +492,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
             mem.duplex = 'split'
         else:
             mem.duplex = DUPLEX[_mem.duplex]
-        mem.tuning_step = TUNE_STEPS[_mem.tuning_step]
+        mem.tuning_step = self.TUNE_STEPS[_mem.tuning_step]
         mem.mode = MODES[_mem.mode]
         if mem.mode != 'DV':
             mem.rtone = chirp_common.TONES[_mem.rtone]
@@ -512,12 +573,12 @@ class THD74Radio(chirp_common.CloneModeRadio,
         if mem.duplex == 'split':
             _mem.split = True
             _mem.duplex = 0
-            _mem.split_tuning_step = TUNE_STEPS.index(
+            _mem.split_tuning_step = self.TUNE_STEPS.index(
                 chirp_common.required_step(mem.offset))
         else:
             _mem.split = False
             _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.tuning_step = TUNE_STEPS.index(mem.tuning_step)
+        _mem.tuning_step = self.TUNE_STEPS.index(mem.tuning_step)
         _mem.mode = MODES.index(mem.mode)
         _mem.narrow = mem.mode == 'NFM'
         _mem.rtone = chirp_common.TONES.index(mem.rtone)
@@ -555,11 +616,13 @@ class THD74Radio(chirp_common.CloneModeRadio,
     def get_bank_model(self):
         return KenwoodTHD74Bankmodel(self)
 
-    @classmethod
-    def match_model(cls, filedata, filename):
-        return filename.endswith('.d74')
-
 
 @directory.register
 class THD75Radio(THD74Radio):
     MODEL = 'TH-D75'
+    FORMATS = [directory.register_format('Kenwood MCP-D75', '*.d75')]
+    MCP_FILE_EXTENSION = '.d75'
+    MCP_FILE_HEADER = D75_FILE_HEADER
+    MCP_FILE_HEADER_SIZE = len(D75_FILE_HEADER)
+    MCP_FILE_DATA_SIZE = None
+    MCP_FILE_SIGNATURES = ((0, b'MCP-D75'), (0x10, b'TH-D75'))
