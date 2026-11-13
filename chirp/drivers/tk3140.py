@@ -645,15 +645,14 @@ class KenwoodTKx140Radio(chirp_common.CloneModeRadio):
         keys.append(knob)
 
         def apply_battsave(setting):
-            rev = {v: k for k, v in BATTSAVE.items()}
-            self._memobj.battsave = rev[str(setting.value)]
+            self._memobj.battsave = setting.value.get_mem_val()
 
         general = settings.RadioSettingGroup('general', 'General')
         battsave = settings.RadioSetting(
             'battsave', 'Battery Save',
-            settings.RadioSettingValueList(
-                BATTSAVE.values(),
-                BATTSAVE[int(self._memobj.battsave)]))
+            settings.RadioSettingValueMap(
+                [(name, code) for code, name in BATTSAVE.items()],
+                int(self._memobj.battsave)))
         battsave.set_apply_callback(apply_battsave)
         general.append(battsave)
 
