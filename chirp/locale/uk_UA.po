@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 09:31-0800\n"
+"POT-Creation-Date: 2026-11-13 18:06-0800\n"
 "PO-Revision-Date: 2015-11-30 10:36+0200\n"
 "Last-Translator: Oleksandr Kravchuk <open.source@oleksandr-kravchuk.com>\n"
 "Language: uk_UA\n"
@@ -1161,7 +1161,7 @@ msgstr "Дозволяє зміщувати частоту від виклика
 msgid "Always On keeps it lit all the time."
 msgstr "Always On залишає її ввімкненою постійно."
 
-#: ../wxui/clone.py:635
+#: ../wxui/clone.py:636
 msgid "Always start with recent list"
 msgstr "Завжди починати зі списку нещодавніх"
 
@@ -1181,7 +1181,7 @@ msgstr "Потрібне ціле число"
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr "Промовляє вголос номер каналу та інші дії під час користування радіостанцією. У тихому оточенні це може заважати."
 
-#: ../wxui/clone.py:145
+#: ../wxui/clone.py:146
 msgid "Applying settings"
 msgstr "Застосування налаштувань"
 
@@ -1217,7 +1217,7 @@ msgstr "Автоматично (з системи)"
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr "Автоматично блокує клавіатуру, щоб запобігти випадковим змінам."
 
-#: ../wxui/developer.py:665
+#: ../wxui/developer.py:669
 msgid "Available modules"
 msgstr "Доступні модулі"
 
@@ -1331,7 +1331,7 @@ msgstr "Виберіть кросрежим"
 msgid "Choose Diff Target"
 msgstr "Оберіть ціль для порівняння"
 
-#: ../wxui/clone.py:616
+#: ../wxui/clone.py:617
 msgid "Choose a recent model"
 msgstr "Виберіть нещодавню модель"
 
@@ -1339,7 +1339,7 @@ msgstr "Виберіть нещодавню модель"
 msgid "Choose duplex"
 msgstr "Виберіть дуплекс"
 
-#: ../wxui/developer.py:664
+#: ../wxui/developer.py:668
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Виберіть модуль для завантаження із задачі %i:"
@@ -1456,11 +1456,11 @@ msgstr[2] "Згрупувати %i пам'ятей"
 msgid "Comment"
 msgstr "Коментар"
 
-#: ../wxui/clone.py:328
+#: ../wxui/clone.py:329
 msgid "Communicate with radio"
 msgstr "Обмін даними з радіостанцією"
 
-#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "Завершено"
 
@@ -1522,7 +1522,7 @@ msgstr "Кросрежим"
 msgid "Cross tone mode %s not supported"
 msgstr "Перехресний тоновий режим %s не підтримується"
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Custom Port"
 msgstr "Власний порт"
 
@@ -1671,12 +1671,12 @@ msgstr "Відстань"
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr "Ділить 500 звичайних каналів пам'яті на десять груп по 50 з нумерацією від M-01-01 до M-10-50. Канали тоді вибираються та скануються по одній групі."
 
-#: ../wxui/clone.py:216
+#: ../wxui/clone.py:217
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Більше не запитувати про %s"
 
-#: ../wxui/clone.py:213
+#: ../wxui/clone.py:214
 msgid "Do you accept the risk?"
 msgstr "Ви приймаєте цей ризик?"
 
@@ -1704,7 +1704,7 @@ msgstr "Скопіювати з радіостанції"
 msgid "Download from radio..."
 msgstr "Скопіювати з радіостанції..."
 
-#: ../wxui/clone.py:800
+#: ../wxui/clone.py:801
 msgid "Download instructions"
 msgstr "Інструкції із завантаження"
 
@@ -1817,7 +1817,7 @@ msgstr "Введіть частоту передавання (МГц)"
 msgid "Enter a new name for bank %s:"
 msgstr "Введіть нову назву для банку %s:"
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Enter custom port:"
 msgstr "Введіть власний порт:"
 
@@ -1854,7 +1854,7 @@ msgstr "Помилка застосування фільтра"
 msgid "Error applying settings"
 msgstr "Помилка застосування налаштувань"
 
-#: ../wxui/clone.py:705
+#: ../wxui/clone.py:706
 msgid "Error communicating with radio"
 msgstr "Помилка обміну даними з радіостанцією"
 
@@ -1899,7 +1899,7 @@ msgstr "Виключити приватні та закриті ретрансл
 msgid "Expected: %s"
 msgstr "Очікувалося: %s"
 
-#: ../wxui/clone.py:759
+#: ../wxui/clone.py:760
 msgid "Experimental driver"
 msgstr "Експериментальний драйвер"
 
@@ -2542,7 +2542,7 @@ msgstr "Взаємодія з драйвером"
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr "Оптимізація точки перетину (IPO). Обходить РЧ-попередній підсилювач приймача, тож вхідний сигнал надходить одразу на перший змішувач. Це жертвує частиною чутливості заради кращої роботи із сильними сигналами та високим рівнем завад."
 
-#: ../wxui/clone.py:822
+#: ../wxui/clone.py:823
 msgid "Internal driver error"
 msgstr "Внутрішня помилка драйвера"
 
@@ -2600,12 +2600,12 @@ msgstr "Неприпустимий тоновий режим `%s'"
 msgid "Invalid value: %r"
 msgstr "Неприпустиме значення: %r"
 
-#: ../wxui/developer.py:631
+#: ../wxui/developer.py:635
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
 msgstr "Задача %i не перебуває в стані, придатному для завантаження модулів. Настійно рекомендується не намагатися вручну завантажувати модулі з цієї задачі, оскільки це, ймовірно, спричинить проблеми."
 
-#: ../wxui/developer.py:686
+#: ../wxui/developer.py:690
 msgid "Issue number:"
 msgstr "Номер задачі:"
 
@@ -2687,7 +2687,7 @@ msgstr "Радіостанція наживо"
 msgid "Load Module..."
 msgstr "Завантажити модуль..."
 
-#: ../wxui/developer.py:687
+#: ../wxui/developer.py:691
 msgid "Load module from issue"
 msgstr "Завантажити модуль із задачі"
 
@@ -2703,7 +2703,7 @@ msgstr "Завантаження модуля не впливає на вже в
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Завантаження модулів може бути надзвичайно небезпечним і призвести до пошкодження вашого комп'ютера, радіостанції або обох. НІКОЛИ не завантажуйте модуль із джерела, якому ви не довіряєте, і особливо не з жодного іншого сайту, окрім офіційного сайту CHIRP (chirpmyradio.com). Завантаження модуля з іншого джерела рівнозначне наданню прямого доступу до вашого комп'ютера і всього, що на ньому! Продовжити, попри цей ризик?"
 
-#: ../wxui/clone.py:147
+#: ../wxui/clone.py:148
 msgid "Loading settings"
 msgstr "Завантаження налаштувань"
 
@@ -2822,7 +2822,7 @@ msgstr "Режим %r неприпустимий"
 msgid "Mode %s not supported"
 msgstr "Режим %s не підтримується"
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:367
 msgid "Model"
 msgstr "Модель"
 
@@ -2846,7 +2846,7 @@ msgstr "Модуль успішно завантажено"
 msgid "More Info"
 msgstr "Докладніше"
 
-#: ../wxui/clone.py:524
+#: ../wxui/clone.py:525
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Знайдено кілька портів: %s"
@@ -2910,11 +2910,11 @@ msgstr "Немає порожніх рядків знизу!"
 msgid "No example for %s"
 msgstr "Немає прикладу для %s"
 
-#: ../wxui/developer.py:706
+#: ../wxui/developer.py:710
 msgid "No modules found"
 msgstr "Модулів не знайдено"
 
-#: ../wxui/developer.py:705
+#: ../wxui/developer.py:709
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "У задачі %i не знайдено модулів"
@@ -3168,7 +3168,7 @@ msgstr "Зверніть увагу, що режим розробника при
 msgid "Please wait"
 msgstr "Будь ласка, зачекайте"
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Plug in your cable and then click OK"
 msgstr "Підключіть кабель і натисніть OK"
 
@@ -3176,7 +3176,7 @@ msgstr "Підключіть кабель і натисніть OK"
 msgid "Polish repeaters database"
 msgstr "База даних польських ретрансляторів"
 
-#: ../wxui/clone.py:351
+#: ../wxui/clone.py:352
 msgid "Port"
 msgstr "Порт"
 
@@ -3235,7 +3235,7 @@ msgstr "Програмує DTMF-код, що надсилається напри
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr "Програмує цифровий код автоматичної ідентифікації номера (ANI) радіостанції. ANI — це DTMF PTT-ID, за яким диспетчер або інше сумісне обладнання може ідентифікувати цю радіостанцію."
 
-#: ../wxui/clone.py:535
+#: ../wxui/clone.py:536
 msgid "Prolific USB device"
 msgstr "USB-пристрій Prolific"
 
@@ -3319,7 +3319,7 @@ msgstr "Інформація про радіостанцію: метадані �
 msgid "Radio did not ack block %i"
 msgstr "Радіостанція не підтвердила блок %i"
 
-#: ../wxui/clone.py:792 ../wxui/clone.py:892
+#: ../wxui/clone.py:793 ../wxui/clone.py:893
 msgid "Radio information"
 msgstr "Інформація про радіостанцію"
 
@@ -3353,11 +3353,11 @@ msgstr "Код DTCS приймання"
 msgid "Receive frequency"
 msgstr "Частота приймання"
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:618
 msgid "Recent"
 msgstr "Нещодавні"
 
-#: ../wxui/clone.py:358
+#: ../wxui/clone.py:359
 msgid "Recent..."
 msgstr "Нещодавні..."
 
@@ -3404,11 +3404,11 @@ msgstr "Перезавантажити драйвер і файл"
 msgid "Reload required"
 msgstr "Потрібне перезавантаження"
 
-#: ../wxui/clone.py:637
+#: ../wxui/clone.py:638
 msgid "Remove"
 msgstr "Вилучити"
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:639
 msgid "Remove selected model from list"
 msgstr "Вилучити вибрану модель зі списку"
 
@@ -3510,7 +3510,7 @@ msgstr "Списки сканування"
 msgid "Scrambler"
 msgstr "Скремблер"
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:681
 msgid "Security Risk"
 msgstr "Ризик безпеки"
 
@@ -4051,7 +4051,7 @@ msgstr ""
 "Будь ласка, збережіть незмінену копію вашого першого успішного\n"
 "завантаження у файл образу радіостанції CHIRP (*.img).\n"
 
-#: ../wxui/developer.py:674
+#: ../wxui/developer.py:678
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "Автор цього модуля не є визнаним розробником CHIRP. Не рекомендується завантажувати цей модуль, оскільки він може становити загрозу безпеці. Усе одно продовжити?"
 
@@ -4219,7 +4219,7 @@ msgstr "Цей інструмент надішле відомості про в�
 msgid "This value is not mutable"
 msgstr "Це значення не можна змінювати"
 
-#: ../wxui/developer.py:684
+#: ../wxui/developer.py:688
 msgid "This will load a module from a website issue"
 msgstr "Це завантажить модуль із задачі на сайті"
 
@@ -4343,8 +4343,8 @@ msgstr "Частота передавання {freq} виходить за ме�
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Введіть простий рядок пошуку або форматований запит і натисніть Enter"
 
-#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
-#: ../wxui/clone.py:521 ../wxui/clone.py:525
+#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
+#: ../wxui/clone.py:522 ../wxui/clone.py:526
 msgid "USB Port Finder"
 msgstr "Пошук USB-порту"
 
@@ -4353,7 +4353,7 @@ msgstr "Пошук USB-порту"
 msgid "Unable to correct rounded frequency %s"
 msgstr "Не вдалося виправити округлену частоту %s"
 
-#: ../wxui/clone.py:511
+#: ../wxui/clone.py:512
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Не вдалося визначити порт для вашого кабелю. Перевірте драйвери та з'єднання."
 
@@ -4426,7 +4426,7 @@ msgstr "Невідомий формат файлу"
 msgid "Unknown file header"
 msgstr "Невідомий заголовок файлу"
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:495
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Від'єднайте кабель (за потреби) і натисніть OK"
 
@@ -4452,7 +4452,7 @@ msgstr "Оновлення задачі %s"
 msgid "Upload"
 msgstr "Записати"
 
-#: ../wxui/clone.py:907
+#: ../wxui/clone.py:908
 msgid "Upload instructions"
 msgstr "Інструкції із запису"
 
@@ -4480,6 +4480,10 @@ msgstr "Використовувати робочий процес із част
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
 msgstr "Використовуйте щонайбільше 3 цифри."
+
+#: ../drivers/kguv980p.py:1727
+msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
+msgstr ""
 
 #: ../wxui/main.py:928
 msgid "Use fixed-width font"
@@ -4555,7 +4559,7 @@ msgstr "Значення для пошуку в полі пам'яті"
 msgid "Values"
 msgstr "Значення"
 
-#: ../wxui/clone.py:362
+#: ../wxui/clone.py:363
 msgid "Vendor"
 msgstr "Виробник"
 
@@ -4609,7 +4613,7 @@ msgstr "Бажаєте, щоб CHIRP встановив для вас іконк
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "Ви створили кілька задач протягом останнього тижня. CHIRP обмежує кількість задач, які можна створити, щоб запобігти зловживанням. Якщо вам справді потрібно створити ще одну, зробіть це через сайт."
 
-#: ../wxui/clone.py:532
+#: ../wxui/clone.py:533
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Ваш USB-пристрій на базі Prolific не працюватиме без повернення до старішої версії драйвера. Відвідати сайт CHIRP, щоб дізнатися більше про те, як це вирішити?"
 
@@ -4617,7 +4621,7 @@ msgstr "Ваш USB-пристрій на базі Prolific не працюват
 msgid "Your QTH Locator"
 msgstr "Ваш локатор QTH"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Your cable appears to be on port:"
 msgstr "Ваш кабель, схоже, під'єднано до порту:"
 

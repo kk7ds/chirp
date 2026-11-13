@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 09:31-0800\n"
+"POT-Creation-Date: 2026-11-13 18:06-0800\n"
 "PO-Revision-Date: 2026-04-05 01:36-0500\n"
 "Last-Translator: Tony Gies <tgies@tgies.net>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1110,7 +1110,7 @@ msgstr ""
 msgid "Always On keeps it lit all the time."
 msgstr ""
 
-#: ../wxui/clone.py:635
+#: ../wxui/clone.py:636
 msgid "Always start with recent list"
 msgstr "常に最近使用したリストで開始"
 
@@ -1130,7 +1130,7 @@ msgstr ""
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
-#: ../wxui/clone.py:145
+#: ../wxui/clone.py:146
 msgid "Applying settings"
 msgstr "設定を適用中"
 
@@ -1166,7 +1166,7 @@ msgstr "システムから自動取得"
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr ""
 
-#: ../wxui/developer.py:665
+#: ../wxui/developer.py:669
 msgid "Available modules"
 msgstr "利用可能なモジュール"
 
@@ -1280,7 +1280,7 @@ msgstr "クロスモードを選択"
 msgid "Choose Diff Target"
 msgstr "比較対象を選択"
 
-#: ../wxui/clone.py:616
+#: ../wxui/clone.py:617
 msgid "Choose a recent model"
 msgstr "最近使用したモデルを選択"
 
@@ -1288,7 +1288,7 @@ msgstr "最近使用したモデルを選択"
 msgid "Choose duplex"
 msgstr "デュプレックスを選択"
 
-#: ../wxui/developer.py:664
+#: ../wxui/developer.py:668
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "issue %i からロードするモジュールを選択:"
@@ -1400,11 +1400,11 @@ msgstr[0] "%i 件を同一グループにまとめる"
 msgid "Comment"
 msgstr "コメント"
 
-#: ../wxui/clone.py:328
+#: ../wxui/clone.py:329
 msgid "Communicate with radio"
 msgstr "無線機と通信"
 
-#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "完了"
 
@@ -1464,7 +1464,7 @@ msgstr "クロスモード"
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Custom Port"
 msgstr "ポートを手動で設定"
 
@@ -1613,12 +1613,12 @@ msgstr "距離"
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
-#: ../wxui/clone.py:216
+#: ../wxui/clone.py:217
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "次回から %s に接続する際にプロンプトを表示しない"
 
-#: ../wxui/clone.py:213
+#: ../wxui/clone.py:214
 msgid "Do you accept the risk?"
 msgstr "リスクを承諾しますか？"
 
@@ -1646,7 +1646,7 @@ msgstr "無線機からダウンロード"
 msgid "Download from radio..."
 msgstr "無線機からダウンロード..."
 
-#: ../wxui/clone.py:800
+#: ../wxui/clone.py:801
 msgid "Download instructions"
 msgstr "ダウンロード手順"
 
@@ -1759,7 +1759,7 @@ msgstr "送信周波数を入力 (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "バンク %s の新しい名前を入力:"
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Enter custom port:"
 msgstr "ポートを入力:"
 
@@ -1796,7 +1796,7 @@ msgstr "フィルタ適用エラー"
 msgid "Error applying settings"
 msgstr "設定適用エラー"
 
-#: ../wxui/clone.py:705
+#: ../wxui/clone.py:706
 msgid "Error communicating with radio"
 msgstr "無線機との通信エラー"
 
@@ -1841,7 +1841,7 @@ msgstr "プライベートおよび閉鎖されたレピータを除外"
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:759
+#: ../wxui/clone.py:760
 msgid "Experimental driver"
 msgstr "実験的ドライバ"
 
@@ -2476,7 +2476,7 @@ msgstr "ドライバと対話"
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr ""
 
-#: ../wxui/clone.py:822
+#: ../wxui/clone.py:823
 msgid "Internal driver error"
 msgstr "内部ドライバエラー"
 
@@ -2534,12 +2534,12 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "無効な値: %r"
 
-#: ../wxui/developer.py:631
+#: ../wxui/developer.py:635
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
 msgstr "Issue %i はモジュールをロードするのに有効な状態ではありません。問題が発生する可能性が高いため、このIssueから手動でモジュールをロードしないことを強くお勧めします。"
 
-#: ../wxui/developer.py:686
+#: ../wxui/developer.py:690
 msgid "Issue number:"
 msgstr "Issue番号:"
 
@@ -2621,7 +2621,7 @@ msgstr "ライブラジオ"
 msgid "Load Module..."
 msgstr "モジュールをロード..."
 
-#: ../wxui/developer.py:687
+#: ../wxui/developer.py:691
 msgid "Load module from issue"
 msgstr "Issueからモジュールをロード"
 
@@ -2637,7 +2637,7 @@ msgstr "モジュールのロードは開いているタブには影響しませ
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "モジュールのロードは非常に危険であり、コンピュータや無線機、あるいはその両方に損害を与える可能性があります。信頼できないソースから、特にメインのCHIRPウェブサイト（chirpmyradio.com）以外からは絶対にモジュールをロードしないでください。他のソースからモジュールをロードすることは、コンピュータとその中のすべてへの直接アクセスを許可するのと同じです！このリスクを承知で進めますか？"
 
-#: ../wxui/clone.py:147
+#: ../wxui/clone.py:148
 msgid "Loading settings"
 msgstr "設定をロードしています"
 
@@ -2756,7 +2756,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:367
 msgid "Model"
 msgstr "モデル"
 
@@ -2780,7 +2780,7 @@ msgstr "モジュールが正常にロードされました"
 msgid "More Info"
 msgstr "詳細情報"
 
-#: ../wxui/clone.py:524
+#: ../wxui/clone.py:525
 #, python-format
 msgid "More than one port found: %s"
 msgstr "2つ以上のポートが見つかりました: %s"
@@ -2844,11 +2844,11 @@ msgstr "空の行が見つかりません"
 msgid "No example for %s"
 msgstr "%s の例はありません"
 
-#: ../wxui/developer.py:706
+#: ../wxui/developer.py:710
 msgid "No modules found"
 msgstr "モジュールが見つかりません"
 
-#: ../wxui/developer.py:705
+#: ../wxui/developer.py:709
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "Issue %i にモジュールが見つかりません"
@@ -3101,7 +3101,7 @@ msgstr "開発者モードはCHIRPプロジェクトの開発者による使用�
 msgid "Please wait"
 msgstr "お待ちください"
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Plug in your cable and then click OK"
 msgstr "ケーブルを接続してOKをクリックしてください。"
 
@@ -3109,7 +3109,7 @@ msgstr "ケーブルを接続してOKをクリックしてください。"
 msgid "Polish repeaters database"
 msgstr "ポーランドのレピータデータベース"
 
-#: ../wxui/clone.py:351
+#: ../wxui/clone.py:352
 msgid "Port"
 msgstr "ポート"
 
@@ -3168,7 +3168,7 @@ msgstr ""
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
-#: ../wxui/clone.py:535
+#: ../wxui/clone.py:536
 msgid "Prolific USB device"
 msgstr "Prolific USBデバイス"
 
@@ -3252,7 +3252,7 @@ msgstr ""
 msgid "Radio did not ack block %i"
 msgstr "無線機がブロック %i を確認応答しませんでした"
 
-#: ../wxui/clone.py:792 ../wxui/clone.py:892
+#: ../wxui/clone.py:793 ../wxui/clone.py:893
 msgid "Radio information"
 msgstr "無線機情報"
 
@@ -3286,11 +3286,11 @@ msgstr "受信DTCSコード"
 msgid "Receive frequency"
 msgstr "受信周波数"
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:618
 msgid "Recent"
 msgstr "最近"
 
-#: ../wxui/clone.py:358
+#: ../wxui/clone.py:359
 msgid "Recent..."
 msgstr "最近..."
 
@@ -3337,11 +3337,11 @@ msgstr "ドライバとファイルを再読み込み"
 msgid "Reload required"
 msgstr "再読み込みが必要です"
 
-#: ../wxui/clone.py:637
+#: ../wxui/clone.py:638
 msgid "Remove"
 msgstr "削除"
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:639
 msgid "Remove selected model from list"
 msgstr "選択したモデルをリストから削除"
 
@@ -3439,7 +3439,7 @@ msgstr "スキャンリスト"
 msgid "Scrambler"
 msgstr "スクランブル"
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:681
 msgid "Security Risk"
 msgstr "セキュリティリスク"
 
@@ -3965,7 +3965,7 @@ msgstr ""
 "最初の成功したダウンロードの未編集のコピーを\n"
 "CHIRP無線機イメージ (*.img) ファイルとして保存してください。\n"
 
-#: ../wxui/developer.py:674
+#: ../wxui/developer.py:678
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "このモジュールの作者は認識されたCHIRP開発者ではありません。セキュリティリスクをもたらす可能性があるため、このモジュールをロードしないことをお勧めします。それでも進めますか？"
 
@@ -4127,7 +4127,7 @@ msgstr "このツールはシステムに関する詳細をCHIRPトラッカの�
 msgid "This value is not mutable"
 msgstr ""
 
-#: ../wxui/developer.py:684
+#: ../wxui/developer.py:688
 msgid "This will load a module from a website issue"
 msgstr "ウェブサイトのIssueからモジュールをロードします"
 
@@ -4251,8 +4251,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "単純な検索文字列またはフォーマットされたクエリを入力してEnterを押してください"
 
-#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
-#: ../wxui/clone.py:521 ../wxui/clone.py:525
+#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
+#: ../wxui/clone.py:522 ../wxui/clone.py:526
 msgid "USB Port Finder"
 msgstr "USBポート検出"
 
@@ -4261,7 +4261,7 @@ msgstr "USBポート検出"
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:511
+#: ../wxui/clone.py:512
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "ポートを検出できませんでした。ドライバがインストールされているかと接続状態をもう一度確認してください。"
 
@@ -4334,7 +4334,7 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:495
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "ケーブルを抜いてからOKをクリックしてください。"
 
@@ -4360,7 +4360,7 @@ msgstr "バグ %s を更新中"
 msgid "Upload"
 msgstr ""
 
-#: ../wxui/clone.py:907
+#: ../wxui/clone.py:908
 msgid "Upload instructions"
 msgstr "アップロード手順"
 
@@ -4387,6 +4387,10 @@ msgstr "送信周波数ワークフローを使用"
 
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
+msgstr ""
+
+#: ../drivers/kguv980p.py:1727
+msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
 msgstr ""
 
 #: ../wxui/main.py:928
@@ -4463,7 +4467,7 @@ msgstr "メモリフィールドを検索する値"
 msgid "Values"
 msgstr "値"
 
-#: ../wxui/clone.py:362
+#: ../wxui/clone.py:363
 msgid "Vendor"
 msgstr "メーカ"
 
@@ -4517,7 +4521,7 @@ msgstr "デスクトップにCHIRPのアイコンを設定しますか？"
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "過去1週間で複数のIssueを開いています。CHIRPは乱用を防ぐために開くことができるIssueの数を制限しています。どうしても別のIssueを開く必要がある場合は、ウェブサイトから行ってください。"
 
-#: ../wxui/clone.py:532
+#: ../wxui/clone.py:533
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "お使いのProlificベースのUSBデバイスは、ドライバを古いバージョンに戻さないと動作しません。解決方法の詳細については、CHIRPウェブサイトをご覧ください。"
 
@@ -4525,7 +4529,7 @@ msgstr "お使いのProlificベースのUSBデバイスは、ドライバを古�
 msgid "Your QTH Locator"
 msgstr "あなたのQTHロケータ"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Your cable appears to be on port:"
 msgstr "あなたのケーブルが使用しているポート:"
 

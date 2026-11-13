@@ -22,6 +22,7 @@
 
 """Wouxun KG-UV980P radio management module"""
 
+import itertools
 import time
 import logging
 import struct
@@ -1154,7 +1155,6 @@ class KG980PRadio(chirp_common.CloneModeRadio,
 
         fmradio_grp = RadioSettingGroup("fmradio_grp", "FM Broadcast Memory")
         lmt_grp = RadioSettingGroup("lmt_grp", "Frequency Limits")
-        lmwrn_grp = RadioSettingGroup("lmwrn_grp", "USE AT YOUR OWN RISK")
         rxlim_grp = RadioSettingGroup("rxlim_grp", "Rx Limits")
         txlim_grp = RadioSettingGroup("txlim_grp", "Tx Limits")
         oem_grp = RadioSettingGroup("oem_grp", "OEM Info")
@@ -1172,7 +1172,6 @@ class KG980PRadio(chirp_common.CloneModeRadio,
         extra_grp.append(oem_grp)
         cfg_grp.append(cfg1_grp)
         cfg_grp.append(cfg2_grp)
-        lmt_grp.append(lmwrn_grp)
         lmt_grp.append(rxlim_grp)
         extra_grp.append(lmt_grp)
         vfo_grp.append(vfoa_grp)
@@ -1666,6 +1665,7 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                           "850M Rx Upper Limit (+ .9975 MHz)",
                           val)
         rxlim_grp.append(rs)
+
         if self.MODEL == "KG-UV980P":
             _temp = int(s.bandlimits.limit_144M_tx_start) // 10
             val = RadioSettingValueInteger(0, 999, _temp)
@@ -1723,6 +1723,11 @@ class KG980PRadio(chirp_common.CloneModeRadio,
                               "50M tx Upper Limit (+ .9975 MHz)",
                               val)
             txlim_grp.append(rs)
+
+        warning = _('Use at your own risk - may cause hardware damage and/or '
+                    'violate your license parameters')
+        for setting in itertools.chain(rxlim_grp, txlim_grp):
+            setting.set_doc(warning)
 
         # VFO Settings
         rs = RadioSetting("vfomode_a", "Working Mode",
