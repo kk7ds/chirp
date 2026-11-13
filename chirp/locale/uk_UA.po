@@ -58,7 +58,7 @@ msgstr "Файл %s не збережено. Зберегти перед зак�
 #: ../settings.py:267 ../settings.py:391
 #, python-format
 msgid "%s is not valid for this setting"
-msgstr ""
+msgstr "%s не є допустимим для цього параметра"
 
 #: ../wxui/bugreport.py:512
 msgid "(Describe what actually happened instead)"
@@ -1115,7 +1115,7 @@ msgstr ""
 
 #: ../settings.py:189
 msgid "A floating point value is required"
-msgstr ""
+msgstr "Потрібне значення з плаваючою комою"
 
 #: ../wxui/main.py:2269
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
@@ -1175,7 +1175,7 @@ msgstr "Сталася помилка"
 
 #: ../settings.py:147
 msgid "An integer is required"
-msgstr ""
+msgstr "Потрібне ціле число"
 
 #: ../drivers/baofeng_uv17Pro.py:728
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
@@ -1207,7 +1207,7 @@ msgstr "Призначає другу функцію ручки DSP/SEL післ
 
 #: ../wxui/query_sources.py:1136
 msgid "Attempting login..."
-msgstr ""
+msgstr "Спроба входу..."
 
 #: ../wxui/main.py:1729
 msgid "Automatic from system"
@@ -1511,7 +1511,7 @@ msgstr "Країна"
 
 #: ../wxui/query_sources.py:1098
 msgid "County"
-msgstr ""
+msgstr "Округ"
 
 #: ../wxui/memedit.py:689
 msgid "Cross Mode"
@@ -1520,7 +1520,7 @@ msgstr "Кросрежим"
 #: ../chirp_common.py:1140
 #, python-format
 msgid "Cross tone mode %s not supported"
-msgstr ""
+msgstr "Перехресний тоновий режим %s не підтримується"
 
 #: ../wxui/clone.py:577
 msgid "Custom Port"
@@ -1556,28 +1556,28 @@ msgstr "DTCS Pol"
 #: ../chirp_common.py:1160 ../chirp_common.py:1165
 #, python-format
 msgid "DTCS Code %03i not supported"
-msgstr ""
+msgstr "Код DTCS %03i не підтримується"
 
 #: ../chirp_common.py:1154
 #, python-format
 msgid "DTCS Polarity %s not supported"
-msgstr ""
+msgstr "Полярність DTCS %s не підтримується"
 
 #: ../chirp_common.py:582
 msgid "DTCS Rx code is not a valid number"
-msgstr ""
+msgstr "Код DTCS Rx не є дійсним числом"
 
 #: ../chirp_common.py:585
 msgid "DTCS Rx code is not valid"
-msgstr ""
+msgstr "Код DTCS Rx неприпустимий"
 
 #: ../chirp_common.py:568
 msgid "DTCS code is not a valid number"
-msgstr ""
+msgstr "Код DTCS не є дійсним числом"
 
 #: ../chirp_common.py:570
 msgid "DTCS code is not valid"
-msgstr ""
+msgstr "Код DTCS неприпустимий"
 
 #: ../drivers/uvk5.py:926
 msgid "DTMF decode"
@@ -1610,16 +1610,16 @@ msgstr "Видалити пам'ять"
 #: ../import_logic.py:209
 #, python-format
 msgid "Destination does not support %s"
-msgstr ""
+msgstr "Призначення не підтримує %s"
 
 #: ../import_logic.py:150 ../import_logic.py:154
 #, python-format
 msgid "Destination does not support tone frequency %s"
-msgstr ""
+msgstr "Призначення не підтримує частоту тону %s"
 
 #: ../import_logic.py:261
 msgid "Destination radio does not support D-STAR"
-msgstr ""
+msgstr "Радіостанція призначення не підтримує D-STAR"
 
 #: ../wxui/bugreport.py:570
 msgid "Detailed information"
@@ -1682,7 +1682,7 @@ msgstr "Ви приймаєте цей ризик?"
 
 #: ../sources/amsats.py:136 ../sources/amsats.py:280
 msgid "Done"
-msgstr ""
+msgstr "Готово"
 
 #: ../wxui/bankedit.py:199
 msgid "Double-click to change bank name"
@@ -1694,7 +1694,7 @@ msgstr "Завантажити"
 
 #: ../sources/repeaterbook.py:207
 msgid "Download complete"
-msgstr ""
+msgstr "Завантаження завершено"
 
 #: ../wxui/main.py:1174
 msgid "Download from radio"
@@ -1710,19 +1710,19 @@ msgstr "Інструкції із завантаження"
 
 #: ../sources/repeaterbook.py:173
 msgid "Downloading"
-msgstr ""
+msgstr "Завантаження"
 
 #: ../sources/amsats.py:240
 msgid "Downloading SatNOGS satellites..."
-msgstr ""
+msgstr "Завантаження супутників SatNOGS..."
 
 #: ../sources/amsats.py:243
 msgid "Downloading SatNOGS transmitters..."
-msgstr ""
+msgstr "Завантаження передавачів SatNOGS..."
 
 #: ../sources/amsats.py:106
 msgid "Downloading satellite data..."
-msgstr ""
+msgstr "Завантаження даних про супутники..."
 
 #: ../wxui/radioinfo.py:76
 msgid "Driver"
@@ -1742,7 +1742,7 @@ msgstr ""
 
 #: ../chirp_common.py:576
 msgid "DtcsPolarity is not valid"
-msgstr ""
+msgstr "Полярність DTCS неприпустима"
 
 #: ../wxui/query_sources.py:409
 msgid "Dual-mode digital repeaters that support analog will be shown as FM"
@@ -1755,11 +1755,11 @@ msgstr "Дуплекс"
 #: ../chirp_common.py:1170
 #, python-format
 msgid "Duplex %s not supported"
-msgstr ""
+msgstr "Дуплекс %s не підтримується"
 
 #: ../chirp_common.py:535
 msgid "Duplex is not +,-, or empty"
-msgstr ""
+msgstr "Дуплекс не є +, - або порожнім"
 
 #: ../drivers/uvk5_cn.py:719
 msgid "EEPROM size"
@@ -1897,7 +1897,7 @@ msgstr "Виключити приватні та закриті ретрансл
 #: ../wxui/memquery.py:232
 #, python-format
 msgid "Expected: %s"
-msgstr ""
+msgstr "Очікувалося: %s"
 
 #: ../wxui/clone.py:759
 msgid "Experimental driver"
@@ -1943,7 +1943,7 @@ msgstr ""
 #: ../sources/amsats.py:114
 #, python-format
 msgid "Failed to download data: %s"
-msgstr ""
+msgstr "Не вдалося завантажити дані: %s"
 
 #: ../wxui/memedit.py:2844
 msgid "Failed to export some memories"
@@ -1964,12 +1964,12 @@ msgstr "Не вдалося надіслати звіт про помилку:"
 
 #: ../sources/repeaterbook.py:192
 msgid "Failed to write RepeaterBook data to disk"
-msgstr ""
+msgstr "Не вдалося записати дані RepeaterBook на диск"
 
 #: ../wxui/query_sources.py:204 ../wxui/query_sources.py:1131
 #, python-format
 msgid "Failed: %s"
-msgstr ""
+msgstr "Помилка: %s"
 
 #: ../wxui/radioinfo.py:57
 msgid "Features"
@@ -1978,17 +1978,17 @@ msgstr "Можливості"
 #: ../sources/amsats.py:217
 #, python-format
 msgid "Fetching %s (page %i)..."
-msgstr ""
+msgstr "Отримання %s (сторінка %i)..."
 
 #: ../sources/radioreference.py:153
 #, python-format
 msgid "Fetching %s:%s"
-msgstr ""
+msgstr "Отримання %s:%s"
 
 #: ../sources/radioreference.py:176
 #, python-format
 msgid "Fetching agency %s %s:%s"
-msgstr ""
+msgstr "Отримання служби %s %s:%s"
 
 #: ../wxui/bugreport.py:213
 msgid "File a new bug"
@@ -2356,7 +2356,7 @@ msgstr "Частота в цьому діапазоні вимагає режи�
 
 #: ../chirp_common.py:529
 msgid "Frequency is not a valid number"
-msgstr ""
+msgstr "Частота не є дійсним числом"
 
 #: ../drivers/tdh8.py:2544
 msgid "Frequency outside TX bands must be duplex=off"
@@ -2365,7 +2365,7 @@ msgstr "Частота поза діапазонами передавання п
 #: ../chirp_common.py:1187
 #, python-brace-format
 msgid "Frequency {freq} is out of supported ranges {ranges}"
-msgstr ""
+msgstr "Частота {freq} виходить за межі підтримуваних діапазонів {ranges}"
 
 #: ../wxui/query_sources.py:355 ../wxui/query_sources.py:435
 #: ../wxui/query_sources.py:536
@@ -2379,7 +2379,7 @@ msgstr "Отримання налаштувань"
 #: ../sources/repeaterbook.py:158
 #, python-format
 msgid "Got error code %i (%s) from server"
-msgstr ""
+msgstr "Сервер повернув код помилки %i (%s)"
 
 #: ../wxui/memedit.py:1408
 msgid "Goto Memory"
@@ -2401,7 +2401,7 @@ msgstr "Група: %s"
 #: ../drivers/generic_csv.py:232
 #, python-format
 msgid "Header line has unknown field %r"
-msgstr ""
+msgstr "Рядок заголовка містить невідоме поле %r"
 
 #: ../wxui/main.py:1139
 msgid "Help"
@@ -2451,7 +2451,7 @@ msgstr "Якщо встановлено, сортувати результати
 
 #: ../wxui/radioinfo.py:131
 msgid "Image Metadata"
-msgstr ""
+msgstr "Метадані образу"
 
 #: ../drivers/uvk5_cn.py:592
 #, python-format
@@ -2528,7 +2528,7 @@ msgstr "Додати рядок зверху"
 
 #: ../wxui/memedit.py:2380
 msgid "Insert row"
-msgstr ""
+msgstr "Вставити рядок"
 
 #: ../wxui/__init__.py:60
 msgid "Install desktop icon?"
@@ -2552,12 +2552,12 @@ msgstr "Внутрішня помилка драйвера: спроба змі�
 
 #: ../sources/repeaterbook.py:105
 msgid "Internal error - check log"
-msgstr ""
+msgstr "Внутрішня помилка — перевірте журнал"
 
 #: ../wxui/memedit.py:312
 #, python-format
 msgid "Internal error: unable to prompt for %s"
-msgstr ""
+msgstr "Внутрішня помилка: не вдалося запитати %s"
 
 #: ../wxui/query_sources.py:62
 #, python-format
@@ -2580,7 +2580,7 @@ msgstr "Неприпустиме редагування: %s"
 
 #: ../wxui/memedit.py:413
 msgid "Invalid frequency"
-msgstr ""
+msgstr "Неприпустима частота"
 
 #: ../wxui/query_sources.py:124
 msgid "Invalid locator"
@@ -2593,7 +2593,7 @@ msgstr "Недійсний або непідтримуваний файл мод
 #: ../chirp_common.py:546
 #, python-format
 msgid "Invalid tone mode `%s'"
-msgstr ""
+msgstr "Неприпустимий тоновий режим `%s'"
 
 #: ../wxui/memedit.py:296 ../wxui/memedit.py:302
 #, python-format
@@ -2672,12 +2672,12 @@ msgstr "Обмежує тривалість однієї передачі. Ко�
 #: ../drivers/generic_csv.py:240
 #, python-format
 msgid "Line %i has %i columns, expected %i"
-msgstr ""
+msgstr "Рядок %i містить %i стовпців, очікувалося %i"
 
 #: ../drivers/generic_csv.py:255
 #, python-format
 msgid "Line %i: %s"
-msgstr ""
+msgstr "Рядок %i: %s"
 
 #: ../wxui/main.py:1845
 msgid "Live Radio"
@@ -2710,12 +2710,12 @@ msgstr "Завантаження налаштувань"
 #: ../chirp_common.py:1121
 #, python-format
 msgid "Location %i is out of range"
-msgstr ""
+msgstr "Розташування %i виходить за межі діапазону"
 
 #: ../chirp_common.py:521
 #, python-format
 msgid "Location '%s' is not a valid integer"
-msgstr ""
+msgstr "Розташування '%s' не є дійсним цілим числом"
 
 #: ../wxui/query_sources.py:110
 msgid "Locator"
@@ -2727,15 +2727,15 @@ msgstr "Блокує елементи керування, вибрані пар�
 
 #: ../wxui/query_sources.py:1086
 msgid "Log In"
-msgstr ""
+msgstr "Увійти"
 
 #: ../wxui/query_sources.py:1091 ../wxui/query_sources.py:1097
 msgid "Log in First"
-msgstr ""
+msgstr "Спочатку увійдіть"
 
 #: ../wxui/query_sources.py:1134
 msgid "Logged in"
-msgstr ""
+msgstr "Вхід виконано"
 
 #: ../wxui/bugreport.py:343
 msgid "Login failed: Check your username and password"
@@ -2815,12 +2815,12 @@ msgstr "Режим"
 #: ../chirp_common.py:593
 #, python-format
 msgid "Mode %r is not valid"
-msgstr ""
+msgstr "Режим %r неприпустимий"
 
 #: ../chirp_common.py:1128
 #, python-format
 msgid "Mode %s not supported"
-msgstr ""
+msgstr "Режим %s не підтримується"
 
 #: ../wxui/clone.py:366
 msgid "Model"
@@ -2879,11 +2879,11 @@ msgstr "Ім'я"
 #: ../chirp_common.py:1237
 #, python-format
 msgid "Name character `%s' not supported"
-msgstr ""
+msgstr "Символ імені `%s' не підтримується"
 
 #: ../sources/base.py:58
 msgid "Network source is immutable"
-msgstr ""
+msgstr "Мережеве джерело незмінне"
 
 #: ../wxui/main.py:788
 msgid "New Window"
@@ -2895,11 +2895,11 @@ msgstr "Доступна нова версія"
 
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
-msgstr ""
+msgstr "Із вставленого тексту не вилучено жодного каналу"
 
 #: ../drivers/generic_csv.py:265
 msgid "No channels found"
-msgstr ""
+msgstr "Каналів не знайдено"
 
 #: ../wxui/memedit.py:2390
 msgid "No empty rows below!"
@@ -2935,7 +2935,7 @@ msgstr "Немає результатів!"
 #: ../import_logic.py:46 ../import_logic.py:64
 #, python-format
 msgid "No room to add callsign %s"
-msgstr ""
+msgstr "Немає місця для додавання позивного %s"
 
 #: ../wxui/main.py:2181
 msgid "No traces stored"
@@ -2943,11 +2943,11 @@ msgstr "Трасування не збережено"
 
 #: ../sources/amsats.py:277
 msgid "No valid SatNOGS frequencies found!"
-msgstr ""
+msgstr "Не знайдено дійсних частот SatNOGS!"
 
 #: ../sources/amsats.py:133
 msgid "No valid satellite frequencies found!"
-msgstr ""
+msgstr "Не знайдено дійсних частот супутників!"
 
 #: ../wxui/query_sources.py:45 ../wxui/memedit.py:1407
 msgid "Number"
@@ -2971,7 +2971,7 @@ msgstr "Зсув"
 
 #: ../chirp_common.py:541
 msgid "Offset is not a valid number"
-msgstr ""
+msgstr "Зсув не є дійсним числом"
 
 #: ../wxui/memedit.py:344
 msgid ""
@@ -3106,7 +3106,7 @@ msgstr "Аналіз"
 
 #: ../sources/amsats.py:117
 msgid "Parsing data..."
-msgstr ""
+msgstr "Розбір даних..."
 
 #: ../wxui/bugreport.py:276 ../wxui/query_sources.py:1062
 msgid "Password"
@@ -3187,12 +3187,12 @@ msgstr "Потужність"
 #: ../chirp_common.py:1218
 #, python-format
 msgid "Power level %s is out of radio's range"
-msgstr ""
+msgstr "Рівень потужності %s виходить за межі діапазону радіостанції"
 
 #: ../chirp_common.py:1224
 #, python-format
 msgid "Power level %s not supported"
-msgstr ""
+msgstr "Рівень потужності %s не підтримується"
 
 #: ../wxui/query_sources.py:877
 msgid "Prefixes"
@@ -3216,7 +3216,7 @@ msgstr "Друк"
 
 #: ../sources/amsats.py:247
 msgid "Processing data..."
-msgstr ""
+msgstr "Обробка даних..."
 
 #: ../drivers/baofeng_uv17Pro.py:572
 #, python-format
@@ -3253,7 +3253,7 @@ msgstr "Значення властивості"
 
 #: ../wxui/query_sources.py:1093
 msgid "Province"
-msgstr ""
+msgstr "Провінція"
 
 #: ../wxui/query_sources.py:833
 msgid "QTH Locator"
@@ -3287,7 +3287,7 @@ msgstr "Виконання запиту"
 
 #: ../sources/radioreference.py:119
 msgid "Querying..."
-msgstr ""
+msgstr "Надсилання запиту..."
 
 #: ../wxui/memedit.py:622
 msgid "RX DTCS"
@@ -3427,7 +3427,7 @@ msgstr ""
 
 #: ../sources/repeaterbook.py:182
 msgid "RepeaterBook returned invalid response"
-msgstr ""
+msgstr "RepeaterBook повернув неприпустиму відповідь"
 
 #: ../wxui/main.py:1121
 msgid "Report or update a bug..."
@@ -3648,7 +3648,7 @@ msgstr "Вибирає широкосмугову або вузькосмуго�
 
 #: ../wxui/bugreport.py:592
 msgid "Sending report..."
-msgstr ""
+msgstr "Надсилання звіту..."
 
 #: ../drivers/baofeng_uv17Pro.py:769
 msgid "Sends a short tone at the end of each transmission so other stations can hear that you released PTT."
@@ -3712,15 +3712,15 @@ msgstr "Встановлює, наскільки сильним має бути 
 
 #: ../drivers/ft450d.py:995
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
-msgstr ""
+msgstr "Встановлює, наскільки сильно фільтр Contour підсилює або послаблює сигнал. Low дає м'який ефект, High — сильніший."
 
 #: ../drivers/ft450d.py:1466
 msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
-msgstr ""
+msgstr "Встановлює гучність власного тону CW від 0 до 100, яка використовується, коли параметр CW sidetone volume Linked вимкнено."
 
 #: ../drivers/ft450d.py:1767
 msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
-msgstr ""
+msgstr "Встановлює чутливість VOX у режимі DIG, щоб звук від апаратури передавання даних вмикав передавач без лінії PTT. 0 вимикає VOX у режимі DIG."
 
 #: ../drivers/baofeng_uv17Pro.py:1041
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
@@ -3728,23 +3728,23 @@ msgstr "Встановлює чутливість VOX. Надто висока �
 
 #: ../drivers/ft450d.py:1758
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
-msgstr ""
+msgstr "Встановлює чутливість VOX. Надто висока чутливість вмикає передавач від шуму навколо радіостанції, надто низька не вловлює ваш голос. 1 — найнижча чутливість, 100 — найвища."
 
 #: ../drivers/ft450d.py:1303
 msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
-msgstr ""
+msgstr "Встановлює швидкість передавання гнізда CAT, яка повинна збігатися з налаштуванням програми керування з комп'ютера. Режим Data натомість перетворює гніздо CAT на інтерфейс RTTY: програма RTTY керує зсувом FSK через вхід послідовних даних і використовує RTS як PTT."
 
 #: ../drivers/ft450d.py:1564
 msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
-msgstr ""
+msgstr "Встановлює гучність звукового сигналу відносно рівня звуку приймання, заданого AF GAIN, коли параметр Beep volume Linked увімкнено. 0 робить сигнал таким самим гучним, як прийманий звук, від'ємні значення роблять його тихішим, а додатні — гучнішим."
 
 #: ../drivers/ft450d.py:1573
 msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
-msgstr ""
+msgstr "Встановлює гучність звукового сигналу від 0 до 100, яка використовується, коли параметр Beep volume Linked вимкнено."
 
 #: ../drivers/ft450d.py:1586
 msgid "Sets the brightness of the display illumination, from 1 to 8."
-msgstr ""
+msgstr "Встановлює яскравість підсвічування дисплея від 1 до 8."
 
 #: ../drivers/baofeng_uv17Pro.py:592
 #, python-format
@@ -3753,7 +3753,7 @@ msgstr "Встановлює назву виклику для DTMF-коду %i, 
 
 #: ../drivers/ft450d.py:1579
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
-msgstr ""
+msgstr "Встановлює контрастність дисплея від 1 до 24. Зміна цього параметра тут, судячи з усього, не має помітного впливу на радіостанцію."
 
 #: ../drivers/baofeng_uv17Pro.py:873
 msgid "Sets the current keypad-lock state."
@@ -3765,7 +3765,7 @@ msgstr "Встановлює затримку перед застосуванн�
 
 #: ../drivers/ft450d.py:1438
 msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
-msgstr ""
+msgstr "Встановлює затримку між замиканням ключа і початком передавання несучої в режимі QSK із вбудованим електронним ключем. За 25 мс тримайте швидкість CW на рівні 50 wpm або нижче, а за 30 мс — 42 wpm або нижче, інакше радіостанція не зможе передавати."
 
 #: ../drivers/baofeng_uv17Pro.py:1186
 msgid "Sets the difference in MHz between VFO A's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
@@ -3777,31 +3777,31 @@ msgstr "Встановлює різницю в МГц між частотами 
 
 #: ../drivers/ft450d.py:1429
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
-msgstr ""
+msgstr "Встановлює співвідношення тривалості крапки й тире вбудованого електронного ключа. За 1:3.0, стандартного співвідношення, тире триває втричі довше за крапку."
 
 #: ../drivers/ft450d.py:1783
 msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
-msgstr ""
+msgstr "Встановлює зсув частоти між тонами mark і space в FSK RTTY. Більшість аматорських передач RTTY використовує 170 Гц."
 
 #: ../drivers/ft450d.py:1829
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
-msgstr ""
+msgstr "Встановлює підсилення мікрофона для SSB, AM і FM. Використовуйте Low із мікрофоном, що має високий вихідний рівень, Normal — із ручним мікрофоном із комплекту, а High — із мікрофоном, що має низький вихідний рівень. Мовний процесор вимкнено за Low і ввімкнено за інших значень."
 
 #: ../drivers/ft450d.py:1345
 msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
-msgstr ""
+msgstr "Встановлює зсув, який застосовує Quick Split. Утримання SPLIT/STEP протягом секунди встановлює передавальний VFO на частоту приймання плюс цей зсув у тому самому режимі, що й приймальний VFO, і вмикає роботу зі рознесеними частотами."
 
 #: ../drivers/ft450d.py:1501
 msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
-msgstr ""
+msgstr "Встановлює паузу в секундах між повторами повідомлення маяка CW. 0 вимикає повторення, тож кожне повідомлення передається один раз на кожне натискання кнопки, як у пам'яті повідомлень CW."
 
 #: ../drivers/ft450d.py:1409
 msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
-msgstr ""
+msgstr "Встановлює висоту власного тону CW, яка також є зсувом переданої несучої та центром приймального фільтра CW. Якщо настроювати станцію, доки її тон не збігеться з власним тоном, ви потрапите на її частоту."
 
 #: ../drivers/ft450d.py:1550
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
-msgstr ""
+msgstr "Встановлює висоту звукового сигналу, яким радіостанція підтверджує натискання кнопок."
 
 #: ../drivers/baofeng_uv17Pro.py:1130
 msgid "Sets the receive frequency shown on display line A in Frequency (VFO) mode."
@@ -3813,11 +3813,11 @@ msgstr "Встановлює частоту прийому, що показує�
 
 #: ../drivers/ft450d.py:1417
 msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
-msgstr ""
+msgstr "Встановлює швидкість передавання вбудованого електронного ключа в словах за хвилину. Радіостанція також може показувати її в символах за хвилину, що в п'ять разів перевищує значення wpm. За затримки CW QSK 25 мс тримайте її на рівні 50 wpm або нижче, а за 30 мс — 42 wpm або нижче, інакше радіостанція не зможе передавати."
 
 #: ../drivers/ft450d.py:1456
 msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
-msgstr ""
+msgstr "Встановлює гучність власного тону відносно рівня звуку приймання, заданого AF GAIN, коли параметр CW sidetone volume Linked увімкнено. 0 робить власний тон таким самим гучним, як прийманий звук, від'ємні значення роблять його тихішим, а додатні — гучнішим."
 
 #: ../drivers/baofeng_uv17Pro.py:632
 msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the receiving system cannot separate adjacent digits."
@@ -3825,19 +3825,19 @@ msgstr "Встановлює тихий проміжок між передани
 
 #: ../drivers/ft450d.py:1294
 msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off."
-msgstr ""
+msgstr "Встановлює таймер тайм-ауту для команд керування з комп'ютера, що надходять на гніздо CAT. Введення команд, яке триває довше за цей час, переривається."
 
 #: ../drivers/ft450d.py:1385
 msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
-msgstr ""
+msgstr "Встановлює потужність передавання у ватах. Використовуйте найнижчу потужність, що забезпечує надійний зв'язок, а для передавання даних довше за кілька хвилин — від половини до третини повної потужності."
 
 #: ../drivers/ft450d.py:1033
 msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
-msgstr ""
+msgstr "Встановлює ширину фільтра DSP IF. Вужчий фільтр відсікає завади поруч із сигналом, ширший звучить природніше, коли в діапазоні тихо. Доступні значення залежать від режиму: 1,8, 2,4 або 3,0 кГц для SSB, 300 Гц, 500 Гц або 2,4 кГц для CW, 300 Гц, 2,4 або 3,0 кГц для DIG, 3,0, 6,0 або 9,0 кГц для AM та 2,5 або 5,0 кГц для FM. Ширина, якої немає в режимі, замінюється найближчою з доступних."
 
 #: ../drivers/ft450d.py:1319
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
-msgstr ""
+msgstr "Встановлює, коли сканування відновлюється після паузи на сигналі. Значення від 1 до 10 відновлює сканування через стільки секунд, 0 вибирає BUSY, що чекає, доки сигнал зникне. У режимах SSB, CW та цифрових режимах на основі SSB сканер натомість повільно проходить через сигнал, даючи вам час його зупинити."
 
 #: ../wxui/main.py:155
 msgid "Settings"
@@ -3858,11 +3858,11 @@ msgstr "Величина зсуву (або частота передаванн�
 
 #: ../drivers/ft450d.py:1329
 msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
-msgstr ""
+msgstr "Трохи зсуває частоту тактового генератора процесора радіостанції. Використовуйте його лише для того, щоб відвести внутрішньо створений паразитний сигнал, або birdie, від частоти, яку ви хочете слухати."
 
 #: ../drivers/ft450d.py:1775
 msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz."
-msgstr ""
+msgstr "Зсуває частоту, що показується на дисплеї в режимах даних USER-L і USER-U, на вказану кількість герців."
 
 #: ../wxui/memedit.py:2335 ../wxui/developer.py:101
 msgid "Show Raw Memory"
@@ -3882,7 +3882,7 @@ msgstr "Показати розташування резервної копії 
 
 #: ../drivers/ft450d.py:1254
 msgid "Shows all 62 items of the radio's Menu Mode. When off, the menu on the radio offers only the 16 most often used items."
-msgstr ""
+msgstr "Показує всі 62 пункти режиму меню радіостанції. Коли вимкнено, меню радіостанції пропонує лише 16 найчастіше використовуваних пунктів."
 
 #: ../wxui/memedit.py:697
 msgid "Skip"
@@ -3890,7 +3890,7 @@ msgstr "Пропустити"
 
 #: ../chirp_common.py:604
 msgid "Skip value is not valid"
-msgstr ""
+msgstr "Значення пропуску неприпустиме"
 
 #: ../wxui/memedit.py:2648
 msgid "Some memories are incompatible with this radio"
@@ -3948,7 +3948,7 @@ msgstr "Подає короткий підтверджувальний звук 
 
 #: ../drivers/ft450d.py:1723
 msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
-msgstr ""
+msgstr "Прискорює настройку: ручка MAIN DIAL настроює вдесятеро швидше, а ручка DSP/SEL — удвічі швидше."
 
 #: ../wxui/query_sources.py:566
 msgid "State"
@@ -3968,15 +3968,15 @@ msgstr "Звіт про помилку успішно надіслано:"
 
 #: ../drivers/ft450d.py:1492
 msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
-msgstr ""
+msgstr "Міняє місцями боки крапки й тире на ключі-маніпуляторі без перепаювання, наприклад для лівші. Normal передає крапки від кінчика штекера, а тире — від кільця, Reverse — навпаки."
 
 #: ../drivers/ft450d.py:1807
 msgid "Swaps the mark and space tones of your transmitted RTTY signal."
-msgstr ""
+msgstr "Міняє місцями тони mark і space у переданому сигналі RTTY."
 
 #: ../drivers/ft450d.py:1799
 msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
-msgstr ""
+msgstr "Міняє місцями тони mark і space під час приймання RTTY. Спробуйте Reverse, якщо станцію з хорошим сигналом не вдається декодувати."
 
 #: ../wxui/memedit.py:348
 msgid "TX Frequency"
@@ -4217,7 +4217,7 @@ msgstr "Цей інструмент надішле відомості про в�
 
 #: ../settings.py:85
 msgid "This value is not mutable"
-msgstr ""
+msgstr "Це значення не можна змінювати"
 
 #: ../wxui/developer.py:684
 msgid "This will load a module from a website issue"
@@ -4230,7 +4230,7 @@ msgstr "Тон"
 #: ../chirp_common.py:1145 ../chirp_common.py:1148
 #, python-format
 msgid "Tone %.1f not supported"
-msgstr ""
+msgstr "Тон %.1f не підтримується"
 
 #: ../wxui/memedit.py:1452
 msgid "Tone Mode"
@@ -4243,7 +4243,7 @@ msgstr "ToneSql"
 #: ../chirp_common.py:1133
 #, python-format
 msgid "Tone mode %s not supported"
-msgstr ""
+msgstr "Тоновий режим %s не підтримується"
 
 #: ../wxui/memedit.py:151
 msgid "Tone squelch mode"
@@ -4279,7 +4279,7 @@ msgstr "Тон передавання/приймання для режиму TSQ
 
 #: ../drivers/ft450d.py:1363
 msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
-msgstr ""
+msgstr "Передає короткий звуковий сигнал, коли PTT відпущено, перш ніж радіостанція повернеться на приймання, щоб повідомити іншим станціям про завершення вашого передавання."
 
 #: ../drivers/baofeng_uv17Pro.py:839
 msgid "Transmits a special end-of-transmission signal intended to reduce the squelch burst heard by another compatible handheld."
@@ -4292,11 +4292,11 @@ msgstr "Крок настройки"
 #: ../chirp_common.py:1176
 #, python-format
 msgid "Tuning step %.2f not supported"
-msgstr ""
+msgstr "Крок настройки %.2f не підтримується"
 
 #: ../chirp_common.py:598
 msgid "Tuning step is invalid"
-msgstr ""
+msgstr "Неприпустимий крок настройки"
 
 #: ../drivers/baofeng_uv17Pro.py:1083
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
@@ -4304,27 +4304,27 @@ msgstr "Вмикає Bluetooth, щоб радіостанцію можна бу�
 
 #: ../drivers/ft450d.py:1337
 msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
-msgstr ""
+msgstr "Вмикає роботу з рознесеними частотами: радіостанція приймає на VFO-A і передає на VFO-B або навпаки. Два VFO можуть використовувати різні режими і навіть різні діапазони."
 
 #: ../drivers/ft450d.py:976
 msgid "Turns on the DSP contour filter, which gently cuts or boosts one part of the receive passband. Cutting suppresses interference or excessive components of a signal, boosting brings out the components that make it easier to understand."
-msgstr ""
+msgstr "Вмикає контурний фільтр DSP, який плавно послаблює або підсилює одну частину смуги пропускання приймача. Послаблення подавляє завади або надмірні складові сигналу, підсилення виділяє складові, що полегшують розбірливість."
 
 #: ../drivers/ft450d.py:1045
 msgid "Turns on the DSP digital noise reduction, which reduces random background noise on the HF and 50 MHz bands. It is especially effective on SSB."
-msgstr ""
+msgstr "Вмикає цифрове шумозаглушення DSP, яке зменшує випадковий фоновий шум у діапазонах HF і 50 МГц. Воно особливо ефективне в SSB."
 
 #: ../drivers/ft450d.py:1686
 msgid "Turns on the IF noise blanker, which reduces short pulses of noise such as those from vehicle ignition systems."
-msgstr ""
+msgstr "Вмикає шумоподавлювач IF, який зменшує короткі імпульсні завади, наприклад від систем запалювання автомобілів."
 
 #: ../drivers/ft450d.py:1010
 msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
-msgstr ""
+msgstr "Вмикає режекторний фільтр IF — вузький і глибокий фільтр, що усуває одну заважаючу несучу або свист усередині смуги пропускання приймача."
 
 #: ../drivers/ft450d.py:1716
 msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
-msgstr ""
+msgstr "Вмикає вбудований електронний ключ CW для маніпулятора, підключеного до гнізда KEY. Вимкніть його, щоб використовувати звичайний телеграфний ключ або зовнішній електронний ключ."
 
 #: ../drivers/baofeng_uv17Pro.py:1619
 msgid "Turns on the privacy function the manual calls Encryption for this channel. Other radios can only understand the conversation if they have it turned on as well and use the same DCS code."
@@ -4332,12 +4332,12 @@ msgstr "Вмикає для цього каналу функцію конфід�
 
 #: ../drivers/ft450d.py:1261
 msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
-msgstr ""
+msgstr "Автоматично вимикає радіостанцію, якщо протягом вибраної кількості годин не використовувалися жодна кнопка, ручка чи клавіша мікрофона і нічого не передавалося. За останню хвилину до вимкнення на дисплеї блимає APO і лунає звуковий сигнал. 0 вимикає автоматичне вимкнення живлення."
 
 #: ../chirp_common.py:1209
 #, python-brace-format
 msgid "Tx freq {freq} is out of supported range"
-msgstr ""
+msgstr "Частота передавання {freq} виходить за межі підтримуваного діапазону"
 
 #: ../wxui/memquery.py:188
 msgid "Type a simple search string or a formatted query and press enter"
@@ -4351,7 +4351,7 @@ msgstr "Пошук USB-порту"
 #: ../chirp_common.py:1957
 #, python-format
 msgid "Unable to correct rounded frequency %s"
-msgstr ""
+msgstr "Не вдалося виправити округлену частоту %s"
 
 #: ../wxui/clone.py:511
 msgid "Unable to determine port for your cable. Check your drivers and connections."
@@ -4364,7 +4364,7 @@ msgstr "Не вдається редагувати пам'ять, доки ра�
 #: ../chirp_common.py:1853
 #, python-format
 msgid "Unable to find a supported tuning step for %s"
-msgstr ""
+msgstr "Не вдалося знайти підтримуваний крок настройки для %s"
 
 #: ../wxui/main.py:1516
 #, python-format
@@ -4386,7 +4386,7 @@ msgstr "Не вдається виконати запит"
 
 #: ../sources/dmrmarc.py:50
 msgid "Unable to query DMR-MARC"
-msgstr ""
+msgstr "Не вдалося виконати запит до DMR-MARC"
 
 #: ../drivers/ft817.py:322
 msgid "Unable to read last block. This often happens when the selected model is US but the radio is a non-US one (or widebanded). Please choose the correct model and try again."
@@ -4416,15 +4416,15 @@ msgstr "Сполучені Штати"
 
 #: ../sources/radioreference.py:173
 msgid "Unknown Category"
-msgstr ""
+msgstr "Невідома категорія"
 
 #: ../directory.py:229
 msgid "Unknown file format"
-msgstr ""
+msgstr "Невідомий формат файлу"
 
 #: ../drivers/tdm11.py:480
 msgid "Unknown file header"
-msgstr ""
+msgstr "Невідомий заголовок файлу"
 
 #: ../wxui/clone.py:494
 msgid "Unplug your cable (if needed) and then click OK"
@@ -4437,7 +4437,7 @@ msgstr "Непідтримувана модель %r"
 
 #: ../drivers/ft70.py:1237 ../drivers/ft2d.py:167 ../drivers/ft2d.py:204
 msgid "Unsupported version found in ADMS file"
-msgstr ""
+msgstr "У файлі ADMS знайдено непідтримувану версію"
 
 #: ../wxui/bugreport.py:219
 msgid "Update an existing bug"
@@ -4450,7 +4450,7 @@ msgstr "Оновлення задачі %s"
 
 #: ../wxui/main.py:1175
 msgid "Upload"
-msgstr ""
+msgstr "Записати"
 
 #: ../wxui/clone.py:907
 msgid "Upload instructions"
@@ -4496,27 +4496,27 @@ msgstr "Ім'я користувача"
 #: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
 #: ../sources/repeaterbook.py:156
 msgid "Using cached data"
-msgstr ""
+msgstr "Використання кешованих даних"
 
 #: ../settings.py:149
 #, python-format
 msgid "Value %i not in range %i-%i"
-msgstr ""
+msgstr "Значення %i поза діапазоном %i-%i"
 
 #: ../settings.py:328
 #, python-format
 msgid "Value %r contains invalid character `%s'"
-msgstr ""
+msgstr "Значення %r містить неприпустимий символ `%s'"
 
 #: ../settings.py:323
 #, python-format
 msgid "Value %r must be between %i and %i chars"
-msgstr ""
+msgstr "Значення %r повинно містити від %i до %i символів"
 
 #: ../settings.py:191
 #, python-format
 msgid "Value %s not in range %s-%s"
-msgstr ""
+msgstr "Значення %s поза діапазоном %s-%s"
 
 #: ../wxui/developer.py:314
 #, python-format
@@ -4526,7 +4526,7 @@ msgstr "Значення не вміщується в %i біт"
 #: ../settings.py:264
 #, python-format
 msgid "Value for %s is out of range"
-msgstr ""
+msgstr "Значення для %s виходить за межі діапазону"
 
 #: ../wxui/common.py:759
 #, python-format
@@ -4595,7 +4595,7 @@ msgstr "Коли параметр вимкнено, клавіатуру все 
 
 #: ../drivers/ft450d.py:1838
 msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
-msgstr ""
+msgstr "Коли ввімкнено, утримання клавіші UP або DWN на мікрофоні приблизно секунду запускає сканування, яке триває після відпускання клавіші. Коли вимкнено, радіостанція скануватиме лише доки клавішу утримують."
 
 #: ../wxui/query_sources.py:418
 msgid "With this option checked, a proximity search will include cached results from other localities if they are in range, match other filter parameters, and have been downloaded before."
@@ -4623,7 +4623,7 @@ msgstr "Ваш кабель, схоже, під'єднано до порту:"
 
 #: ../wxui/query_sources.py:1118
 msgid "ZIP Code"
-msgstr ""
+msgstr "Поштовий індекс"
 
 #: ../wxui/developer.py:194
 msgid "bits"
@@ -4639,11 +4639,11 @@ msgstr "байт кожен"
 
 #: ../chirp_common.py:560
 msgid "cTone is not a valid number"
-msgstr ""
+msgstr "cTone не є дійсним числом"
 
 #: ../chirp_common.py:562
 msgid "cTone is not valid"
-msgstr ""
+msgstr "cTone неприпустимий"
 
 #: ../wxui/common.py:545
 msgid "checkbox"
@@ -4676,7 +4676,7 @@ msgstr "заблоковано"
 #: ../settings.py:366
 #, python-format
 msgid "map_entries must be 2 el tuples instead of: %s"
-msgstr ""
+msgstr "map_entries повинні бути кортежами з 2 елементів замість: %s"
 
 #: ../wxui/common.py:550
 msgid "number"
@@ -4684,15 +4684,15 @@ msgstr "число"
 
 #: ../import_logic.py:239
 msgid "offset is abnormally large."
-msgstr ""
+msgstr "зсув аномально великий."
 
 #: ../chirp_common.py:552
 msgid "rTone is not a valid number"
-msgstr ""
+msgstr "rTone не є дійсним числом"
 
 #: ../chirp_common.py:554
 msgid "rTone is not valid"
-msgstr ""
+msgstr "rTone неприпустимий"
 
 #: ../wxui/bugreport.py:421
 msgid "searched for duplicate issues"
