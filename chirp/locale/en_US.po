@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 09:31-0800\n"
+"POT-Creation-Date: 2026-11-13 18:06-0800\n"
 "PO-Revision-Date: 2011-11-29 16:07-0800\n"
 "Last-Translator: Dan Smith <dan@theine>\n"
 "Language-Team: English\n"
@@ -776,7 +776,7 @@ msgstr ""
 msgid "Always On keeps it lit all the time."
 msgstr ""
 
-#: ../wxui/clone.py:635
+#: ../wxui/clone.py:636
 msgid "Always start with recent list"
 msgstr ""
 
@@ -796,7 +796,7 @@ msgstr ""
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
-#: ../wxui/clone.py:145
+#: ../wxui/clone.py:146
 msgid "Applying settings"
 msgstr ""
 
@@ -833,7 +833,7 @@ msgstr "Automatic Repeater Offset"
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr ""
 
-#: ../wxui/developer.py:665
+#: ../wxui/developer.py:669
 msgid "Available modules"
 msgstr ""
 
@@ -947,7 +947,7 @@ msgstr ""
 msgid "Choose Diff Target"
 msgstr ""
 
-#: ../wxui/clone.py:616
+#: ../wxui/clone.py:617
 msgid "Choose a recent model"
 msgstr ""
 
@@ -955,7 +955,7 @@ msgstr ""
 msgid "Choose duplex"
 msgstr ""
 
-#: ../wxui/developer.py:664
+#: ../wxui/developer.py:668
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr ""
@@ -1067,11 +1067,11 @@ msgstr[1] "Diff raw memories"
 msgid "Comment"
 msgstr ""
 
-#: ../wxui/clone.py:328
+#: ../wxui/clone.py:329
 msgid "Communicate with radio"
 msgstr ""
 
-#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr ""
 
@@ -1132,7 +1132,7 @@ msgstr ""
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Custom Port"
 msgstr ""
 
@@ -1285,12 +1285,12 @@ msgstr ""
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
-#: ../wxui/clone.py:216
+#: ../wxui/clone.py:217
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr ""
 
-#: ../wxui/clone.py:213
+#: ../wxui/clone.py:214
 msgid "Do you accept the risk?"
 msgstr ""
 
@@ -1320,7 +1320,7 @@ msgstr "Download From Radio"
 msgid "Download from radio..."
 msgstr "Download From Radio"
 
-#: ../wxui/clone.py:800
+#: ../wxui/clone.py:801
 #, fuzzy
 msgid "Download instructions"
 msgstr "Download From Radio"
@@ -1434,7 +1434,7 @@ msgstr ""
 msgid "Enter a new name for bank %s:"
 msgstr ""
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Enter custom port:"
 msgstr ""
 
@@ -1471,7 +1471,7 @@ msgstr ""
 msgid "Error applying settings"
 msgstr ""
 
-#: ../wxui/clone.py:705
+#: ../wxui/clone.py:706
 msgid "Error communicating with radio"
 msgstr ""
 
@@ -1516,7 +1516,7 @@ msgstr ""
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:759
+#: ../wxui/clone.py:760
 msgid "Experimental driver"
 msgstr ""
 
@@ -2068,7 +2068,7 @@ msgstr ""
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr ""
 
-#: ../wxui/clone.py:822
+#: ../wxui/clone.py:823
 msgid "Internal driver error"
 msgstr ""
 
@@ -2126,12 +2126,12 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr ""
 
-#: ../wxui/developer.py:631
+#: ../wxui/developer.py:635
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
 msgstr ""
 
-#: ../wxui/developer.py:686
+#: ../wxui/developer.py:690
 msgid "Issue number:"
 msgstr ""
 
@@ -2214,7 +2214,7 @@ msgstr "_Radio"
 msgid "Load Module..."
 msgstr ""
 
-#: ../wxui/developer.py:687
+#: ../wxui/developer.py:691
 msgid "Load module from issue"
 msgstr ""
 
@@ -2230,7 +2230,7 @@ msgstr ""
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr ""
 
-#: ../wxui/clone.py:147
+#: ../wxui/clone.py:148
 msgid "Loading settings"
 msgstr ""
 
@@ -2350,7 +2350,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:367
 msgid "Model"
 msgstr ""
 
@@ -2374,7 +2374,7 @@ msgstr ""
 msgid "More Info"
 msgstr ""
 
-#: ../wxui/clone.py:524
+#: ../wxui/clone.py:525
 #, python-format
 msgid "More than one port found: %s"
 msgstr ""
@@ -2440,11 +2440,11 @@ msgstr ""
 msgid "No example for %s"
 msgstr ""
 
-#: ../wxui/developer.py:706
+#: ../wxui/developer.py:710
 msgid "No modules found"
 msgstr ""
 
-#: ../wxui/developer.py:705
+#: ../wxui/developer.py:709
 #, python-format
 msgid "No modules found in issue %i"
 msgstr ""
@@ -2696,7 +2696,7 @@ msgstr ""
 msgid "Please wait"
 msgstr ""
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Plug in your cable and then click OK"
 msgstr ""
 
@@ -2704,7 +2704,7 @@ msgstr ""
 msgid "Polish repeaters database"
 msgstr ""
 
-#: ../wxui/clone.py:351
+#: ../wxui/clone.py:352
 msgid "Port"
 msgstr ""
 
@@ -2763,7 +2763,7 @@ msgstr ""
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
-#: ../wxui/clone.py:535
+#: ../wxui/clone.py:536
 msgid "Prolific USB device"
 msgstr ""
 
@@ -2848,7 +2848,7 @@ msgstr ""
 msgid "Radio did not ack block %i"
 msgstr ""
 
-#: ../wxui/clone.py:792 ../wxui/clone.py:892
+#: ../wxui/clone.py:793 ../wxui/clone.py:893
 msgid "Radio information"
 msgstr ""
 
@@ -2879,12 +2879,12 @@ msgstr ""
 msgid "Receive frequency"
 msgstr ""
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:618
 #, fuzzy
 msgid "Recent"
 msgstr "_Recent"
 
-#: ../wxui/clone.py:358
+#: ../wxui/clone.py:359
 #, fuzzy
 msgid "Recent..."
 msgstr "_Recent"
@@ -2932,11 +2932,11 @@ msgstr ""
 msgid "Reload required"
 msgstr ""
 
-#: ../wxui/clone.py:637
+#: ../wxui/clone.py:638
 msgid "Remove"
 msgstr ""
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:639
 msgid "Remove selected model from list"
 msgstr ""
 
@@ -3031,7 +3031,7 @@ msgstr ""
 msgid "Scrambler"
 msgstr ""
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:681
 msgid "Security Risk"
 msgstr ""
 
@@ -3557,7 +3557,7 @@ msgid ""
 "download to a CHIRP Radio Images (*.img) file.\n"
 msgstr ""
 
-#: ../wxui/developer.py:674
+#: ../wxui/developer.py:678
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr ""
 
@@ -3704,7 +3704,7 @@ msgstr ""
 msgid "This value is not mutable"
 msgstr ""
 
-#: ../wxui/developer.py:684
+#: ../wxui/developer.py:688
 msgid "This will load a module from a website issue"
 msgstr ""
 
@@ -3828,8 +3828,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr ""
 
-#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
-#: ../wxui/clone.py:521 ../wxui/clone.py:525
+#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
+#: ../wxui/clone.py:522 ../wxui/clone.py:526
 msgid "USB Port Finder"
 msgstr ""
 
@@ -3838,7 +3838,7 @@ msgstr ""
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:511
+#: ../wxui/clone.py:512
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr ""
 
@@ -3911,7 +3911,7 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:495
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr ""
 
@@ -3937,7 +3937,7 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-#: ../wxui/clone.py:907
+#: ../wxui/clone.py:908
 msgid "Upload instructions"
 msgstr ""
 
@@ -3966,6 +3966,10 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
+msgstr ""
+
+#: ../drivers/kguv980p.py:1727
+msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
 msgstr ""
 
 #: ../wxui/main.py:928
@@ -4042,7 +4046,7 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
-#: ../wxui/clone.py:362
+#: ../wxui/clone.py:363
 msgid "Vendor"
 msgstr ""
 
@@ -4097,7 +4101,7 @@ msgstr ""
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr ""
 
-#: ../wxui/clone.py:532
+#: ../wxui/clone.py:533
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr ""
 
@@ -4105,7 +4109,7 @@ msgstr ""
 msgid "Your QTH Locator"
 msgstr ""
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Your cable appears to be on port:"
 msgstr ""
 

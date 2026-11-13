@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 09:31-0800\n"
+"POT-Creation-Date: 2026-11-13 18:06-0800\n"
 "PO-Revision-Date: 2026-06-17 14:30+0200\n"
 "Last-Translator: Martin Macko <martin.macko@email.cz>\n"
 "Language-Team: Czech\n"
@@ -1210,7 +1210,7 @@ msgstr ""
 msgid "Always On keeps it lit all the time."
 msgstr ""
 
-#: ../wxui/clone.py:635
+#: ../wxui/clone.py:636
 msgid "Always start with recent list"
 msgstr "Vždy začít s nedávným seznamem"
 
@@ -1230,7 +1230,7 @@ msgstr ""
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
-#: ../wxui/clone.py:145
+#: ../wxui/clone.py:146
 msgid "Applying settings"
 msgstr "Použití nastavení"
 
@@ -1267,7 +1267,7 @@ msgstr "Automaticky ze systému"
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr ""
 
-#: ../wxui/developer.py:665
+#: ../wxui/developer.py:669
 msgid "Available modules"
 msgstr "Dostupné moduly"
 
@@ -1381,7 +1381,7 @@ msgstr "Zvolte křížový režim (Cross Mode)"
 msgid "Choose Diff Target"
 msgstr "Zvolte cíl porovnání"
 
-#: ../wxui/clone.py:616
+#: ../wxui/clone.py:617
 msgid "Choose a recent model"
 msgstr "Zvolte nedávný model"
 
@@ -1389,7 +1389,7 @@ msgstr "Zvolte nedávný model"
 msgid "Choose duplex"
 msgstr "Zvolte duplex"
 
-#: ../wxui/developer.py:664
+#: ../wxui/developer.py:668
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Zvolte modul k načtení z hlášení %i:"
@@ -1506,11 +1506,11 @@ msgstr[2] "Skupina %i pamětí"
 msgid "Comment"
 msgstr "Komentář"
 
-#: ../wxui/clone.py:328
+#: ../wxui/clone.py:329
 msgid "Communicate with radio"
 msgstr "Komunikovat s vysílačkou"
 
-#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "Dokončeno"
 
@@ -1573,7 +1573,7 @@ msgstr "Křížový režim"
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Custom Port"
 msgstr "Vlastní port"
 
@@ -1728,12 +1728,12 @@ msgstr "Vzdálenost"
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
-#: ../wxui/clone.py:216
+#: ../wxui/clone.py:217
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Znovu se nedotazovat na %s"
 
-#: ../wxui/clone.py:213
+#: ../wxui/clone.py:214
 msgid "Do you accept the risk?"
 msgstr "Přijímáte toto riziko?"
 
@@ -1763,7 +1763,7 @@ msgstr "Stáhnout z vysílačky"
 msgid "Download from radio..."
 msgstr "Stáhnout z vysílačky..."
 
-#: ../wxui/clone.py:800
+#: ../wxui/clone.py:801
 #, fuzzy
 msgid "Download instructions"
 msgstr "Instrukce pro stažení"
@@ -1877,7 +1877,7 @@ msgstr "Zadejte vysílací (TX) frekvenci (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Zadejte nový název pro banku %s:"
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Enter custom port:"
 msgstr "Zadejte vlastní port:"
 
@@ -1914,7 +1914,7 @@ msgstr "Chyba při použití filtru"
 msgid "Error applying settings"
 msgstr "Chyba při použití nastavení"
 
-#: ../wxui/clone.py:705
+#: ../wxui/clone.py:706
 msgid "Error communicating with radio"
 msgstr "Chyba při komunikaci s vysílačkou"
 
@@ -1959,7 +1959,7 @@ msgstr "Vyloučit soukromé a uzavřené převaděče"
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:759
+#: ../wxui/clone.py:760
 msgid "Experimental driver"
 msgstr "Experimentální ovladač"
 
@@ -2622,7 +2622,7 @@ msgstr "Interagovat s ovladačem"
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr ""
 
-#: ../wxui/clone.py:822
+#: ../wxui/clone.py:823
 msgid "Internal driver error"
 msgstr "Interní chyba ovladače"
 
@@ -2680,12 +2680,12 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "Neplatná hodnota: %r"
 
-#: ../wxui/developer.py:631
+#: ../wxui/developer.py:635
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
 msgstr "Hlášení %i není v platném stavu pro načítání modulů. Důrazně se doporučuje nepokoušet se z něj ručně načítat moduly, protože to pravděpodobně způsobí problémy."
 
-#: ../wxui/developer.py:686
+#: ../wxui/developer.py:690
 msgid "Issue number:"
 msgstr "Číslo hlášení:"
 
@@ -2768,7 +2768,7 @@ msgstr "Živá vysílačka"
 msgid "Load Module..."
 msgstr "Načíst modul..."
 
-#: ../wxui/developer.py:687
+#: ../wxui/developer.py:691
 msgid "Load module from issue"
 msgstr "Načíst modul z hlášení"
 
@@ -2784,7 +2784,7 @@ msgstr "Načtení modulu neovlivní otevřené karty. Doporučuje se (pokud nen�
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Načítání modulů může být extrémně nebezpečné a může vést k poškození počítače, vysílačky nebo obojího. NIKDY nenačítejte modul ze zdroje, kterému nedůvěřujete, a zejména ne odjinud než z hlavního webu CHIRP (chirpmyradio.com). Načtení modulu z jiného zdroje je podobné jako poskytnutí přímého přístupu k vašemu počítači! Pokračovat i přes toto riziko?"
 
-#: ../wxui/clone.py:147
+#: ../wxui/clone.py:148
 msgid "Loading settings"
 msgstr "Načítání nastavení"
 
@@ -2904,7 +2904,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:367
 msgid "Model"
 msgstr "Model"
 
@@ -2928,7 +2928,7 @@ msgstr "Modul byl úspěšně načten"
 msgid "More Info"
 msgstr "Více informací"
 
-#: ../wxui/clone.py:524
+#: ../wxui/clone.py:525
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Nalezeno více než jedno rozhraní: %s"
@@ -2994,11 +2994,11 @@ msgstr "Níže nejsou žádné prázdné řádky!"
 msgid "No example for %s"
 msgstr "Žádný příklad pro %s"
 
-#: ../wxui/developer.py:706
+#: ../wxui/developer.py:710
 msgid "No modules found"
 msgstr "Nebyly nalezeny žádné moduly"
 
-#: ../wxui/developer.py:705
+#: ../wxui/developer.py:709
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "V hlášení %i nebyly nalezeny žádné moduly"
@@ -3255,7 +3255,7 @@ msgstr "Upozorňujeme, že vývojářský režim je určen pro vývojáře proje
 msgid "Please wait"
 msgstr "Čekejte prosím"
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Plug in your cable and then click OK"
 msgstr "Zapojte kabel a poté klikněte na OK"
 
@@ -3263,7 +3263,7 @@ msgstr "Zapojte kabel a poté klikněte na OK"
 msgid "Polish repeaters database"
 msgstr "Polská databáze převaděčů"
 
-#: ../wxui/clone.py:351
+#: ../wxui/clone.py:352
 msgid "Port"
 msgstr "Port"
 
@@ -3322,7 +3322,7 @@ msgstr ""
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
-#: ../wxui/clone.py:535
+#: ../wxui/clone.py:536
 msgid "Prolific USB device"
 msgstr "Prolific USB zařízení"
 
@@ -3407,7 +3407,7 @@ msgstr ""
 msgid "Radio did not ack block %i"
 msgstr "Vysílačka nepotvrdila příjem bloku %i"
 
-#: ../wxui/clone.py:792 ../wxui/clone.py:892
+#: ../wxui/clone.py:793 ../wxui/clone.py:893
 msgid "Radio information"
 msgstr "Informace o vysílačce"
 
@@ -3440,12 +3440,12 @@ msgstr "Přijímaný DTCS kód"
 msgid "Receive frequency"
 msgstr "Přijímaná frekvence"
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:618
 #, fuzzy
 msgid "Recent"
 msgstr "Nedávné"
 
-#: ../wxui/clone.py:358
+#: ../wxui/clone.py:359
 #, fuzzy
 msgid "Recent..."
 msgstr "Nedávné..."
@@ -3493,11 +3493,11 @@ msgstr "Znovu načíst ovladač a soubor"
 msgid "Reload required"
 msgstr "Je vyžadováno znovunačtení"
 
-#: ../wxui/clone.py:637
+#: ../wxui/clone.py:638
 msgid "Remove"
 msgstr "Odebrat"
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:639
 msgid "Remove selected model from list"
 msgstr "Odebrat vybraný model ze seznamu"
 
@@ -3593,7 +3593,7 @@ msgstr "Seznamy skenování"
 msgid "Scrambler"
 msgstr "Scrambler"
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:681
 msgid "Security Risk"
 msgstr "Bezpečnostní riziko"
 
@@ -4134,7 +4134,7 @@ msgstr ""
 "Uložte si prosím neupravenou kopii prvního úspěšného stažení do souboru obrazu (*.img).\n"
 "\n"
 
-#: ../wxui/developer.py:674
+#: ../wxui/developer.py:678
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "Autor tohoto modulu není uznávaným vývojářem CHIRP. Doporučuje se tento modul nenačítat, protože by mohl představovat bezpečnostní riziko. Pokračovat přesto?"
 
@@ -4299,7 +4299,7 @@ msgstr "Tento nastroj odešle podrobnosti o vašem systému k již existujícím
 msgid "This value is not mutable"
 msgstr ""
 
-#: ../wxui/developer.py:684
+#: ../wxui/developer.py:688
 msgid "This will load a module from a website issue"
 msgstr "Tímto načtete modul z hlášení na webu"
 
@@ -4423,8 +4423,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Napište jednoduchý vyhledávací řetězec nebo formátovaný dotaz a stiskněte enter"
 
-#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
-#: ../wxui/clone.py:521 ../wxui/clone.py:525
+#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
+#: ../wxui/clone.py:522 ../wxui/clone.py:526
 msgid "USB Port Finder"
 msgstr "Vyhledávač portů USB"
 
@@ -4433,7 +4433,7 @@ msgstr "Vyhledávač portů USB"
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:511
+#: ../wxui/clone.py:512
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Nelze určit port pro váš kabel. Zkontrolujte ovladače a připojení."
 
@@ -4506,7 +4506,7 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:495
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Odpojte kabel (je-li to nutné) a poté klikněte na OK"
 
@@ -4532,7 +4532,7 @@ msgstr "Aktualizace chyby %s"
 msgid "Upload"
 msgstr ""
 
-#: ../wxui/clone.py:907
+#: ../wxui/clone.py:908
 msgid "Upload instructions"
 msgstr "Instrukce k nahrání"
 
@@ -4561,6 +4561,10 @@ msgstr "Použít postup s TX frekvencí"
 
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
+msgstr ""
+
+#: ../drivers/kguv980p.py:1727
+msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
 msgstr ""
 
 #: ../wxui/main.py:928
@@ -4637,7 +4641,7 @@ msgstr "Hodnota pro vyhledání v poli paměti"
 msgid "Values"
 msgstr "Hodnoty"
 
-#: ../wxui/clone.py:362
+#: ../wxui/clone.py:363
 msgid "Vendor"
 msgstr "Výrobce"
 
@@ -4692,7 +4696,7 @@ msgstr "Přejete si, aby program CHIRP nainstaloval ikonu na plochu?"
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "Během posledního týdne jste otevřeli několik hlášení chyb. CHIRP omezuje počet otevřených hlášení, aby se předešlo zneužití. Pokud opravdu potřebujete otevřít další, učiňte tak prosím prostřednictvím webu."
 
-#: ../wxui/clone.py:532
+#: ../wxui/clone.py:533
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Vaše USB zařízení s čipem Prolific nebude fungovat bez návratu ke starší verzi ovladače. Přejete si navštívit webovou stránku CHIRP, kde se dozvíte více o řešení tohoto problému?"
 
@@ -4700,7 +4704,7 @@ msgstr "Vaše USB zařízení s čipem Prolific nebude fungovat bez návratu ke 
 msgid "Your QTH Locator"
 msgstr "Váš QTH lokátor"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Your cable appears to be on port:"
 msgstr "Váš kabel je zřejmě na portu:"
 

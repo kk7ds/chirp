@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 09:31-0800\n"
+"POT-Creation-Date: 2026-11-13 18:06-0800\n"
 "PO-Revision-Date: 2026-04-08 20:20+0300\n"
 "Last-Translator: Abdullah YILMAZ (TA1AUB) <h.abdullahyilmaz@hotmail.com>\n"
 "Language-Team: TURKISH\n"
@@ -1100,7 +1100,7 @@ msgstr ""
 msgid "Always On keeps it lit all the time."
 msgstr ""
 
-#: ../wxui/clone.py:635
+#: ../wxui/clone.py:636
 msgid "Always start with recent list"
 msgstr "Her zaman son listeyle başla"
 
@@ -1120,7 +1120,7 @@ msgstr ""
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
-#: ../wxui/clone.py:145
+#: ../wxui/clone.py:146
 msgid "Applying settings"
 msgstr "Ayarlar uygulanıyor"
 
@@ -1156,7 +1156,7 @@ msgstr "Sistemden otomatik"
 msgid "Automatically locks the keypad to prevent accidental changes."
 msgstr ""
 
-#: ../wxui/developer.py:665
+#: ../wxui/developer.py:669
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
@@ -1270,7 +1270,7 @@ msgstr "Çapraz Modu Seç"
 msgid "Choose Diff Target"
 msgstr "Farklı Hedef Seçin"
 
-#: ../wxui/clone.py:616
+#: ../wxui/clone.py:617
 msgid "Choose a recent model"
 msgstr "Son modellerden birini seçin"
 
@@ -1278,7 +1278,7 @@ msgstr "Son modellerden birini seçin"
 msgid "Choose duplex"
 msgstr "Dubleks seç"
 
-#: ../wxui/developer.py:664
+#: ../wxui/developer.py:668
 #, python-format
 msgid "Choose the module to load from issue %i:"
 msgstr "Sorun %i'den yüklenecek modülü seçin:"
@@ -1394,11 +1394,11 @@ msgstr[1] "%i kaydı sırala"
 msgid "Comment"
 msgstr "Yorum"
 
-#: ../wxui/clone.py:328
+#: ../wxui/clone.py:329
 msgid "Communicate with radio"
 msgstr "Telsiz ile iletişim"
 
-#: ../wxui/clone.py:153 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
 msgid "Complete"
 msgstr "Tamamla"
 
@@ -1460,7 +1460,7 @@ msgstr "Çapraz Mod"
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:578
 msgid "Custom Port"
 msgstr "Özel Bağlantı Noktası"
 
@@ -1611,12 +1611,12 @@ msgstr "Mesafe"
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
-#: ../wxui/clone.py:216
+#: ../wxui/clone.py:217
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "%s için tekrar sorma"
 
-#: ../wxui/clone.py:213
+#: ../wxui/clone.py:214
 msgid "Do you accept the risk?"
 msgstr "Riski kabul ediyor musun?"
 
@@ -1644,7 +1644,7 @@ msgstr "Telsizden indir"
 msgid "Download from radio..."
 msgstr "Telsizden indir..."
 
-#: ../wxui/clone.py:800
+#: ../wxui/clone.py:801
 msgid "Download instructions"
 msgstr "İndirme talimatları"
 
@@ -1757,7 +1757,7 @@ msgstr "TX Frekansını girin (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Banka %s için yeni bir ad girin:"
 
-#: ../wxui/clone.py:576
+#: ../wxui/clone.py:577
 msgid "Enter custom port:"
 msgstr "Özel bağlantı noktasını girin:"
 
@@ -1794,7 +1794,7 @@ msgstr "Filtre uygulanırken hata oluştu"
 msgid "Error applying settings"
 msgstr "Ayarlar uygulanırken hata oluştu"
 
-#: ../wxui/clone.py:705
+#: ../wxui/clone.py:706
 msgid "Error communicating with radio"
 msgstr "Telsizle iletişim hatası"
 
@@ -1839,7 +1839,7 @@ msgstr "Özel ve kapalı röleleri hariç tut"
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:759
+#: ../wxui/clone.py:760
 msgid "Experimental driver"
 msgstr "Deneysel sürücü"
 
@@ -2475,7 +2475,7 @@ msgstr "Sürücü ile etkileşim"
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr ""
 
-#: ../wxui/clone.py:822
+#: ../wxui/clone.py:823
 msgid "Internal driver error"
 msgstr "Dahili sürücü hatası"
 
@@ -2533,12 +2533,12 @@ msgstr ""
 msgid "Invalid value: %r"
 msgstr "Geçersiz değer: %r"
 
-#: ../wxui/developer.py:631
+#: ../wxui/developer.py:635
 #, python-format
 msgid "Issue %i is not in a valid state to load modules. It is highly recommended that you not attempt to manually load modules from this issue as it is likely to cause problems."
 msgstr "%i numaralı kayıt, modül yüklemek için geçerli durumda değil. Bu kayıttan elle modül yüklemeye çalışmamanız şiddetle önerilir, çünkü sorunlara yol açması muhtemeldir."
 
-#: ../wxui/developer.py:686
+#: ../wxui/developer.py:690
 msgid "Issue number:"
 msgstr "Kayıt numarası:"
 
@@ -2620,7 +2620,7 @@ msgstr "Canlı Radyo"
 msgid "Load Module..."
 msgstr "Modül Yükle..."
 
-#: ../wxui/developer.py:687
+#: ../wxui/developer.py:691
 msgid "Load module from issue"
 msgstr "Kayıttan modül yükle"
 
@@ -2636,7 +2636,7 @@ msgstr "Bir modülün yüklenmesi açık sekmeleri etkilemeyecektir. Bir modül�
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Modülleri yüklemek son derece tehlikeli olabilir ve bilgisayarınıza, telsizinize veya her ikisine birden zarar verebilir. ASLA güvenmediğiniz bir kaynaktan ve özellikle ana CHIRP web sitesi (chirpmyradio.com) dışında herhangi bir yerden modül yüklemeyin. Başka bir kaynaktan bir modül yüklemek, kaynak sahiplerinin bilgisayarınıza ve üzerindeki her şeye doğrudan erişim sağlamasına olanak sağlayabilir! Bu riske rağmen devam edilsin mi?"
 
-#: ../wxui/clone.py:147
+#: ../wxui/clone.py:148
 msgid "Loading settings"
 msgstr "Ayarlar yükleniyor"
 
@@ -2755,7 +2755,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:366
+#: ../wxui/clone.py:367
 msgid "Model"
 msgstr "Model"
 
@@ -2779,7 +2779,7 @@ msgstr "Modül başarıyla yüklendi"
 msgid "More Info"
 msgstr "Daha Fazla Bilgi"
 
-#: ../wxui/clone.py:524
+#: ../wxui/clone.py:525
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Birden fazla bağlantı noktası bulundu: %s"
@@ -2843,11 +2843,11 @@ msgstr "Aşağıda boş satır yok!"
 msgid "No example for %s"
 msgstr "%s için örnek yok"
 
-#: ../wxui/developer.py:706
+#: ../wxui/developer.py:710
 msgid "No modules found"
 msgstr "Modül bulunamadı"
 
-#: ../wxui/developer.py:705
+#: ../wxui/developer.py:709
 #, python-format
 msgid "No modules found in issue %i"
 msgstr "%i kaydında modül bulunamadı"
@@ -3100,7 +3100,7 @@ msgstr "Lütfen geliştirici modunun CHIRP projesinin geliştiricileri tarafınd
 msgid "Please wait"
 msgstr "Lütfen bekleyin"
 
-#: ../wxui/clone.py:501
+#: ../wxui/clone.py:502
 msgid "Plug in your cable and then click OK"
 msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 
@@ -3108,7 +3108,7 @@ msgstr "Kablonuzu takın ve ardından Tamam'a tıklayın"
 msgid "Polish repeaters database"
 msgstr "Polonya tekrarlayıcılar veritabanı"
 
-#: ../wxui/clone.py:351
+#: ../wxui/clone.py:352
 msgid "Port"
 msgstr "Port"
 
@@ -3167,7 +3167,7 @@ msgstr ""
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
-#: ../wxui/clone.py:535
+#: ../wxui/clone.py:536
 msgid "Prolific USB device"
 msgstr "Prolific USB aygıtı"
 
@@ -3251,7 +3251,7 @@ msgstr ""
 msgid "Radio did not ack block %i"
 msgstr "Telsiz %i bloğunu onaylamadı"
 
-#: ../wxui/clone.py:792 ../wxui/clone.py:892
+#: ../wxui/clone.py:793 ../wxui/clone.py:893
 msgid "Radio information"
 msgstr "Telsiz bilgisi"
 
@@ -3285,11 +3285,11 @@ msgstr "DTCS kodu al"
 msgid "Receive frequency"
 msgstr "Alım frekansı"
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:618
 msgid "Recent"
 msgstr "Geçmiş"
 
-#: ../wxui/clone.py:358
+#: ../wxui/clone.py:359
 msgid "Recent..."
 msgstr "Geçmiş..."
 
@@ -3336,11 +3336,11 @@ msgstr "Sürücüyü ve Dosyayı Yeniden Yükle"
 msgid "Reload required"
 msgstr "Yeniden yükleme gerekli"
 
-#: ../wxui/clone.py:637
+#: ../wxui/clone.py:638
 msgid "Remove"
 msgstr "Kaldır"
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:639
 msgid "Remove selected model from list"
 msgstr "Seçili modeli listeden kaldır"
 
@@ -3440,7 +3440,7 @@ msgstr "Tarama listeleri"
 msgid "Scrambler"
 msgstr "Karıştırıcı"
 
-#: ../wxui/developer.py:677
+#: ../wxui/developer.py:681
 msgid "Security Risk"
 msgstr "Güvenlik Riski"
 
@@ -3979,7 +3979,7 @@ msgstr ""
 "Lütfen ilk başarılı indirmenizin düzenlenmemiş bir kopyasını\n"
 "bir CHIRP Radio Images (*.img) dosyasına kaydedin.\n"
 
-#: ../wxui/developer.py:674
+#: ../wxui/developer.py:678
 msgid "The author of this module is not a recognized CHIRP developer. It is recommended that you not load this module as it could pose a security risk. Proceed anyway?"
 msgstr "Bu modülün yazarı tanınmış bir CHIRP geliştiricisi değildir. Güvenlik riski oluşturabileceğinden bu modülü yüklememeniz önerilir. Yine de devam edilsin mi?"
 
@@ -4140,7 +4140,7 @@ msgstr "Bu araç, sisteminiz hakkındaki ayrıntıları CHIRP izleyicisindeki me
 msgid "This value is not mutable"
 msgstr ""
 
-#: ../wxui/developer.py:684
+#: ../wxui/developer.py:688
 msgid "This will load a module from a website issue"
 msgstr "Bu, bir web sitesi kaydından bir modül yükleyecektir"
 
@@ -4264,8 +4264,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Basit bir arama dizesi veya biçimlendirilmiş bir sorgu yazın ve enter'a basın"
 
-#: ../wxui/clone.py:495 ../wxui/clone.py:502 ../wxui/clone.py:513
-#: ../wxui/clone.py:521 ../wxui/clone.py:525
+#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
+#: ../wxui/clone.py:522 ../wxui/clone.py:526
 msgid "USB Port Finder"
 msgstr "USB Portu Bulucu"
 
@@ -4274,7 +4274,7 @@ msgstr "USB Portu Bulucu"
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:511
+#: ../wxui/clone.py:512
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Kablonuz için bağlantı noktası belirlenemiyor. Sürücülerinizi ve bağlantılarınızı kontrol edin."
 
@@ -4347,7 +4347,7 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:494
+#: ../wxui/clone.py:495
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "(gerekirse) Kablonuzu çıkarın ve ardından Tamam'ı tıklayın"
 
@@ -4373,7 +4373,7 @@ msgstr "%s hatası güncelleniyor"
 msgid "Upload"
 msgstr "Yükle"
 
-#: ../wxui/clone.py:907
+#: ../wxui/clone.py:908
 msgid "Upload instructions"
 msgstr "Yükleme talimatları"
 
@@ -4400,6 +4400,10 @@ msgstr "TX Frekansı İş Akışını Kullan"
 
 #: ../drivers/baofeng_uv17Pro.py:576 ../drivers/baofeng_uv17Pro.py:607
 msgid "Use at most 3 digits."
+msgstr ""
+
+#: ../drivers/kguv980p.py:1727
+msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
 msgstr ""
 
 #: ../wxui/main.py:928
@@ -4476,7 +4480,7 @@ msgstr "Kayıt alanında arama yapılacak değer"
 msgid "Values"
 msgstr "Değerler"
 
-#: ../wxui/clone.py:362
+#: ../wxui/clone.py:363
 msgid "Vendor"
 msgstr "Tedarikçi"
 
@@ -4530,7 +4534,7 @@ msgstr "CHIRP'in sizin için bir masaüstü simgesi yüklemesini ister misiniz?"
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "Geçtiğimiz hafta içinde birden fazla konu açtınız. CHIRP, kötüye kullanımı önlemek için açabileceğiniz konu sayısını sınırlar. Gerçekten başka bir konu açmanız gerekiyorsa, lütfen bunu web sitesi üzerinden yapın."
 
-#: ../wxui/clone.py:532
+#: ../wxui/clone.py:533
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Prolific tabanlı USB aygıtınız, sürücünün eski bir sürümüne geri dönmeden çalışmayacaktır. Bunu nasıl çözeceğiniz hakkında daha fazla bilgi edinmek için CHIRP web sitesini ziyaret edin?"
 
@@ -4538,7 +4542,7 @@ msgstr "Prolific tabanlı USB aygıtınız, sürücünün eski bir sürümüne g
 msgid "Your QTH Locator"
 msgstr "QTH Bulucunuz"
 
-#: ../wxui/clone.py:519
+#: ../wxui/clone.py:520
 msgid "Your cable appears to be on port:"
 msgstr "Kablonuz şu bağlantı noktasında görünüyor:"
 
