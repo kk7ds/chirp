@@ -339,6 +339,8 @@ Wouxun:
   model: KG-UV5D
 - alt: KG-UV6
   model: KG-UV7D
+- alt: Wouxun KG-935G Plus
+  model: KG-945G
 - alt: Wouxun KG-UV9D Plus
   model: KG-UV9P
 - alt: Wouxun KG-UV9D Plus
