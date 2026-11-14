@@ -15,6 +15,7 @@
 
 import collections
 import logging
+import os
 import platform
 import re
 import textwrap
@@ -203,13 +204,29 @@ class ChirpRadioPromptDialog(wx.Dialog):
         prompts = self.radio.get_prompts()
         self.message = getattr(prompts, self.prompt)
 
-        if '\n' not in self.message:
-            self.message = '\n'.join(textwrap.wrap(self.message))
+        try:
+            prompt_style = wx.ST_WRAP
+            manual_wrap = False
+        except AttributeError:
+            # Older Linux distros will use wxWidgets 3.0 and thus do not
+            # have built-in wrapping
+            prompt_style = None
+            manual_wrap = True
+
+        if '\n' not in self.message and manual_wrap:
+            self.message = os.linesep.join(textwrap.wrap(self.message))
+        else:
+            # wxPython >4.3.x seems to freak out with newlines in this text
+            # on msw. Filter this out (since it shouldn't be controlled by
+            # the driver anyway) for now.
+            self.message = self.message.replace('\n', ' ')
 
         bs = self.CreateButtonSizer(buttons)
         vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(vbox)
-        instructions = wx.StaticText(self)
+        instructions = wx.StaticText(self, style=prompt_style)
+        if prompt_style:
+            instructions.Wrap(500)
         instructions.SetLabelMarkup(self.message)
         vbox.Add(instructions,
                  border=20, flag=wx.ALL)
@@ -222,6 +239,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
                 '%s %s' % (self.radio.VENDOR, self.radio.MODEL)))
         vbox.Add(self.cb, border=20, flag=wx.ALL)
         vbox.Add(bs, flag=wx.ALL, border=10)
+        self.Layout()
         self.Fit()
         self.Centre()
 
