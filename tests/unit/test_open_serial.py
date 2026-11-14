@@ -14,7 +14,7 @@ sys.modules['chirp.wxui.developer'] = mock.MagicMock()
 
 from chirp.drivers import fake  # noqa: E402
 from chirp.wxui import clone  # noqa: E402
-from chirp.wxui import serialtrace  # noqa: E402
+from chirp import serialtrace  # noqa: E402
 
 
 class _Radio(object):
@@ -81,7 +81,7 @@ class TestOpenSerialWriteTimeout(unittest.TestCase):
             seen['rts'] = self.rts
             seen['dtr'] = self.dtr
 
-        with mock.patch('chirp.wxui.serialtrace.SerialTrace.open', fake_open):
+        with mock.patch('chirp.serialtrace.SerialTrace.open', fake_open):
             pipe = clone.open_serial('/dev/ttyTEST', _Radio)
         self.assertIsInstance(pipe, serialtrace.SerialTrace)
         self.assertEqual(seen['write_timeout'], 2)

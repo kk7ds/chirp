@@ -29,7 +29,6 @@ test = [
     'pytest<8',
     'pytest-xdist',
     'pytest-html',
-    'six',
     'pep8',
     'pyyaml',
     'ddt',

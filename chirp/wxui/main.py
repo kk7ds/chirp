@@ -37,6 +37,7 @@ from chirp import directory
 from chirp import errors
 from chirp import logger
 from chirp import platform as chirp_platform
+from chirp import serialtrace
 from chirp.sources import base
 from chirp.wxui import config
 from chirp.wxui import bankedit
@@ -50,7 +51,6 @@ from chirp.wxui import query_sources
 from chirp.wxui import radioinfo
 from chirp.wxui import radiothread
 from chirp.wxui import report
-from chirp.wxui import serialtrace
 from chirp.wxui import settingsedit
 from chirp import CHIRP_VERSION
 

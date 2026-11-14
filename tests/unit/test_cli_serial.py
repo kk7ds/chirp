@@ -20,7 +20,7 @@ class TestChirpcWriteTimeout(unittest.TestCase):
         with mock.patch('sys.argv', ['chirpc', '-s', '/dev/ttyTEST']), \
                 mock.patch('chirp.cli.main.directory.get_radio',
                            return_value=_Radio), \
-                mock.patch('chirp.cli.main.serial.Serial',
+                mock.patch('chirp.cli.main.serialtrace.SerialTrace',
                            return_value=serial_obj) as ser, \
                 mock.patch('builtins.print'):
             with self.assertRaises(SystemExit) as cm:
@@ -47,7 +47,7 @@ class TestChirpcWriteTimeout(unittest.TestCase):
                            return_value=_Radio), \
                 mock.patch('chirp.cli.main.serial.serial_for_url',
                            return_value=pipe) as for_url, \
-                mock.patch('chirp.cli.main.serial.Serial') as ser, \
+                mock.patch('chirp.cli.main.serialtrace.SerialTrace') as ser, \
                 mock.patch('builtins.print'):
             with self.assertRaises(SystemExit) as cm:
                 climain.main(['-r', 'Dummy', '-s', 'loop://',

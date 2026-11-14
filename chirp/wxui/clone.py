@@ -30,10 +30,10 @@ from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import fake
 from chirp import errors
+from chirp import serialtrace
 from chirp.wxui import config
 from chirp.wxui import common
 from chirp.wxui import developer
-from chirp.wxui import serialtrace
 
 _ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
@@ -170,7 +170,11 @@ def open_serial(port, rclass):
         pipe.rtscts = rclass.HARDWARE_FLOW
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
-        pipe.open()
+        try:
+            pipe.open()
+        except NotImplementedError:
+            pipe.write_timeout = None
+            pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
         pipe = serialtrace.SerialTrace(

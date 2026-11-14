@@ -23,6 +23,7 @@ import logging
 
 from chirp import logger
 from chirp import chirp_common, errors, directory, util
+from chirp import serialtrace
 
 sys.modules['builtins']._ = lambda x: x  # type: ignore[attr-defined]
 
@@ -229,10 +230,16 @@ def main(args=None):
             s = serial.serial_for_url(options.serial, do_not_open=True)
             s.timeout = 0.5
             s.write_timeout = 2
-            s.open()
+            try:
+                s.open()
+            except NotImplementedError:
+                # Some socket-based URLs don't implement write_timeout
+                s.write_timeout = None
+                s.open()
+
         else:
-            s = serial.Serial(port=options.serial, timeout=0.5,
-                              write_timeout=2)
+            s = serialtrace.SerialTrace(port=options.serial, timeout=0.5,
+                                        write_timeout=2)
 
     radio = rclass(s)
 
