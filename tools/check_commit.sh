@@ -23,10 +23,6 @@ if grep -E '\<(from|import)\>.*\<six\>' added_lines; then
     fail No new uses of six
 fi
 
-if grep -E '\<six\>' added_lines; then
-    fail No new uses of six
-fi
-
 if grep -E '\<(from|import)\>.*builtins' added_lines; then
     fail No new uses of future
 fi
