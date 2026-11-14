@@ -17,7 +17,6 @@ KSUN_M6
 KYD_IP-620
 KYD_NC-630A
 Kenwood_ITM
-Kenwood_TM-D710_CloneMode
 Kenwood_TS-480_CloneMode
 Kenwood_TS-480_LiveMode
 Kenwood_TS-590SG_CloneMode
