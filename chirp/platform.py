@@ -223,15 +223,16 @@ class Win32Platform(Platform):
     def os_version_string(self):
         import win32api
 
-        vers = {4: "Win2k",
-                5: "WinXP",
-                6: "WinVista/7",
-                }
-
         (pform, sub, build, _, _) = win32api.GetVersionEx()
 
-        return vers.get(pform,
-                        "Win32 (Unknown %i.%i:%i)" % (pform, sub, build))
+        if pform == 10 and build > 22000:
+            version = '11'
+        elif pform != 0:
+            version = 'Unknown'
+        else:
+            version = '10'
+
+        return "Windows %s (%i.%i:%i)" % (version, pform, sub, build)
 
     def is_ble_serial(self, serial):
         import winreg
