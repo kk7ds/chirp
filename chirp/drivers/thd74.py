@@ -429,7 +429,7 @@ class THD74Radio(chirp_common.CloneModeRadio,
             return False
         if len(filedata) < cls.MCP_FILE_HEADER_SIZE + cls._memsize:
             return False
-        return all(filedata[offset:offset + len(signature)] == signature
+        return any(filedata[offset:offset + len(signature)] == signature
                    for offset, signature in cls.MCP_FILE_SIGNATURES)
 
     def get_features(self):
@@ -625,4 +625,4 @@ class THD75Radio(THD74Radio):
     MCP_FILE_HEADER = D75_FILE_HEADER
     MCP_FILE_HEADER_SIZE = len(D75_FILE_HEADER)
     MCP_FILE_DATA_SIZE = None
-    MCP_FILE_SIGNATURES = ((0, b'MCP-D75'), (0x10, b'TH-D75'))
+    MCP_FILE_SIGNATURES = ((0, b'MCP-D75'),)
