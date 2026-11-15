@@ -837,8 +837,9 @@ class FT450DRadio(yaesu_clone.YaesuCloneModeRadio):
             self._memobj.visible[(mem.number - 1) // 8] &= \
                 ~(1 << (mem.number - 1) % 8)
             return
-        if not wasvalid:
-            _mem.set_raw("\x00" * (_mem.size() // 8))    # clean up
+        # Initialize the entire record before writing it. A channel can be
+        # marked valid even when its memory data is blank or uninitialized.
+        _mem.set_raw("\x00" * (_mem.size() // 8))
 
         self._memobj.visible[(mem.number - 1) // 8] |= 1 << (mem.number - 1) \
             % 8
