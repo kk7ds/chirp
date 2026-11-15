@@ -1809,19 +1809,6 @@ class ChirpMain(wx.Frame):
             d.Centre()
             ok = d.ShowModal() == wx.ID_OK
             radio = d._radio if ok else None
-        # `d` is destroyed by the `with` block above, *before* we build
-        # any new UI here. ChirpEditorSet immediately moves keyboard
-        # focus to its first grid (memedit.py's self._grid.SetFocus()),
-        # and on MSW under wxWidgets 3.3+ (wxPython 4.3+) a SetFocus()
-        # issued while this dialog is only hidden (ShowModal()
-        # returned, but not yet Destroy()ed) can fail outright rather
-        # than just log harmlessly -- see
-        # https://github.com/wxWidgets/wxWidgets/issues/24290, whose
-        # title is literally this: "SetFocus when selecting a notebook
-        # page while Progress is active". wx.SafeYield() gives MSW a
-        # chance to actually process the dialog's teardown before we
-        # touch focus again.
-        wx.SafeYield()
         if not ok:
             return
         self._make_backup(radio, 'download')
@@ -2209,10 +2196,6 @@ GNU General Public License for more details."""
         with query_cls(self, title=_('Query %s') % query_cls.NAME) as d:
             ok = d.ShowModal() == wx.ID_OK
             result_radio = d.result_radio if ok else None
-        # See the matching comment in _menu_download(): `d` needs to be
-        # actually destroyed (not just hidden) before ChirpEditorSet
-        # moves focus to its first grid, or SetFocus() can fail on MSW.
-        wx.SafeYield()
         if not ok:
             return
         report.report_model(result_radio, 'query')
