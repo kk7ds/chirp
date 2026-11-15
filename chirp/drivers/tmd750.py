@@ -92,8 +92,9 @@ class TMD750Radio(thd74.THD75Radio):
     MCP_FILE_EXTENSION = '.d750'
     MCP_FILE_HEADER = D750_FILE_HEADER
     MCP_FILE_HEADER_SIZE = len(D750_FILE_HEADER)
-    MCP_FILE_DATA_SIZE = D750_FILE_DATA_SIZE
-    MCP_FILE_SIGNATURES = ((0, b'MCP-D750'), (0x10, b'TM-D750'))
+    MCP_FILE_DATA_SIZE = None
+    MCP_FILE_SIGNATURES = ((0, b'MCP-D750'),     # MCP
+                           (0, b'TM-D750\xFF'))  # Direct export
 
     _memsize = IMAGE_SIZE
 
