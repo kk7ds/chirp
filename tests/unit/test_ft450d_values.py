@@ -30,6 +30,28 @@ def test_cw_500hz_filter_can_be_stored():
         assert str(radio.get_memory(1).extra["bpfilter"].value) == "500 Hz"
 
 
+def test_set_initializes_blank_but_valid_memory():
+    for radio_cls, image in MODELS:
+        radio = _load(radio_cls, image)
+        number = 11
+        index = number - 1
+        channel = radio._memobj.memory[index]
+        channel.set_raw("\xFF" * (channel.size() // 8))
+        radio._memobj.visible[index // 8] &= ~(1 << (index % 8))
+        radio._memobj.filled[index // 8] |= 1 << (index % 8)
+
+        mem = radio.get_memory(number)
+        assert mem.empty
+        mem.empty = False
+        mem.freq = 2255000
+
+        radio.set_memory(mem)
+
+        updated = radio.get_memory(number)
+        assert updated.freq == 2255000, radio_cls.MODEL
+        assert str(updated.extra["bpfilter"].value) == "2.5 kHz"
+
+
 def test_setting_ranges_match_manual():
     for radio_cls, image in MODELS:
         radio = _load(radio_cls, image)
