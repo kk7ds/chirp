@@ -82,3 +82,7 @@ Baojie_BJ-9900_Left:
   - class: TestCaseBruteForce
     test: test_validate_all_steps
     reason: Bad channel stored in image or code is wrong
+Yaesu_FTX-1:
+  - class: TestCaseCopyAll
+    test: test_copy
+    reason: The file stores a shift direction but no offset amount
