@@ -277,11 +277,18 @@ def recv(radio, readdata=True):
 
 
 def do_ident(radio):
-    send(radio, b"\x02\x06LEIXEN\x17")
-    ident = radio.pipe.read(9)
+    payload = radio._wake_payload
+    frame = struct.pack(">BB", 0x02, len(payload)) + payload
+    frame += bytes([checksum.checksum_xor(frame)])
+    send(radio, frame)
+    ident = radio.pipe.read(len(radio._ident) + 3)
     LOG.debug("     P<R: %s" %
               util.hexprint(ident).replace("\n", "\n          "))
-    if ident != b"\x06\x06leixen\x13":
+    expected = b"\x06" + bytes([len(radio._ident)]) + radio._ident
+    expected += bytes([checksum.checksum_xor(expected)])
+    if (len(ident) != len(expected) or ident[0:2] != expected[0:2] or
+            ident[2:-1].lower() != radio._ident.lower() or
+            ident[-1] != checksum.checksum_xor(ident[:-1])):
         raise errors.RadioError("Radio refused program mode")
     radio.pipe.write(b"\x06\x00\x06")
     ack = radio.pipe.read(3)
@@ -312,17 +319,18 @@ def do_download(radio):
     return memmap.MemoryMapBytes(data)
 
 
-def do_upload(radio):
-    _ranges = [(0x0d00, 0x2000)]
+def do_upload(radio, ident=True, ranges=None):
+    if ranges is None:
+        ranges = radio._upload_ranges
+        image_ident = _image_ident_from_image(radio)
+        if image_ident.startswith(radio._file_ident) and \
+           radio._model_ident in image_ident:
+            ranges = radio._ranges
 
-    image_ident = _image_ident_from_image(radio)
-    if image_ident.startswith(radio._file_ident) and \
-       radio._model_ident in image_ident:
-        _ranges = radio._ranges
+    if ident:
+        do_ident(radio)
 
-    do_ident(radio)
-
-    for start, end in _ranges:
+    for start, end in ranges:
         LOG.debug('Uploading range 0x%04X - 0x%04X' % (start, end))
         for addr in range(start, end, 0x10):
             frame = make_frame(b"W", addr, radio._mmap[addr:addr + 0x10])
@@ -356,6 +364,11 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
     MODEL = "VV-898"
     BAUD_RATE = 9600
 
+    # handshake payload and the ident string the radio answers with; clones
+    # that speak the same protocol override these
+    _wake_payload = b"LEIXEN"
+    _ident = b"leixen"
+
     _file_ident = b"Leixen"
     _model_ident = b'LX-\x89\x85\x63'
 
@@ -369,6 +382,9 @@ class LeixenVV898Radio(chirp_common.CloneModeRadio):
         (0x0920, 0x0927),
         (0x0d00, 0x2000),
     ]
+    # written back when the image is not one of ours, i.e. the channel and
+    # name area only, so that an unknown image cannot clobber the settings
+    _upload_ranges = [(0x0d00, 0x2000)]
 
     _mem_formatter = {'unknownormode': 'unknown6:1',
                       'modeorpower': 'mode:1, power:1',
