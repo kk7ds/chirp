@@ -22,7 +22,7 @@ differs:
 
 * the frame tag is ``0x78`` (``0x7b`` on the KG-UV8E)
 * reads have to be split into 32 byte blocks
-* ``CH-001`` lives in slot 0 here, the KG-UV8E starts at slot 1
+* ``CH-001`` is the first channel slot, like on the KG-UV8E
 * channel names are GBK and use all 12 bytes of the field
 * bit 0 of the flag byte means "narrow" (the KG-UV8E calls it "wide")
 * band limits and output power
@@ -65,7 +65,6 @@ class KGWV50Radio(KGUV8ERadio):
     MODEL = "KG-WV50"
 
     _record_start = 0x78
-    _channel_index_offset = -1
     # Only the mapped area is written: the radio answers 0xdd for everything
     # above it (reserved / factory data) and the vendor software does not
     # touch those blocks either
