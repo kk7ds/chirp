@@ -18,7 +18,7 @@ import time
 import struct
 import logging
 
-from chirp import chirp_common, directory, memmap
+from chirp import chirp_common, directory, kenwood_tone, memmap
 from chirp import bitwise, errors, util
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -27,6 +27,14 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
+# The channel flags differ between the radios using this memory map, so the
+# first flag byte is substituted into the format below by each driver.
+FLAGS_TDQ8A = """u8 unknown1:2,
+     dtmf:1,          // DTMF
+     unknown2:1,
+     bcl:1,           // Busy Channel Lockout
+     unknown3:3"""
+
 MEM_FORMAT = """
 #seekto 0x0010;
 struct {
@@ -34,11 +42,7 @@ struct {
   lbcd txfreq[4];
   ul16 rxtone;
   ul16 txtone;
-  u8 unknown1:2,
-     dtmf:1,          // DTMF
-     unknown2:1,
-     bcl:1,           // Busy Channel Lockout
-     unknown3:3;
+  %s;
   u8 unknown4:1,
      scan:1,          // Scan Add
      highpower:1,     // TX Power Level
@@ -431,6 +435,15 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                (0x1F10, 0x1F30)]
     _send_block_size = 0x10
 
+    # Substituted into MEM_FORMAT; radios sharing this map differ here
+    MEM_FLAGS = FLAGS_TDQ8A
+    # Value of the first flag byte for a programmed and an empty channel
+    DEFAULT_FLAGS = 0x9f
+    EMPTY_FLAGS = 0xbf
+    TONE_MODEL = kenwood_tone.KenwoodToneModel(dcs_base=0x2800,
+                                               pol_mask=0x8000,
+                                               tone_init=0x0000)
+
     @classmethod
     def get_prompts(cls):
         rp = chirp_common.RadioPrompts()
@@ -488,7 +501,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
-        self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
+        self._memobj = bitwise.parse(MEM_FORMAT % self.MEM_FLAGS, self._mmap)
 
     def sync_in(self):
         """Download from radio"""
@@ -520,10 +533,10 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                                     'with the radio')
 
     def _is_txinh(self, _mem):
-        raw_tx = ""
+        raw_tx = b""
         for i in range(0, 4):
-            raw_tx += _mem.txfreq[i].get_raw(asbytes=False)
-        return raw_tx == "\xFF\xFF\xFF\xFF"
+            raw_tx += _mem.txfreq[i].get_raw()
+        return raw_tx == b"\xFF\xFF\xFF\xFF"
 
     def _get_mem(self, number):
         return self._memobj.memory[number - 1]
@@ -538,7 +551,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         mem = chirp_common.Memory()
         mem.number = number
 
-        if _mem.get_raw(asbytes=False)[0] == "\xff":
+        if _mem.get_raw()[0] == 0xff:
             mem.empty = True
             return mem
 
@@ -573,29 +586,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                     break
             mem.name = mem.name.rstrip()
 
-        if _mem.txtone in [0, 0xFFFF]:
-            txmode = ""
-        elif _mem.txtone >= 0x0258:
-            txmode = "Tone"
-            mem.rtone = int(_mem.txtone) / 10.0
-        else:
-            LOG.warn("Bug: txtone is %04x" % _mem.txtone)
-
-        if _mem.rxtone in [0, 0xFFFF]:
-            rxmode = ""
-        elif _mem.rxtone >= 0x0258:
-            rxmode = "Tone"
-            mem.ctone = int(_mem.rxtone) / 10.0
-        else:
-            LOG.warn("Bug: rxtone is %04x" % _mem.rxtone)
-
-        if txmode == "Tone" and not rxmode:
-            mem.tmode = "Tone"
-        elif txmode == rxmode and txmode == "Tone" and mem.rtone == mem.ctone:
-            mem.tmode = "TSQL"
-        elif rxmode or txmode:
-            mem.tmode = "Cross"
-            mem.cross_mode = "%s->%s" % (txmode, rxmode)
+        self.TONE_MODEL.get_tone(_mem, mem)
 
         if not _mem.scan:
             mem.skip = "S"
@@ -628,11 +619,13 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
         _nam = self._get_nam(mem.number)
 
         if mem.empty:
-            _mem.set_raw("\xff" * 12 + "\xbf" + "\xff" * 3)
-            _nam.set_raw("\xff" * 16)
+            _mem.set_raw(b"\xff" * 12 + bytes([self.EMPTY_FLAGS]) +
+                         b"\xff" * 3)
+            _nam.set_raw(b"\xff" * 16)
             return
 
-        _mem.set_raw("\xff" * 12 + "\x9f" + "\xff" * 3)
+        _mem.set_raw(b"\xff" * 12 + bytes([self.DEFAULT_FLAGS]) +
+                     b"\xff" * 3)
 
         _mem.rxfreq = mem.freq / 10
 
@@ -655,26 +648,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
                 except IndexError:
                     _nam.name[i] = 0xFF
 
-        rxmode = txmode = ""
-        if mem.tmode == "Tone":
-            _mem.txtone = int(mem.rtone * 10)
-            _mem.rxtone = 0
-        elif mem.tmode == "TSQL":
-            _mem.txtone = int(mem.ctone * 10)
-            _mem.rxtone = int(mem.ctone * 10)
-        elif mem.tmode == "Cross":
-            txmode, rxmode = mem.cross_mode.split("->", 1)
-            if txmode == "Tone":
-                _mem.txtone = int(mem.rtone * 10)
-            else:
-                _mem.txtone = 0
-            if rxmode == "Tone":
-                _mem.rxtone = int(mem.ctone * 10)
-            else:
-                _mem.rxtone = 0
-        else:
-            _mem.rxtone = 0
-            _mem.txtone = 0
+        self.TONE_MODEL.set_tone(mem, _mem)
 
         _mem.scan = mem.skip != "S"
         _mem.wide = mem.mode == "FM"
