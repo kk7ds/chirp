@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import time
 
 from chirp.drivers import baofeng_common as bfc
-from chirp import chirp_common, directory
+from chirp import chirp_common, directory, errors
 from chirp import bitwise
 from chirp.settings import RadioSettingGroup, RadioSetting, \
     RadioSettingValueBoolean, RadioSettingValueList, \
@@ -876,7 +877,7 @@ class WP970I(bfc.BaofengCommonHT):
                     _obj = self._memobj.squelch.vhf
                 elif band == "uhf":
                     _obj = self._memobj.squelch.uhf
-                val = RadioSettingValueInteger(0, 123,
+                val = RadioSettingValueInteger(0, 255,
                                                getattr(
                                                    _obj, "sql%i" % (index)))
                 if index == 0:
@@ -929,6 +930,86 @@ class BFA58(WP970I):
     ALIASES = [RH5XAlias, UV9RPROAlias]
 
     _fileid = ["BFT515 ", "BFT517 "]
+
+
+def _upload_uv9rprov2(radio):
+    """Upload procedure for UV-9R Pro V2"""
+    # put radio in program mode
+    bfc._ident_radio(radio)
+
+    # UI progress
+    status = chirp_common.Status()
+    status.cur = 0
+    status.max = radio._mem_size // radio._send_block_size
+    status.msg = "Cloning to radio..."
+    radio.status_fn(status)
+
+    for start, end in radio._ranges:
+        for addr in range(start, end, radio._send_block_size):
+            data = radio.get_mmap()[addr:addr + radio._send_block_size]
+            send_size = radio._send_block_size
+
+            # The vendor CPS Form_Comm_Write handler shortens empty
+            # channel entries (0x0010..0x0800 for channels 1-127) and
+            # empty name entries (0x1000..0x1800) into a single 0xFF byte
+            # instead of sending 16 0xFF bytes. Channel 0 (0x0000) is
+            # always sent as a full 16-byte block.
+            if (0x0010 <= addr < 0x0800 or addr > 0x1000) and \
+                    data[:1] == b"\xFF":
+                data = b"\xFF"
+                send_size = 1
+
+            frame = bfc._make_frame("X", addr, send_size, data)
+
+            bfc._rawsend(radio, frame)
+            time.sleep(0.05)
+
+            ack = bfc._rawrecv(radio, 1)
+            if ack != b"\x06":
+                msg = "Bad ack writing block 0x%04x" % addr
+                raise errors.RadioError(msg)
+
+            status.cur = addr // radio._send_block_size
+            status.msg = "Cloning to radio..."
+            radio.status_fn(status)
+
+
+@directory.register
+class UV9RPROV2(BFA58):
+    """Baofeng UV-9R Pro V2"""
+    VENDOR = "Baofeng"
+    MODEL = "UV-9R Pro V2"
+    ALIASES = []
+    _fileid = []
+
+    # Address ranges written by vendor CPS Form_Comm_Write handler:
+    # 0x0000..0x0810: 128 channel records (16 bytes each) + boundary
+    # 0x0A00..0x0CF0: auxiliary / scanlist configuration
+    # 0x0E00..0x0E90: radio basic and work settings
+    # 0x0F00..0x0F70: VFO A/B configuration and FM presets
+    # 0x1000..0x1810: 128 channel alpha tags (16 bytes each)
+    _ranges = [
+        (0x0000, 0x0810),
+        (0x0A00, 0x0CF0),
+        (0x0E00, 0x0E90),
+        (0x0F00, 0x0F70),
+        (0x1000, 0x1810),
+    ]
+
+    def sync_out(self):
+        """Upload to radio"""
+        try:
+            _upload_uv9rprov2(self)
+        except errors.RadioError:
+            raise
+        except Exception:
+            LOG.exception("Unexpected error during upload")
+            raise errors.RadioError("Unexpected error communicating "
+                                    "with the radio")
+
+    @classmethod
+    def match_model(cls, filedata, filename):
+        return False
 
 
 @directory.register
