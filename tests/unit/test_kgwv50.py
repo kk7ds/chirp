@@ -39,17 +39,17 @@ def test_image_size_and_layout(radio):
 
 
 def test_channel_index_offset(radio):
-    # CH-001 is slot 0 on this radio
-    assert radio._mem_index(1) == 0
-    assert radio._mem_index(999) == 998
+    # CH-001 is the first channel slot, slot 0 is unused
+    assert radio._mem_index(1) == 1
+    assert radio._mem_index(999) == 999
 
 
 def test_image_channels(radio):
     used = [n for n in range(1, kgwv50.CHANNEL_COUNT + 1)
             if not radio.get_memory(n).empty]
-    assert used[0] == 2
+    assert used[0] == 1
     assert len(used) == 77
-    first = radio.get_memory(2)
+    first = radio.get_memory(1)
     assert first.freq == 435587500
     assert first.name == "私有频道"
     assert first.duplex == ""
@@ -138,14 +138,14 @@ def test_clear_sets_valid_flag(radio):
     mem.duplex = ""
     mem.tmode = ""
     radio.set_memory(mem)
-    assert int(radio._memobj.valid[503]) == kguv8d.MEM_VALID
+    assert int(radio._memobj.valid[504]) == kguv8d.MEM_VALID
 
     empty = chirp_common.Memory()
     empty.number = 504
     empty.empty = True
     radio.set_memory(empty)
     assert radio.get_memory(504).empty
-    assert int(radio._memobj.valid[503]) == 0
+    assert int(radio._memobj.valid[504]) == 0
 
 
 def test_name_truncation_warning(radio):
