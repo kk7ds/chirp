@@ -107,9 +107,11 @@ def warn_timeout(f):
 
 
 class SerialTrace(serial.Serial):
-    def __init__(self, *a, **k):
+    def __init__(self, *a, on_close=None, is_ble=False, **k):
         self.__tracef = None
         self.__last_write = None
+        self._on_close = on_close
+        self.is_ble = is_ble
         super().__init__(*a, **k)
 
     @property
@@ -170,17 +172,21 @@ class SerialTrace(serial.Serial):
         return data
 
     def close(self):
-        super().close()
-        if self.__tracef:
-            try:
-                now = datetime.datetime.now()
-                self.log('Trace ended at %s' % now.isoformat())
-                self.__tracef.close()
-                LOG.info('Serial trace file closed: %s' % self.__tracef.name)
-            except Exception as e:
-                LOG.error('Failed to close serial trace file: %s' % e)
-            finally:
-                self.__tracef = None
+        try:
+            super().close()
+            if self.__tracef:
+                try:
+                    now = datetime.datetime.now()
+                    self.log(f'Trace ended at {now.isoformat()}')
+                    self.__tracef.close()
+                    LOG.info('Serial trace file closed: %s', self.__tracef.name)
+                except Exception as e:
+                    LOG.error('Failed to close serial trace file: %s', e)
+                finally:
+                    self.__tracef = None
+        finally:
+            if self._on_close is not None:
+                self._on_close()
 
     def log(self, message):
         """Log a message to the trace file.
