@@ -2136,29 +2136,6 @@ msgstr ""
 "3 - Sélectionnez votre radio dans la liste\n"
 "4 - Appuyez sur OK pour commencer à télécharger les données de votre radio\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Suivez ces instructions pour envoyer vos données :\n"
-"1 - Allumez votre radio\n"
-"2 - Activez le Bluetooth sur votre radio\n"
-"3 - Sélectionnez votre radio dans la liste\n"
-"4 - Appuyez sur OK pour commencer à envoyer les données vers votre radio\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -2262,6 +2239,29 @@ msgstr ""
 "2 - Connectez votre câble d'interface\n"
 "3 - Allumez votre radio\n"
 "4 - Téléchargez les données vers votre radio\n"
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"Suivez ces instructions pour envoyer vos données :\n"
+"1 - Allumez votre radio\n"
+"2 - Activez le Bluetooth sur votre radio\n"
+"3 - Sélectionnez votre radio dans la liste\n"
+"4 - Appuyez sur OK pour commencer à envoyer les données vers votre radio\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""

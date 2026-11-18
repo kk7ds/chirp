@@ -2110,29 +2110,6 @@ msgstr ""
 "3 - 一覧から無線機を選択する\n"
 "4 - OKを押して無線機からのデータのダウンロードを開始する\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"データをアップロードするには、次の手順に従ってください:\n"
-"1 - 無線機の電源を入れる\n"
-"2 - 無線機のBluetoothを有効にする\n"
-"3 - 一覧から無線機を選択する\n"
-"4 - OKを押して無線機へのデータのアップロードを開始する\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -2233,6 +2210,29 @@ msgstr ""
 "2 - インターフェースケーブルを接続\n"
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのアップロードを実行\n"
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"データをアップロードするには、次の手順に従ってください:\n"
+"1 - 無線機の電源を入れる\n"
+"2 - 無線機のBluetoothを有効にする\n"
+"3 - 一覧から無線機を選択する\n"
+"4 - OKを押して無線機へのデータのアップロードを開始する\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""

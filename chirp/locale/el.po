@@ -1775,29 +1775,6 @@ msgstr ""
 "3 - Επιλέξτε τον πομποδέκτη σας από τη λίστα\n"
 "4 - Πατήστε OK για να ξεκινήσει η λήψη δεδομένων από τον πομποδέκτη\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Ακολουθήστε αυτές τις οδηγίες για να μεταφέρετε τα δεδομένα σας:\n"
-"1 - Ενεργοποιήστε τον πομποδέκτη σας\n"
-"2 - Ενεργοποιήστε το Bluetooth στον πομποδέκτη σας\n"
-"3 - Επιλέξτε τον πομποδέκτη σας από τη λίστα\n"
-"4 - Πατήστε OK για να ξεκινήσει η μεταφορά δεδομένων στον πομποδέκτη\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -1863,6 +1840,29 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"Ακολουθήστε αυτές τις οδηγίες για να μεταφέρετε τα δεδομένα σας:\n"
+"1 - Ενεργοποιήστε τον πομποδέκτη σας\n"
+"2 - Ενεργοποιήστε το Bluetooth στον πομποδέκτη σας\n"
+"3 - Επιλέξτε τον πομποδέκτη σας από τη λίστα\n"
+"4 - Πατήστε OK για να ξεκινήσει η μεταφορά δεδομένων στον πομποδέκτη\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""

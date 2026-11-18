@@ -1751,29 +1751,6 @@ msgstr ""
 "3 - Wählen Sie Ihr Funkgerät aus der Liste aus\n"
 "4 - Drücken Sie OK, um Daten vom Funkgerät herunterzuladen\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Befolgen Sie diese Anweisungen, um Ihre Daten hochzuladen:\n"
-"1 - Schalten Sie Ihr Funkgerät ein\n"
-"2 - Aktivieren Sie Bluetooth an Ihrem Funkgerät\n"
-"3 - Wählen Sie Ihr Funkgerät aus der Liste aus\n"
-"4 - Drücken Sie OK, um Daten auf das Funkgerät hochzuladen\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -1839,6 +1816,29 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the upload of your radio data\n"
 msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"Befolgen Sie diese Anweisungen, um Ihre Daten hochzuladen:\n"
+"1 - Schalten Sie Ihr Funkgerät ein\n"
+"2 - Aktivieren Sie Bluetooth an Ihrem Funkgerät\n"
+"3 - Wählen Sie Ihr Funkgerät aus der Liste aus\n"
+"4 - Drücken Sie OK, um Daten auf das Funkgerät hochzuladen\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""

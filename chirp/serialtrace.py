@@ -179,7 +179,8 @@ class SerialTrace(serial.Serial):
                     now = datetime.datetime.now()
                     self.log(f'Trace ended at {now.isoformat()}')
                     self.__tracef.close()
-                    LOG.info('Serial trace file closed: %s', self.__tracef.name)
+                    LOG.info('Serial trace file closed: %s',
+                             self.__tracef.name)
                 except Exception as e:
                     LOG.error('Failed to close serial trace file: %s', e)
                 finally:

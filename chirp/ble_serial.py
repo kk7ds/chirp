@@ -50,6 +50,7 @@ def scan_ble_device_lists():
         raise RuntimeError('\n'.join(scan_errors))
     return parse_ble_scan_output(result.stdout)
 
+
 # Formats the list of devices from ble-scan output, removing RSSI, e.g.:
 # 00:11:22:33:44:55: My Device
 def parse_ble_scan_output(output):
