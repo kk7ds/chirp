@@ -53,6 +53,41 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         self.SetStandardFonts(self._font_size, self._normal_font,
                               self._fixed_font)
 
+    def select_columns(self, parent):
+        col_defs = [col_def for col_def in self._col_defs if col_def.valid]
+        choices = [col_def.label.replace('\n', ' ')
+                   for col_def in col_defs]
+        hidden_names = list(dict.fromkeys(
+            name.strip() for name in
+            (CONF.get('hide_in_printout', 'printing') or '').split(',')
+            if name.strip()))
+        hidden = set(hidden_names)
+        dialog = wx.MultiChoiceDialog(
+            parent, _('Select columns to include in print output'),
+            _('Print Columns'), choices)
+        dialog.SetSelections([i for i, col_def in enumerate(col_defs)
+                              if col_def.name not in hidden])
+        try:
+            if dialog.ShowModal() != wx.ID_OK:
+                return False
+            selected = set(dialog.GetSelections())
+            self._col_defs = [col_def for i, col_def in enumerate(col_defs)
+                              if i in selected]
+
+            # Keep exclusions for columns not available on this radio so
+            # switching models does not discard the user's preferences.
+            available_names = {col_def.name for col_def in col_defs}
+            hidden_names = [name for name in hidden_names
+                            if name not in available_names]
+            hidden_names.extend(col_def.name
+                                for i, col_def in enumerate(col_defs)
+                                if i not in selected)
+            CONF.set('hide_in_printout', ','.join(hidden_names), 'printing')
+            config._CONFIG.save()
+            return True
+        finally:
+            dialog.Destroy()
+
     def _memory(self, doc, mem):
         tag = doc.tag
         with tag('td'):
