@@ -147,6 +147,104 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
             attrs.append('nowrap')
         return attrs
 
+    def _printable_size(self):
+        page_setup = self.GetPageSetupData()
+        paper_width, paper_height = page_setup.GetPaperSize()
+        if paper_width <= 0 or paper_height <= 0:
+            paper_width, paper_height = 279.4, 215.9
+
+        if self.GetPrintData().GetOrientation() == wx.LANDSCAPE:
+            paper_width, paper_height = (max(paper_width, paper_height),
+                                         min(paper_width, paper_height))
+        else:
+            paper_width, paper_height = (min(paper_width, paper_height),
+                                         max(paper_width, paper_height))
+
+        top_left = page_setup.GetMarginTopLeft()
+        bottom_right = page_setup.GetMarginBottomRight()
+        width = paper_width - top_left[0] - bottom_right[0]
+        height = paper_height - top_left[1] - bottom_right[1]
+        return max(1, width), max(1, height)
+
+    def _wrap_lines(self, dc, text, width):
+        words = ' '.join(str(text).split()).split()
+        if not words:
+            return 1
+
+        space_width = dc.GetTextExtent(' ')[0]
+        lines = 1
+        line_width = 0
+        for word in words:
+            word_width = dc.GetTextExtent(word)[0]
+            if line_width and line_width + space_width + word_width > width:
+                lines += 1
+                line_width = word_width
+            elif line_width:
+                line_width += space_width + word_width
+            else:
+                line_width = word_width
+        return lines
+
+    def _memory_pages(self, memories, col_defs, widths):
+        dc = wx.ScreenDC()
+        fixed_font = wx.Font(
+            pointSize=self._font_size,
+            family=wx.FONTFAMILY_TELETYPE,
+            style=wx.FONTSTYLE_NORMAL,
+            weight=wx.FONTWEIGHT_NORMAL,
+            faceName=self._fixed_font)
+        dc.SetFont(fixed_font)
+        line_height = max(1, dc.GetTextExtent('Ag')[1])
+        screen_ppi = dc.GetPPI()[1] or 96
+        printable_width, _ = self._printable_size()
+        printable_width = printable_width * 96.0 / 25.4
+
+        expander = ('comment' if any(col_def.name == 'comment'
+                                     for col_def in col_defs) else
+                    'name' if any(col_def.name == 'name'
+                                  for col_def in col_defs) else None)
+        fixed_width = widths[None]
+        fixed_width += sum(widths[col_def.name] for col_def in col_defs
+                           if col_def.name != expander)
+        expander_width = max(
+            1, printable_width - fixed_width - 3 - 8) * screen_ppi / 96.0
+
+        row_limit = max(1, self._rows_per_page)
+        page_capacity = row_limit * (line_height + 8)
+
+        pages = []
+        page = []
+        used_height = 0
+        for mem in memories:
+            row_lines = self._wrap_lines(
+                dc, mem.number,
+                max(1, (widths[None] - 8) * screen_ppi / 96.0))
+            for col_def in col_defs:
+                try:
+                    value = col_def.render_value(mem)
+                except IndexError:
+                    continue
+                if col_def.name == expander:
+                    width = expander_width
+                else:
+                    width = max(
+                        1, (widths[col_def.name] - 8) * screen_ppi / 96.0)
+                row_lines = max(row_lines,
+                                self._wrap_lines(dc, value, width))
+            row_height = row_lines * line_height + 8
+
+            if page and (len(page) >= row_limit or
+                         used_height + row_height > page_capacity):
+                pages.append(page)
+                page = []
+                used_height = 0
+            page.append(mem)
+            used_height += row_height
+
+        if page:
+            pages.append(page)
+        return pages
+
     def _memory(self, doc, mem, expander, widths):
         tag = doc.tag
         with tag('td', *self._cell_attrs(None, expander, widths)):
@@ -168,10 +266,12 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         expander = ('comment' if 'comment' in col_names else
                     'name' if 'name' in col_names else None)
         widths = self._column_widths(memories, col_defs)
+        pages = self._memory_pages(memories, col_defs, widths)
 
-        for i in range(0, len(memories), self._rows_per_page):
-            with tag('div', ('style', 'page-break-before:always')):
-                pass
+        for page_number, page_memories in enumerate(pages):
+            if page_number:
+                with tag('div', ('style', 'page-break-before:always')):
+                    pass
             table_attrs = [('border', '1'), ('cellspacing', '0')]
             if expander:
                 table_attrs.append(('width', '100%'))
@@ -189,11 +289,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                                 if j:
                                     doc.stag('br')
                                 doc.text(piece)
-                for row in range(i, i + self._rows_per_page):
-                    try:
-                        mem = memories[row]
-                    except IndexError:
-                        continue
+                for mem in page_memories:
                     with tag('tr'):
                         try:
                             self._memory(doc, mem, expander, widths)
