@@ -838,6 +838,11 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
+#: ../ble_serial.py:55
+#, python-format
+msgid "BLE: %s"
+msgstr "BLE: %s"
+
 #: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr ""
@@ -857,6 +862,18 @@ msgstr ""
 
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
+msgstr ""
+
+#: ../ble_serial.py:239
+msgid "Bluetooth device"
+msgstr "Bluetooth-eszköz"
+
+#: ../ble_serial.py:331 ../ble_serial.py:333
+msgid "Bluetooth scan failed"
+msgstr "A Bluetooth-keresés nem sikerült"
+
+#: ../wxui/clone.py:45
+msgid "Bluetooth..."
 msgstr ""
 
 #: ../wxui/main.py:161
@@ -1088,6 +1105,10 @@ msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
+
+#: ../wxui/clone.py:576
+msgid "Connecting to Bluetooth radio..."
+msgstr "Csatlakozás a Bluetooth-rádióhoz..."
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
@@ -1726,7 +1747,7 @@ msgstr ""
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1734,6 +1755,52 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:514
+msgid ""
+"Follow these instructions to download your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start downloading data from your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:526
+msgid ""
+"Follow these instructions to download your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start downloading data from your radio\n"
+msgstr ""
+"Az adatok letöltéséhez kövesse az alábbi utasításokat:\n"
+"1 - Kapcsolja be a rádiót\n"
+"2 - Kapcsolja be a Bluetooth-t a rádión\n"
+"3 - Válassza ki a rádiót a listából\n"
+"4 - Az adatok rádióról történő letöltéséhez nyomja meg az OK gombot\n"
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"Az adatok feltöltéséhez kövesse az alábbi utasításokat:\n"
+"1 - Kapcsolja be a rádiót\n"
+"2 - Kapcsolja be a Bluetooth-t a rádión\n"
+"3 - Válassza ki a rádiót a listából\n"
+"4 - Az adatok rádióra történő feltöltéséhez nyomja meg az OK gombot\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -1841,7 +1908,6 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2453,6 +2519,10 @@ msgstr ""
 msgid "New version available"
 msgstr "A CHIRP egy új verziója érhető el:"
 
+#: ../ble_serial.py:351
+msgid "No Bluetooth devices found"
+msgstr "Nem található Bluetooth-eszköz"
+
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
 msgstr ""
@@ -2944,6 +3014,10 @@ msgstr ""
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
+#: ../ble_serial.py:248
+msgid "Refresh"
+msgstr "Frissítés"
+
 #: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr ""
@@ -3071,6 +3145,10 @@ msgstr ""
 msgid "Scanlists"
 msgstr ""
 
+#: ../ble_serial.py:294
+msgid "Scanning..."
+msgstr "Keresés..."
+
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr ""
@@ -3103,6 +3181,10 @@ msgstr "Oszlopok kiválasztása"
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
 msgstr ""
+
+#: ../ble_serial.py:181
+msgid "Select a Bluetooth device first"
+msgstr "Először válasszon Bluetooth-eszközt"
 
 #: ../wxui/main.py:2192
 msgid "Select a bandplan"
@@ -3753,6 +3835,11 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr ""
 
+#: ../ble_serial.py:150
+#, python-format
+msgid "Timed out waiting for ble-serial to connect. %s"
+msgstr "Időtúllépés a ble-serial csatlakozására várva. %s"
+
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "CTCSS"
@@ -4173,6 +4260,31 @@ msgstr ""
 msgid "bits"
 msgstr ""
 
+#: ../ble_serial.py:65
+#, python-format
+msgid "ble-scan exited with status %s: %s"
+msgstr "A ble-scan %s állapottal lépett ki: %s"
+
+#: ../ble_serial.py:144
+#, python-format
+msgid "ble-serial connected but %s is unavailable"
+msgstr "A ble-serial csatlakozott, de a(z) %s nem érhető el"
+
+#: ../ble_serial.py:139
+#, python-format
+msgid "ble-serial did not report a serial port. %s"
+msgstr "A ble-serial nem adott meg soros portot. %s"
+
+#: ../ble_serial.py:127
+#, python-format
+msgid "ble-serial exited before connecting (status %s). %s"
+msgstr "A ble-serial csatlakozás előtt lépett ki (%s állapot). %s"
+
+#: ../ble_serial.py:135
+#, python-format
+msgid "ble-serial stopped after connecting. %s"
+msgstr "A ble-serial a csatlakozás után leállt. %s"
+
 #: ../wxui/developer.py:190
 msgid "bytes"
 msgstr ""
@@ -4263,6 +4375,10 @@ msgstr ""
 
 #~ msgid "%i errors during open, check the debug log for details"
 #~ msgstr "%i errors during open, check the debug log for details"
+
+#, python-format
+#~ msgid "%s already exists. Stop any running ble-serial session and remove a stale port before connecting."
+#~ msgstr "%s már létezik. Kapcsolódás előtt állítson le minden futó ble-serial munkamenetet, és távolítsa el az elavult portot."
 
 #~ msgid "Adding memory {number}"
 #~ msgstr "A(z) {number}. memória hozzáadása"
