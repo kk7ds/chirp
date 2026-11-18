@@ -111,7 +111,8 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
 
         dc.SetFont(fixed_font)
         widths[None] = max([measure('#')] +
-                           [measure(mem.number) for mem in memories])
+                           [measure(self._memory_number(mem))
+                            for mem in memories])
         for col_def in col_defs:
             for mem in memories:
                 try:
@@ -145,6 +146,10 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
             attrs.append('nowrap')
         return attrs
 
+    @staticmethod
+    def _memory_number(mem):
+        return mem.extd_number or mem.number
+
     def _table_markup(self, memories, col_defs, expander, widths):
         doc, tag, text = yattag.Doc().tagtext()
         table_attrs = [('border', '1'), ('cellspacing', '0')]
@@ -173,7 +178,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         tag = doc.tag
         with tag('td', *self._cell_attrs(None, expander, widths)):
             with tag('tt'):
-                doc.text(mem.number)
+                doc.text(self._memory_number(mem))
         for col_def in self._col_defs:
             if not col_def.valid:
                 continue
