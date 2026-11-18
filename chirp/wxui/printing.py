@@ -126,9 +126,10 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         dc.SetFont(normal_font)
         widths[None] = max(widths[None], measure('#'))
         for col_def in col_defs:
-            label = ' '.join(col_def.label.split())
+            pieces = col_def.label.split()
+            label_width = max(measure(piece) for piece in pieces)
             widths[col_def.name] = max(widths[col_def.name],
-                                       measure(label))
+                                       label_width)
 
         screen_ppi = dc.GetPPI()[0] or 96
         pixel_scale = 96.0 / screen_ppi
@@ -138,10 +139,13 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         return {name: int(width * pixel_scale + 0.5) + 12
                 for name, width in widths.items()}
 
-    def _cell_attrs(self, name, expander, widths):
+    def _cell_attrs(self, name, expander, widths, nowrap=True):
         width = ('100%' if expander and name == expander else
                  widths[name])
-        return ['nowrap', ('width', str(width))]
+        attrs = [('width', str(width))]
+        if nowrap:
+            attrs.append('nowrap')
+        return attrs
 
     def _memory(self, doc, mem, expander, widths):
         tag = doc.tag
@@ -178,8 +182,13 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                         doc.text('#')
                     for col_def in col_defs:
                         with tag('th', *self._cell_attrs(col_def.name,
-                                                         expander, widths)):
-                            doc.text(' '.join(col_def.label.split()))
+                                                         expander, widths,
+                                                         nowrap=False)):
+                            pieces = col_def.label.split()
+                            for j, piece in enumerate(pieces):
+                                if j:
+                                    doc.stag('br')
+                                doc.text(piece)
                 for row in range(i, i + self._rows_per_page):
                     try:
                         mem = memories[row]
