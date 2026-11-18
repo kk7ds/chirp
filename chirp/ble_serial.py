@@ -231,7 +231,8 @@ class BluetoothConnection:
             self._pipe = None
         on_complete = self._on_complete
         self._on_complete = None
-        on_complete(pipe, error)
+        if on_complete is not None:
+            on_complete(pipe, error)
 
 
 class BluetoothDeviceDialog(wx.Dialog):
