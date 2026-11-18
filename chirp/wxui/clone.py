@@ -548,7 +548,7 @@ class ChirpCloneDialog(wx.Dialog):
                 self.ports.append((
                     BLUETOOTH,
                     ble_serial.device(self._ble_device_address,
-                                          self._ble_device_name)))
+                                      self._ble_device_name)))
 
         if not select:
             select = CONF.get('last_port', 'state')
@@ -637,7 +637,7 @@ class ChirpCloneDialog(wx.Dialog):
     def set_selected_port(self, devname):
         if devname == BLUETOOTH and self._ble_device_address:
             name = ble_serial.device(self._ble_device_address,
-                                         self._ble_device_name)
+                                     self._ble_device_name)
             self._port.SetStringSelection(name)
             self._current_port_selection = name
             return True

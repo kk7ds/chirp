@@ -2082,29 +2082,6 @@ msgstr ""
 "3 - 从列表中选择无线电设备\n"
 "4 - 按 OK 开始从无线电设备下载数据\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"请按照以下步骤上传数据：\n"
-"1 - 打开无线电设备\n"
-"2 - 在无线电设备上启用蓝牙\n"
-"3 - 从列表中选择无线电设备\n"
-"4 - 按 OK 开始向无线电设备上传数据\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -2205,6 +2182,29 @@ msgstr ""
 "2 - 连接您的接口电缆\n"
 "3 - 打开您的电台\n"
 "4 - 上传您的电台数据\n"
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"请按照以下步骤上传数据：\n"
+"1 - 打开无线电设备\n"
+"2 - 在无线电设备上启用蓝牙\n"
+"3 - 从列表中选择无线电设备\n"
+"4 - 按 OK 开始向无线电设备上传数据\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""

@@ -2137,29 +2137,6 @@ msgstr ""
 "3 - Выберите радиостанцию из списка\n"
 "4 - Нажмите OK, чтобы начать загрузку данных из радиостанции\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Следуйте этим инструкциям, чтобы передать данные:\n"
-"1 - Включите радиостанцию\n"
-"2 - Включите Bluetooth на радиостанции\n"
-"3 - Выберите радиостанцию из списка\n"
-"4 - Нажмите OK, чтобы начать передачу данных в радиостанцию\n"
-
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
 "Follow these instructions to download your radio:\n"
@@ -2264,6 +2241,29 @@ msgstr ""
 "2 - Подключите ваш интерфейсный кабель\n"
 "3 - Включите вашу станцию\n"
 "4 - Выполните отправку ваших радиоданных\n"
+
+#: ../drivers/baofeng_uv17Pro.py:520
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn off your radio\n"
+"2 - Connect your interface cable\n"
+"3 - Turn on your radio\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+
+#: ../drivers/baofeng_uv17Pro.py:532
+msgid ""
+"Follow these instructions to upload your info:\n"
+"1 - Turn on your radio\n"
+"2 - Enable Bluetooth on your radio\n"
+"3 - Select your radio from the list\n"
+"4 - Press OK to start uploading data to your radio\n"
+msgstr ""
+"Следуйте этим инструкциям, чтобы передать данные:\n"
+"1 - Включите радиостанцию\n"
+"2 - Включите Bluetooth на радиостанции\n"
+"3 - Выберите радиостанцию из списка\n"
+"4 - Нажмите OK, чтобы начать передачу данных в радиостанцию\n"
 
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
