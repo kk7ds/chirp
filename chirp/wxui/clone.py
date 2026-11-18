@@ -28,6 +28,7 @@ import wx
 import wx.lib.sized_controls
 
 from chirp import chirp_common
+from chirp import ble_serial
 from chirp import directory
 from chirp.drivers import fake
 from chirp import errors
@@ -41,6 +42,7 @@ LOG = logging.getLogger(__name__)
 CONF = config.get()
 HELPME = _('Help Me...')
 CUSTOM = _('Custom...')
+BLUETOOTH = _('Bluetooth...')
 ID_RECENT = wx.NewId()
 
 
@@ -155,7 +157,7 @@ class SettingsThread(threading.Thread):
         wx.CallAfter(self._dialog.Update, 100, newmsg=_('Complete'))
 
 
-def open_serial(port, rclass):
+def open_serial(port, rclass, serial_factory=None):
     if port.startswith('Fake'):
         # Duck-typed test doubles are not OS serial ports. They skip the
         # timeout/flow setup below, same as before this default existed.
@@ -178,7 +180,9 @@ def open_serial(port, rclass):
             pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
-        pipe = serialtrace.SerialTrace(
+        if serial_factory is None:
+            serial_factory = serialtrace.SerialTrace
+        pipe = serial_factory(
             baudrate=rclass.BAUD_RATE,
             rtscts=rclass.HARDWARE_FLOW,
             timeout=0.25,
@@ -198,11 +202,13 @@ class ChirpRadioPromptDialog(wx.Dialog):
         self.radio = k.pop('radio')
         self.rconfig = config.get_for_radio(self.radio)
         self.prompt = k.pop('prompt')
+        message = k.pop('message', None)
         buttons = k.pop('buttons', wx.OK | wx.CANCEL)
         super().__init__(*a, **k)
 
         prompts = self.radio.get_prompts()
-        self.message = getattr(prompts, self.prompt)
+        self.message = (message if message is not None
+                        else getattr(prompts, self.prompt))
 
         try:
             prompt_style = wx.ST_WRAP
@@ -215,7 +221,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
 
         if '\n' not in self.message and manual_wrap:
             self.message = os.linesep.join(textwrap.wrap(self.message))
-        else:
+        elif message is None or platform.system() == 'Windows':
             # wxPython >4.3.x seems to freak out with newlines in this text
             # on msw. Filter this out (since it shouldn't be controlled by
             # the driver anyway) for now.
@@ -350,6 +356,10 @@ class ChirpCloneDialog(wx.Dialog):
         super(ChirpCloneDialog, self).__init__(
             *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
+        self._ble_supported = platform.system() in ('Linux', 'Darwin')
+        self._ble_device_address = None
+        self._ble_device_name = None
+        self._ble_connection = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -390,8 +400,12 @@ class ChirpCloneDialog(wx.Dialog):
         self.Bind(wx.EVT_CHOICE, self._selected_model, self._model)
 
         self.gauge = wx.Gauge(self)
+        self._ble_activity_timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self._pulse_ble_activity,
+                  self._ble_activity_timer)
 
         self.Bind(wx.EVT_BUTTON, self._action)
+        self.Bind(wx.EVT_WINDOW_DESTROY, self._window_destroyed)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(grid, proportion=1,
@@ -409,6 +423,12 @@ class ChirpCloneDialog(wx.Dialog):
         vbox.Add(self.status_msg,
                  border=5, proportion=0,
                  flag=wx.EXPAND | wx.BOTTOM)
+        self._ble_error_details = wx.TextCtrl(
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self._ble_error_details.SetMinSize((-1, 100))
+        self._ble_error_details.Hide()
+        vbox.Add(self._ble_error_details,
+                 flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
         vbox.Add(self.gauge, flag=wx.EXPAND | wx.RIGHT | wx.LEFT, border=10,
                  proportion=0)
         vbox.Add(self.model_msg,
@@ -445,6 +465,38 @@ class ChirpCloneDialog(wx.Dialog):
         self.SetMinSize((400, 200))
         self.Fit()
 
+    def _window_destroyed(self, event):
+        if event.GetEventObject() is self:
+            self._cancel_ble_connection()
+            self._ble_activity_timer.Stop()
+        event.Skip()
+
+    def _start_ble_activity(self, message):
+        self._clear_ble_error()
+        self.status_msg.SetLabel(message)
+        self.gauge.SetRange(100)
+        self.gauge.Pulse()
+        self._ble_activity_timer.Start(100)
+        self.Layout()
+        self.Refresh()
+        self.Update()
+
+    def _clear_ble_error(self):
+        self.status_msg.SetLabel('')
+        self._ble_error_details.ChangeValue('')
+        if self._ble_error_details.IsShown():
+            self._ble_error_details.Hide()
+            self.Fit()
+            self.Layout()
+
+    def _stop_ble_activity(self):
+        self._ble_activity_timer.Stop()
+        self.gauge.SetValue(0)
+        self.status_msg.SetLabel('')
+
+    def _pulse_ble_activity(self, event):
+        self.gauge.Pulse()
+
     def set_ports(self, system_ports=None, select=None):
         if not system_ports:
             system_ports = list_ports.comports()
@@ -473,9 +525,16 @@ class ChirpCloneDialog(wx.Dialog):
             if port not in [x[0] for x in self.ports]:
                 self.ports.insert(0, (port, port))
 
+        if self._ble_supported:
+            self.ports.append((BLUETOOTH, BLUETOOTH))
+            if self._ble_device_address:
+                self.ports.append((
+                    BLUETOOTH,
+                    ble_serial.device(self._ble_device_address,
+                                          self._ble_device_name)))
+
         if not select:
             select = CONF.get('last_port', 'state')
-
         if not self.ports:
             LOG.warning('No ports available; action will be disabled')
         okay_btn = self.FindWindowById(self.GetAffirmativeId())
@@ -484,17 +543,18 @@ class ChirpCloneDialog(wx.Dialog):
         self._port.SetItems([x[1] for x in self.ports] +
                             [CUSTOM, HELPME])
         for device, name in self.ports:
-            if device == select:
+            if device == select or name == select:
                 self._port.SetStringSelection(name)
                 break
         else:
             if self.ports:
                 port = self.ports[0]
-                self._port.SetStringSelection(port[0])
+                self._port.SetStringSelection(port[1])
             else:
                 port = '(no ports available)'
             LOG.warning('Last port %r is unavailable, defaulting to %s',
                         select, port)
+        self._current_port_selection = self._port.GetStringSelection()
 
     def get_selected_port(self):
         selected = self._port.GetStringSelection()
@@ -504,10 +564,70 @@ class ChirpCloneDialog(wx.Dialog):
         LOG.warning('Did not find device for selected port %s' % selected)
         return selected
 
+    def _select_ble_device(self):
+        dialog = ble_serial.BluetoothDeviceDialog(
+            self, selected=self._ble_device_address)
+        try:
+            if dialog.ShowModal() == wx.ID_OK:
+                device = dialog.get_selected_device_info()
+            else:
+                device = None
+        finally:
+            dialog._alive = False
+            dialog.Destroy()
+        if not device:
+            return False
+        self._clear_ble_error()
+        self._ble_device_address, self._ble_device_name = device
+        self.set_ports(select=ble_serial.device(*device))
+        return True
+
+    def _open_selected_port(self, port, rclass, continuation):
+        if port != BLUETOOTH:
+            continuation(open_serial(port, rclass))
+            return
+        connection = ble_serial.BluetoothConnection(
+            self._ble_device_address, rclass, open_serial,
+            lambda pipe, error: self._ble_connection_complete(
+                continuation, pipe, error))
+        self._ble_connection = connection
+        self._start_ble_activity(_('Connecting to Bluetooth radio...'))
+        try:
+            connection.start()
+        except Exception:
+            self._ble_connection = None
+            self._stop_ble_activity()
+            raise
+
+    def _cancel_ble_connection(self):
+        if self._ble_connection is not None:
+            self._ble_connection.cancel()
+            self._ble_connection = None
+
+    def _ble_connection_complete(self, continuation, pipe, error):
+        self._ble_connection = None
+        self._stop_ble_activity()
+        if error is not None:
+            self.fail(error)
+            return
+        try:
+            continuation(pipe)
+        except Exception as e:
+            LOG.exception('Failed after connecting to Bluetooth radio')
+            pipe.close()
+            self.fail(str(e))
+
     def set_selected_port(self, devname):
+        if devname == BLUETOOTH and self._ble_device_address:
+            name = ble_serial.device(self._ble_device_address,
+                                         self._ble_device_name)
+            self._port.SetStringSelection(name)
+            self._current_port_selection = name
+            return True
         for device, name in self.ports:
             if device == devname:
                 self._port.SetStringSelection(name)
+                self._current_port_selection = name
                 return True
         else:
             LOG.debug('Port %s not in current list', devname)
@@ -595,7 +715,9 @@ class ChirpCloneDialog(wx.Dialog):
 
     def _selected_port(self, event):
         okay_btn = self.FindWindowById(self.GetAffirmativeId())
-        if self._port.GetStringSelection() == CUSTOM:
+        previous_selection = self._current_port_selection
+        selected = self._port.GetStringSelection()
+        if selected == CUSTOM:
             port = wx.GetTextFromUser(_('Enter custom port:'),
                                       _('Custom Port'),
                                       parent=self)
@@ -603,13 +725,28 @@ class ChirpCloneDialog(wx.Dialog):
                 CUSTOM_PORTS.append(port)
             self.set_ports(select=port or None)
             return
-        elif self._port.GetStringSelection() == HELPME:
+        elif selected == HELPME:
             self._port_assist(event)
+            self._current_port_selection = self._port.GetStringSelection()
             return
-        elif is_prolific_warning(self._port.GetStringSelection()):
+        elif is_prolific_warning(selected):
             self._prolific_assist(event)
             okay_btn.Enable(False)
             return
+
+        port = self.get_selected_port()
+        if port == BLUETOOTH and selected == BLUETOOTH:
+            if self._select_ble_device():
+                self._persist_choices()
+                okay_btn.Enable(True)
+            else:
+                if previous_selection:
+                    self._port.SetStringSelection(previous_selection)
+                self._current_port_selection = self._port.GetStringSelection()
+                okay_btn.Enable(True)
+            return
+
+        self._current_port_selection = selected
         self._persist_choices()
         okay_btn.Enable(True)
 
@@ -723,9 +860,18 @@ class ChirpCloneDialog(wx.Dialog):
 
     def fail(self, error):
         def safe_fail():
-            common.error_proof.show_error(
-                error, parent=self,
-                title=_('Error communicating with radio'))
+            if self.get_selected_port() == BLUETOOTH:
+                details = str(error)
+                self.status_msg.SetLabel(
+                    _('Error communicating with radio'))
+                self._ble_error_details.ChangeValue(details)
+                self._ble_error_details.Show()
+                self.Fit()
+                self.Layout()
+            else:
+                common.error_proof.show_error(
+                    error, parent=self,
+                    title=_('Error communicating with radio'))
             if isinstance(self, ChirpDownloadDialog):
                 self.enable_model_select()
             self.enable_running()
@@ -751,9 +897,12 @@ class ChirpCloneDialog(wx.Dialog):
     def _action(self, event):
         id = event.GetEventObject().GetId()
         if id == wx.ID_CANCEL:
+            self._cancel_ble_connection()
             if self._clone_thread:
                 self._clone_thread.stop()
             self.EndModal(id)
+            return
+        if self._ble_connection is not None:
             return
         try:
             self._actual_action(event)
@@ -818,17 +967,30 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 return
-        if prompts.pre_download:
+        message = None
+        if port == BLUETOOTH and prompts.pre_download_ble:
+            message = prompts.pre_download_ble
+        message = message or prompts.pre_download
+        if message:
             d = ChirpRadioPromptDialog(self,
                                        title=_('Download instructions'),
                                        radio=rclass,
-                                       prompt='pre_download')
+                                       prompt='pre_download',
+                                       message=message)
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 return
 
-        serial = open_serial(port, rclass)
+        if port == BLUETOOTH and not self._ble_device_address:
+            if not self._select_ble_device():
+                self.cancel_action()
+                return
 
+        self._open_selected_port(
+            port, rclass, lambda serial: self._download_with_serial(
+                serial, rclass))
+
+    def _download_with_serial(self, serial, rclass):
         # See if the driver detects we should be using a different radio class
         # to communicate with this model
         try:
@@ -838,10 +1000,12 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             pass
         except errors.RadioError as e:
             LOG.error('Radio serial detection failed: %s', e)
+            serial.close()
             self.fail(str(e))
             return
         except Exception as e:
             LOG.exception('Exception during detection: %s', e)
+            serial.close()
             self.fail(_('Internal driver error'))
             return
 
@@ -854,6 +1018,7 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             self._radio = rclass(serial)
         except Exception as e:
             LOG.exception('Failed to open serial: %s' % e)
+            serial.close()
             self.fail(str(e))
             return
 
@@ -919,21 +1084,35 @@ class ChirpUploadDialog(ChirpCloneDialog):
                 self.cancel_action()
                 return
 
-        if prompts.display_pre_upload_prompt_before_opening_port:
-            s = None
+        if (prompts.display_pre_upload_prompt_before_opening_port or
+                (port == BLUETOOTH and not self._ble_device_address)):
+            self._upload_before_serial(None, port, prompts)
         else:
             LOG.debug('Opening serial %r before upload prompt' % port)
-            s = open_serial(port, self._radio)
+            self._open_selected_port(
+                port, self._radio,
+                lambda serial: self._upload_before_serial(serial, port,
+                                                          prompts))
 
-        if prompts.pre_upload:
+    def _upload_before_serial(self, s, port, prompts):
+        message = None
+        if port == BLUETOOTH and prompts.pre_upload_ble:
+            message = prompts.pre_upload_ble
+        if message or prompts.pre_upload:
             d = ChirpRadioPromptDialog(self,
                                        title=_('Upload instructions'),
                                        radio=self._radio,
-                                       prompt='pre_upload')
+                                       prompt='pre_upload',
+                                       message=message)
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 if s:
                     s.close()
+                return
+
+        if port == BLUETOOTH and not self._ble_device_address:
+            if not self._select_ble_device():
+                self.cancel_action()
                 return
 
         baud = self._radio.BAUD_RATE
@@ -942,8 +1121,13 @@ class ChirpUploadDialog(ChirpCloneDialog):
 
         if s is None:
             LOG.debug('Opening serial %r after upload prompt' % port)
-            s = open_serial(port, self._radio)
+            self._open_selected_port(
+                port, self._radio, lambda serial: self._upload_with_serial(
+                    serial, baud))
+        else:
+            self._upload_with_serial(s, baud)
 
+    def _upload_with_serial(self, s, baud):
         self._remember_port_for_selected()
 
         try:
@@ -952,6 +1136,7 @@ class ChirpUploadDialog(ChirpCloneDialog):
             # rate radios to sync back up faster
             self._radio.pipe.baudrate = baud
         except Exception as e:
+            s.close()
             self.fail(str(e))
             return
 
