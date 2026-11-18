@@ -360,6 +360,7 @@ class ChirpCloneDialog(wx.Dialog):
         self._ble_device_address = None
         self._ble_device_name = None
         self._ble_connection = None
+        self._ble_error = None
         grid = wx.FlexGridSizer(2, 5, 5)
         grid.AddGrowableCol(1)
         bs = self.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -420,15 +421,24 @@ class ChirpCloneDialog(wx.Dialog):
             self, label='',
             style=(wx.ALIGN_CENTER_HORIZONTAL | wx.ST_NO_AUTORESIZE |
                    wx.ELLIPSIZE_END))
-        vbox.Add(self.status_msg,
-                 border=5, proportion=0,
-                 flag=wx.EXPAND | wx.BOTTOM)
-        self._ble_error_details = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self._ble_error_details.SetMinSize((-1, 100))
-        self._ble_error_details.Hide()
-        vbox.Add(self._ble_error_details,
-                 flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
+        vbox.Add(self.status_msg, border=5, flag=wx.EXPAND | wx.BOTTOM)
+        self._ble_error_panel = wx.Panel(self)
+        error_box = wx.BoxSizer(wx.HORIZONTAL)
+        error_label = wx.StaticText(
+            self._ble_error_panel, label=_('Error communicating with radio'))
+        error_box.Add(error_label, flag=wx.ALIGN_CENTER_VERTICAL)
+        self._ble_error_button = wx.BitmapButton(
+            self._ble_error_panel, bitmap=wx.ArtProvider.GetBitmap(
+                wx.ART_INFORMATION, wx.ART_BUTTON, (16, 16)))
+        self._ble_error_button.SetToolTip(_('More Info'))
+        self._ble_error_button.SetName(_('More Info'))
+        self._ble_error_button.Bind(wx.EVT_BUTTON, self._show_ble_error)
+        error_box.Add(self._ble_error_button, border=5,
+                      flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT)
+        self._ble_error_panel.SetSizerAndFit(error_box)
+        self._ble_error_panel.Hide()
+        vbox.Add(self._ble_error_panel, border=5,
+                 flag=wx.ALIGN_CENTER_HORIZONTAL | wx.BOTTOM)
         vbox.Add(self.gauge, flag=wx.EXPAND | wx.RIGHT | wx.LEFT, border=10,
                  proportion=0)
         vbox.Add(self.model_msg,
@@ -483,11 +493,18 @@ class ChirpCloneDialog(wx.Dialog):
 
     def _clear_ble_error(self):
         self.status_msg.SetLabel('')
-        self._ble_error_details.ChangeValue('')
-        if self._ble_error_details.IsShown():
-            self._ble_error_details.Hide()
+        self._ble_error = None
+        if self._ble_error_panel.IsShown():
+            self._ble_error_panel.Hide()
+            self.status_msg.Show()
             self.Fit()
             self.Layout()
+
+    def _show_ble_error(self, event):
+        if self._ble_error is not None:
+            common.error_proof.show_error(
+                self._ble_error, parent=self,
+                title=_('Error communicating with radio'))
 
     def _stop_ble_activity(self):
         self._ble_activity_timer.Stop()
@@ -862,10 +879,10 @@ class ChirpCloneDialog(wx.Dialog):
         def safe_fail():
             if self.get_selected_port() == BLUETOOTH:
                 details = str(error)
-                self.status_msg.SetLabel(
-                    _('Error communicating with radio'))
-                self._ble_error_details.ChangeValue(details)
-                self._ble_error_details.Show()
+                self._ble_error = error
+                self.status_msg.Hide()
+                self._ble_error_button.Show(bool(details.strip()))
+                self._ble_error_panel.Show()
                 self.Fit()
                 self.Layout()
             else:
