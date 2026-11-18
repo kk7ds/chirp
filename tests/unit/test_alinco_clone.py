@@ -48,7 +48,7 @@ class FakeAlincoSerial:
         if cmd == 'R':
             bin_chunk = self.image[addr:addr+64]
             hex_chunk = binascii.hexlify(bin_chunk)
-            assert (len(hex_chunk) == 128)
+            assert len(hex_chunk) == 128
             self.readbuf.append(hex_chunk)
             self.readbuf.append(b'\r\n')
 
