@@ -261,7 +261,7 @@ class BluetoothDeviceDialog(wx.Dialog):
                   flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM,
                   border=10)
         sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL),
-                  flag=wx.ALL | wx.ALIGN_RIGHT, border=10)
+                  flag=wx.ALL, border=10)
         self.SetSizer(sizer)
         self.SetMinSize((500, 120))
         self.Fit()
