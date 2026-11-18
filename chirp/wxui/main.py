@@ -1150,6 +1150,8 @@ class ChirpMain(wx.Frame):
             self,
             self.current_editorset.radio,
             self.current_editorset.current_editor)
+        if not p.select_columns(self):
+            return
 
         mems = self.current_editorset.current_editor.get_selected_memories()
         if event.GetId() == wx.ID_PRINT:
