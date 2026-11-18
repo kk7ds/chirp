@@ -866,6 +866,8 @@ class RadioPrompts:
     experimental = None
     pre_download = None
     pre_upload = None
+    pre_download_ble = None
+    pre_upload_ble = None
     display_pre_upload_prompt_before_opening_port = True
 
 
