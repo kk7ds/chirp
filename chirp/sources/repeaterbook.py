@@ -7,6 +7,7 @@ import math
 import os
 
 import requests
+import wx
 
 from chirp import chirp_common
 from chirp import errors
@@ -14,6 +15,7 @@ from chirp import platform as chirp_platform
 from chirp.sources import base
 from chirp.sources import fips
 
+_ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 
 NA_COUNTRIES = [
