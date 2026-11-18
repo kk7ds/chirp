@@ -12,6 +12,7 @@ authors = [
 ]
 requires-python = '>=3.10'
 dependencies = [
+    'ble-serial',
     'pyserial',
     'requests',
     'yattag',
