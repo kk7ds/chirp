@@ -88,39 +88,98 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         finally:
             dialog.Destroy()
 
-    def _memory(self, doc, mem):
+    def _column_widths(self, memories, col_defs):
+        dc = wx.ScreenDC()
+        fixed_font = wx.Font(
+            pointSize=self._font_size,
+            family=wx.FONTFAMILY_TELETYPE,
+            style=wx.FONTSTYLE_NORMAL,
+            weight=wx.FONTWEIGHT_NORMAL,
+            faceName=self._fixed_font)
+        normal_font = wx.Font(
+            pointSize=self._font_size,
+            family=wx.FONTFAMILY_DEFAULT,
+            style=wx.FONTSTYLE_NORMAL,
+            weight=wx.FONTWEIGHT_BOLD,
+            faceName=self._normal_font)
+
+        def measure(text):
+            text = ' '.join(str(text).split())
+            return dc.GetTextExtent(text)[0]
+
+        widths = {None: 0}
+        for col_def in col_defs:
+            widths[col_def.name] = 0
+
+        dc.SetFont(fixed_font)
+        widths[None] = max([measure('#')] +
+                           [measure(mem.number) for mem in memories])
+        for col_def in col_defs:
+            for mem in memories:
+                try:
+                    value = col_def.render_value(mem)
+                except IndexError:
+                    continue
+                widths[col_def.name] = max(widths[col_def.name],
+                                           measure(value))
+
+        dc.SetFont(normal_font)
+        widths[None] = max(widths[None], measure('#'))
+        for col_def in col_defs:
+            label = ' '.join(col_def.label.split())
+            widths[col_def.name] = max(widths[col_def.name],
+                                       measure(label))
+
+        screen_ppi = dc.GetPPI()[0] or 96
+        pixel_scale = 96.0 / screen_ppi
+        # Match wxHTML's default 3px cell padding and 1px cell border on
+        # either side of the measured text, with a small allowance for
+        # differences between screen and printer font metrics.
+        return {name: int(width * pixel_scale + 0.5) + 12
+                for name, width in widths.items()}
+
+    def _cell_attrs(self, name, expander, widths):
+        width = ('100%' if expander and name == expander else
+                 widths[name])
+        return ['nowrap', ('width', str(width))]
+
+    def _memory(self, doc, mem, expander, widths):
         tag = doc.tag
-        with tag('td'):
+        with tag('td', *self._cell_attrs(None, expander, widths)):
             with tag('tt'):
                 doc.text(mem.number)
         for col_def in self._col_defs:
             if not col_def.valid:
                 continue
-            with tag('td', 'nowrap'):
+            with tag('td', *self._cell_attrs(col_def.name, expander,
+                                             widths)):
                 with tag('tt'):
                     doc.text(col_def.render_value(mem))
 
     def _memory_table(self, doc, memories):
         tag = doc.tag
-        row = 0
+        col_defs = [col_def for col_def in self._col_defs
+                    if col_def.valid]
+        col_names = {col_def.name for col_def in col_defs}
+        expander = ('comment' if 'comment' in col_names else
+                    'name' if 'name' in col_names else None)
+        widths = self._column_widths(memories, col_defs)
 
         for i in range(0, len(memories), self._rows_per_page):
             with tag('div', ('style', 'page-break-before:always')):
                 pass
-            with tag('table', ('border', '1'), ('width', '100%'),
-                     ('cellspacing', '0')):
+            table_attrs = [('border', '1'), ('cellspacing', '0')]
+            if expander:
+                table_attrs.append(('width', '100%'))
+            with tag('table', *table_attrs):
                 with tag('tr'):
-                    with tag('th'):
+                    with tag('th', *self._cell_attrs(None, expander,
+                                                     widths)):
                         doc.text('#')
-                    for col_def in self._col_defs:
-                        if not col_def.valid:
-                            continue
-                        with tag('th'):
-                            pieces = col_def.label.split()
-                            for piece in pieces:
-                                doc.text(piece)
-                                if piece != pieces[-1]:
-                                    doc.stag('br')
+                    for col_def in col_defs:
+                        with tag('th', *self._cell_attrs(col_def.name,
+                                                         expander, widths)):
+                            doc.text(' '.join(col_def.label.split()))
                 for row in range(i, i + self._rows_per_page):
                     try:
                         mem = memories[row]
@@ -128,7 +187,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                         continue
                     with tag('tr'):
                         try:
-                            self._memory(doc, mem)
+                            self._memory(doc, mem, expander, widths)
                         except IndexError:
                             pass
 
