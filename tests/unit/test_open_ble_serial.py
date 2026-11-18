@@ -301,26 +301,47 @@ class TestBleSerial(unittest.TestCase):
     def test_bluetooth_failure_is_shown_in_dialog_without_popup(self):
         dialog = mock.Mock(spec=clone.ChirpDownloadDialog)
         dialog.status_msg = mock.Mock()
-        dialog._ble_error_details = mock.Mock()
+        dialog._ble_error_button = mock.Mock()
+        dialog._ble_error_panel = mock.Mock()
         dialog.Fit = mock.Mock()
         dialog.Layout = mock.Mock()
         dialog.get_selected_port.return_value = clone.BLUETOOTH
-        error = 'Connection timed out\nTechnical details'
+        error = 'Connection timed out. Check the radio.\nTechnical details'
         with mock.patch.object(wx, 'CallAfter',
                                side_effect=lambda callback: callback()), \
                 mock.patch.object(clone.common.error_proof,
                                   'show_error') as show_error:
             clone.ChirpCloneDialog.fail(dialog, error)
 
-        dialog.status_msg.SetLabel.assert_called_once_with(
-            'Error communicating with radio')
-        dialog._ble_error_details.ChangeValue.assert_called_once_with(error)
-        dialog._ble_error_details.Show.assert_called_once_with()
+        dialog.status_msg.Hide.assert_called_once_with()
+        self.assertEqual(dialog._ble_error, error)
+        dialog._ble_error_button.Show.assert_called_once_with(True)
+        dialog._ble_error_panel.Show.assert_called_once_with()
         dialog.Fit.assert_called_once_with()
         dialog.Layout.assert_called_once_with()
         dialog.enable_model_select.assert_called_once_with()
         dialog.enable_running.assert_called_once_with()
         show_error.assert_not_called()
+
+    def test_empty_bluetooth_error_hides_information_button(self):
+        dialog = mock.Mock()
+        dialog.get_selected_port.return_value = clone.BLUETOOTH
+        with mock.patch.object(wx, 'CallAfter',
+                               side_effect=lambda callback: callback()):
+            clone.ChirpCloneDialog.fail(dialog, '')
+        dialog.status_msg.Hide.assert_called_once_with()
+        dialog._ble_error_panel.Show.assert_called_once_with()
+        dialog._ble_error_button.Show.assert_called_once_with(False)
+
+    def test_bluetooth_error_button_shows_full_error(self):
+        dialog = mock.Mock()
+        error = errors.RadioError('Connection failed. Details\nMore details')
+        dialog._ble_error = error
+        with mock.patch.object(clone.common.error_proof,
+                               'show_error') as show_error:
+            clone.ChirpCloneDialog._show_ble_error(dialog, None)
+        show_error.assert_called_once_with(
+            error, parent=dialog, title='Error communicating with radio')
 
     def test_bluetooth_retry_replaces_error_with_connection_progress(self):
         dialog = mock.Mock()
@@ -333,11 +354,13 @@ class TestBleSerial(unittest.TestCase):
 
     def test_clearing_bluetooth_error_hides_details(self):
         dialog = mock.Mock()
-        dialog._ble_error_details.IsShown.return_value = True
+        dialog._ble_error = 'Old error'
+        dialog._ble_error_panel.IsShown.return_value = True
         clone.ChirpCloneDialog._clear_ble_error(dialog)
         dialog.status_msg.SetLabel.assert_called_once_with('')
-        dialog._ble_error_details.ChangeValue.assert_called_once_with('')
-        dialog._ble_error_details.Hide.assert_called_once_with()
+        self.assertIsNone(dialog._ble_error)
+        dialog._ble_error_panel.Hide.assert_called_once_with()
+        dialog.status_msg.Show.assert_called_once_with()
         dialog.Fit.assert_called_once_with()
         dialog.Layout.assert_called_once_with()
 
