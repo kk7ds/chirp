@@ -35,7 +35,9 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
         self.GetPrintData().SetOrientation(wx.LANDSCAPE)  # wx.PORTRAIT
         # Black and white printing if False.
         self.GetPrintData().SetColour(False)
-        self.GetPageSetupData().SetMarginTopLeft((0, 5))
+        self.GetPageSetupData().SetPaperId(wx.PAPER_LETTER)
+        self.GetPageSetupData().GetPrintData().SetOrientation(wx.LANDSCAPE)
+        self.GetPageSetupData().SetMarginTopLeft((5, 5))
         self.GetPageSetupData().SetMarginBottomRight((10, 10))
 
         # These are arbitrary defaults that seem to work okay. Let people
@@ -44,10 +46,6 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
             self._font_size = CONF.get_int('font_size', 'printing')
         except TypeError:
             self._font_size = 8
-        try:
-            self._rows_per_page = CONF.get_int('rows_per_page', 'printing')
-        except TypeError:
-            self._rows_per_page = 35
         self._normal_font = CONF.get('normal_font', 'printing') or 'Sans'
         self._fixed_font = CONF.get('fixed_font', 'printing') or 'Courier'
         self.SetStandardFonts(self._font_size, self._normal_font,
@@ -131,7 +129,7 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
             widths[col_def.name] = max(widths[col_def.name],
                                        label_width)
 
-        screen_ppi = dc.GetPPI()[0] or 96
+        screen_ppi = dc.GetPPI()[1] or 96
         pixel_scale = 96.0 / screen_ppi
         # Match wxHTML's default 3px cell padding and 1px cell border on
         # either side of the measured text, with a small allowance for
@@ -147,103 +145,29 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
             attrs.append('nowrap')
         return attrs
 
-    def _printable_size(self):
-        page_setup = self.GetPageSetupData()
-        paper_width, paper_height = page_setup.GetPaperSize()
-        if paper_width <= 0 or paper_height <= 0:
-            paper_width, paper_height = 279.4, 215.9
-
-        if self.GetPrintData().GetOrientation() == wx.LANDSCAPE:
-            paper_width, paper_height = (max(paper_width, paper_height),
-                                         min(paper_width, paper_height))
-        else:
-            paper_width, paper_height = (min(paper_width, paper_height),
-                                         max(paper_width, paper_height))
-
-        top_left = page_setup.GetMarginTopLeft()
-        bottom_right = page_setup.GetMarginBottomRight()
-        width = paper_width - top_left[0] - bottom_right[0]
-        height = paper_height - top_left[1] - bottom_right[1]
-        return max(1, width), max(1, height)
-
-    def _wrap_lines(self, dc, text, width):
-        words = ' '.join(str(text).split()).split()
-        if not words:
-            return 1
-
-        space_width = dc.GetTextExtent(' ')[0]
-        lines = 1
-        line_width = 0
-        for word in words:
-            word_width = dc.GetTextExtent(word)[0]
-            if line_width and line_width + space_width + word_width > width:
-                lines += 1
-                line_width = word_width
-            elif line_width:
-                line_width += space_width + word_width
-            else:
-                line_width = word_width
-        return lines
-
-    def _memory_pages(self, memories, col_defs, widths):
-        dc = wx.ScreenDC()
-        fixed_font = wx.Font(
-            pointSize=self._font_size,
-            family=wx.FONTFAMILY_TELETYPE,
-            style=wx.FONTSTYLE_NORMAL,
-            weight=wx.FONTWEIGHT_NORMAL,
-            faceName=self._fixed_font)
-        dc.SetFont(fixed_font)
-        line_height = max(1, dc.GetTextExtent('Ag')[1])
-        screen_ppi = dc.GetPPI()[1] or 96
-        printable_width, _ = self._printable_size()
-        printable_width = printable_width * 96.0 / 25.4
-
-        expander = ('comment' if any(col_def.name == 'comment'
-                                     for col_def in col_defs) else
-                    'name' if any(col_def.name == 'name'
-                                  for col_def in col_defs) else None)
-        fixed_width = widths[None]
-        fixed_width += sum(widths[col_def.name] for col_def in col_defs
-                           if col_def.name != expander)
-        expander_width = max(
-            1, printable_width - fixed_width - 3 - 8) * screen_ppi / 96.0
-
-        row_limit = max(1, self._rows_per_page)
-        page_capacity = row_limit * (line_height + 8)
-
-        pages = []
-        page = []
-        used_height = 0
-        for mem in memories:
-            row_lines = self._wrap_lines(
-                dc, mem.number,
-                max(1, (widths[None] - 8) * screen_ppi / 96.0))
-            for col_def in col_defs:
-                try:
-                    value = col_def.render_value(mem)
-                except IndexError:
-                    continue
-                if col_def.name == expander:
-                    width = expander_width
-                else:
-                    width = max(
-                        1, (widths[col_def.name] - 8) * screen_ppi / 96.0)
-                row_lines = max(row_lines,
-                                self._wrap_lines(dc, value, width))
-            row_height = row_lines * line_height + 8
-
-            if page and (len(page) >= row_limit or
-                         used_height + row_height > page_capacity):
-                pages.append(page)
-                page = []
-                used_height = 0
-            page.append(mem)
-            used_height += row_height
-
-        if page:
-            pages.append(page)
-        return pages
+    def _table_markup(self, memories, col_defs, expander, widths):
+        doc, tag, text = yattag.Doc().tagtext()
+        table_attrs = [('border', '1'), ('cellspacing', '0')]
+        if expander:
+            table_attrs.append(('width', '100%'))
+        with tag('table', *table_attrs):
+            with tag('tr'):
+                with tag('th', *self._cell_attrs(None, expander, widths)):
+                    doc.text('#')
+                for col_def in col_defs:
+                    with tag('th', *self._cell_attrs(col_def.name, expander,
+                                                     widths, nowrap=False)):
+                        for i, piece in enumerate(col_def.label.split()):
+                            if i:
+                                doc.stag('br')
+                            doc.text(piece)
+            for mem in memories:
+                with tag('tr'):
+                    try:
+                        self._memory(doc, mem, expander, widths)
+                    except IndexError:
+                        pass
+        return doc.getvalue()
 
     def _memory(self, doc, mem, expander, widths):
         tag = doc.tag
@@ -258,59 +182,192 @@ class MemoryPrinter(wx.html.HtmlEasyPrinting):
                 with tag('tt'):
                     doc.text(col_def.render_value(mem))
 
-    def _memory_table(self, doc, memories):
-        tag = doc.tag
+    def _printout_args(self, memories):
+        memories = [mem for mem in memories if not mem.empty]
         col_defs = [col_def for col_def in self._col_defs
                     if col_def.valid]
         col_names = {col_def.name for col_def in col_defs}
         expander = ('comment' if 'comment' in col_names else
                     'name' if 'name' in col_names else None)
         widths = self._column_widths(memories, col_defs)
-        pages = self._memory_pages(memories, col_defs, widths)
+        return memories, col_defs, expander, widths
 
-        for page_number, page_memories in enumerate(pages):
-            if page_number:
-                with tag('div', ('style', 'page-break-before:always')):
-                    pass
-            table_attrs = [('border', '1'), ('cellspacing', '0')]
-            if expander:
-                table_attrs.append(('width', '100%'))
-            with tag('table', *table_attrs):
-                with tag('tr'):
-                    with tag('th', *self._cell_attrs(None, expander,
-                                                     widths)):
-                        doc.text('#')
-                    for col_def in col_defs:
-                        with tag('th', *self._cell_attrs(col_def.name,
-                                                         expander, widths,
-                                                         nowrap=False)):
-                            pieces = col_def.label.split()
-                            for j, piece in enumerate(pieces):
-                                if j:
-                                    doc.stag('br')
-                                doc.text(piece)
-                for mem in page_memories:
-                    with tag('tr'):
-                        try:
-                            self._memory(doc, mem, expander, widths)
-                        except IndexError:
-                            pass
+    def _copy_print_data(self, data):
+        target = self.GetPrintData()
+        target.SetPrinterName(data.GetPrinterName())
+        target.SetPaperId(data.GetPaperId())
+        target.SetOrientation(data.GetOrientation())
+        target.SetColour(data.GetColour())
+        target.SetNoCopies(data.GetNoCopies())
+        target.SetCollate(data.GetCollate())
+        target.SetDuplex(data.GetDuplex())
+        target.SetQuality(data.GetQuality())
+        target.SetBin(data.GetBin())
 
-    def _print(self, memories):
-        report.report_model(self._radio, 'print')
-        memories = [m for m in memories if not m.empty]
-        doc, tag, text = yattag.Doc().tagtext()
-        with tag('html'):
-            with tag('body'):
-                self._memory_table(doc, memories)
-        return doc
+    def _print_dialog_data(self):
+        data = wx.PrintDialogData(self.GetPrintData())
+        print_data = data.GetPrintData()
+        print_data.SetPaperId(wx.PAPER_LETTER)
+        print_data.SetOrientation(wx.LANDSCAPE)
+        return data
 
     @common.error_proof()
     def print(self, memories):
-        doc = self._print(memories)
-        self.PrintText(doc.getvalue())
+        report.report_model(self._radio, 'print')
+        printout = MemoryPrintout(self, *self._printout_args(memories))
+        data = self._print_dialog_data()
+        printer = wx.Printer(data)
+        if not printer.Print(self.GetParentWindow(), printout, True):
+            if wx.Printer.GetLastError() == wx.PRINTER_ERROR:
+                wx.MessageBox(_('There was a problem printing.'),
+                              _('Printing'), wx.OK | wx.ICON_ERROR,
+                              self.GetParentWindow())
+            return False
+        self._copy_print_data(
+            printer.GetPrintDialogData().GetPrintData())
+        return True
 
     @common.error_proof()
     def print_preview(self, memories):
-        doc = self._print(memories)
-        return self.PreviewText(doc.getvalue())
+        report.report_model(self._radio, 'print')
+        args = self._printout_args(memories)
+        printout = MemoryPrintout(self, *args)
+        printout_for_printing = MemoryPrintout(self, *args)
+        data = self._print_dialog_data()
+        preview = wx.PrintPreview(printout, printout_for_printing, data)
+        if not preview.IsOk():
+            wx.MessageBox(_('There was a problem preparing the preview.'),
+                          _('Print Preview'), wx.OK | wx.ICON_ERROR,
+                          self.GetParentWindow())
+            return False
+
+        parent = self.GetParentWindow()
+        frame = wx.PreviewFrame(
+            preview, parent, _('%s Preview') % self.GetName(),
+            wx.DefaultPosition, wx.Window.FromDIP(wx.Size(650, 500), parent))
+        frame.Centre(wx.BOTH)
+        frame.Initialize()
+        frame.Show(True)
+        return True
+
+
+class MemoryPrintout(wx.Printout):
+    def __init__(self, printer, memories, col_defs, expander, widths):
+        super().__init__(_('Printing'))
+        self._printer = printer
+        self._memories = memories
+        self._col_defs = col_defs
+        self._expander = expander
+        self._widths = widths
+        self._pages = []
+
+    def _renderer(self, dc, pixel_scale, font_scale, width, height):
+        renderer = wx.html.HtmlDCRenderer()
+        try:
+            renderer.SetDC(dc, pixel_scale, font_scale)
+        except TypeError:
+            renderer.SetDC(dc, pixel_scale)
+        renderer.SetStandardFonts(self._printer._font_size,
+                                  self._printer._normal_font,
+                                  self._printer._fixed_font)
+        renderer.SetSize(width, height)
+        return renderer
+
+    def _page_metrics(self):
+        page_width, page_height = self.GetPageSizePixels()
+        page_width_mm, page_height_mm = self.GetPageSizeMM()
+        _, ppi_printer_y = self.GetPPIPrinter()
+        _, ppi_screen_y = self.GetPPIScreen()
+        ppi_printer_y = ppi_printer_y or ppi_screen_y or 96
+        ppi_screen_y = ppi_screen_y or 96
+        page_width = max(1, page_width)
+        page_height = max(1, page_height)
+        page_width_mm = page_width_mm or 1
+        page_height_mm = page_height_mm or 1
+
+        dc = self.GetDC()
+        dc_width, dc_height = dc.GetSize()
+        dc.SetUserScale(float(dc_width) / page_width,
+                        float(dc_height) / page_height)
+
+        margin_left, margin_top = self._printer.GetPageSetupData().\
+            GetMarginTopLeft()
+        margin_right, margin_bottom = self._printer.GetPageSetupData().\
+            GetMarginBottomRight()
+        ppmm_x = float(page_width) / page_width_mm
+        ppmm_y = float(page_height) / page_height_mm
+        area_width_mm = page_width_mm - margin_left - margin_right
+        area_height_mm = page_height_mm - margin_top - margin_bottom
+        area_width = max(1, int(ppmm_x * area_width_mm))
+        area_height = max(1, int(ppmm_y * area_height_mm))
+        offset_x = int(ppmm_x * margin_left)
+        offset_y = int(ppmm_y * margin_top)
+
+        font_scale = float(ppi_printer_y) / ppi_screen_y
+        pixel_scale = float(ppi_printer_y) / 96.0
+        return (dc, pixel_scale, font_scale, area_width, area_height,
+                offset_x, offset_y)
+
+    def OnPreparePrinting(self):
+        self._pages = []
+        (dc, pixel_scale, font_scale, area_width, area_height, offset_x,
+         offset_y) = self._page_metrics()
+        self._metrics = (pixel_scale, font_scale, area_width, area_height,
+                         offset_x, offset_y)
+        renderer = self._renderer(dc, pixel_scale, font_scale,
+                                  area_width, area_height)
+
+        def table_height(memories):
+            markup = self._printer._table_markup(
+                memories, self._col_defs, self._expander, self._widths)
+            renderer.SetHtmlText('<html><body>%s</body></html>' % markup)
+            return renderer.GetTotalHeight()
+
+        header_height = table_height([])
+        page = []
+        used_height = header_height
+        for mem in self._memories:
+            row_height = max(1, table_height([mem]) - header_height)
+            if page and used_height + row_height > area_height:
+                self._pages.append(page)
+                page = []
+                used_height = header_height
+            page.append(mem)
+            used_height += row_height
+
+        if page:
+            self._pages.append(page)
+        elif not self._pages:
+            self._pages.append([])
+
+    def GetPageInfo(self):
+        pages = max(1, len(self._pages))
+        return 1, pages, 1, pages
+
+    def HasPage(self, page):
+        return 1 <= page <= len(self._pages)
+
+    def OnPrintPage(self, page):
+        if not self.HasPage(page):
+            return False
+
+        (pixel_scale, font_scale, area_width, area_height, offset_x,
+         offset_y) = self._metrics
+        dc = self.GetDC()
+        if not dc or not dc.IsOk():
+            return False
+        page_width, page_height = self.GetPageSizePixels()
+        page_width = max(1, page_width)
+        page_height = max(1, page_height)
+        dc_width, dc_height = dc.GetSize()
+        dc.SetBackgroundMode(wx.BRUSHSTYLE_TRANSPARENT)
+        dc.SetUserScale(float(dc_width) / page_width,
+                        float(dc_height) / page_height)
+        renderer = self._renderer(dc, pixel_scale, font_scale,
+                                  area_width, area_height)
+        markup = self._printer._table_markup(
+            self._pages[page - 1], self._col_defs, self._expander,
+            self._widths)
+        renderer.SetHtmlText('<html><body>%s</body></html>' % markup)
+        renderer.Render(offset_x, offset_y)
+        return True
