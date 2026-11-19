@@ -731,3 +731,10 @@ class BFT20(RT22Radio):
     _fileid = [b"P330h33",
                b"P32073" + b"\xF8\xFF",
                ]
+
+
+@directory.register
+class T22PMR(BFT20):
+    """Baofeng T22 PMR"""
+    VENDOR = "Baofeng"
+    MODEL = "T22 PMR"
