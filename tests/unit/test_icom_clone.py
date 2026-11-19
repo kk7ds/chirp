@@ -15,6 +15,7 @@
 
 import sys
 from tests import icom_clone_simulator
+from chirp import errors
 from chirp import memmap
 from chirp.drivers import icw32
 from builtins import bytes
@@ -77,6 +78,121 @@ class BaseIcomCloneTest():
         self.radio._mmap[start] = bytes(b'abcdefgh')
         self.radio.sync_out()
         self.assertEqual(b'abcdefgh', self.simulator._memory[start:start + 8])
+
+
+class TestHispeedConfirm(unittest.TestCase):
+    """The hispeed switch is confirmed, or reverted if the radio ignores it"""
+
+    def _radio(self, **sim_attrs):
+        # An ID-880H, as it supports hispeed
+        radio = directory.get_radio('Icom_ID-880H')(None)
+        self.assertTrue(radio.is_hispeed())
+        self.simulator = icom_clone_simulator.FakeIcomRadio(radio)
+        for attr, value in sim_attrs.items():
+            setattr(self.simulator, attr, value)
+        radio.set_pipe(self.simulator)
+        return radio
+
+    def _sync_out(self, radio):
+        radio._mmap = memmap.MemoryMapBytes(
+            bytes(b'\x00') * radio.get_memsize())
+        start = radio._ranges[0][0]
+        radio._mmap[start] = bytes(b'abcdefgh')
+        radio.sync_out()
+        self.assertEqual(b'abcdefgh', self.simulator._memory[start:start + 8])
+
+    def test_sync_in_hispeed(self):
+        radio = self._radio()
+        radio.sync_in()
+        self.assertTrue(self.simulator.hispeed_requested)
+        self.assertEqual(38400, self.simulator.baudrate)
+        self.assertEqual(radio.get_memsize(), len(radio._mmap))
+
+    def test_sync_out_hispeed(self):
+        radio = self._radio()
+        self._sync_out(radio)
+        self.assertTrue(self.simulator.hispeed_requested)
+        self.assertEqual(38400, self.simulator.baudrate)
+
+    def test_sync_in_slow_switch(self):
+        # The radio ignores the first few frames while it changes speed
+        radio = self._radio(settle_writes=3)
+        radio.sync_in()
+        self.assertEqual(38400, self.simulator.baudrate)
+        self.assertEqual(radio.get_memsize(), len(radio._mmap))
+
+    def test_sync_in_hispeed_not_accepted(self):
+        radio = self._radio(accept_hispeed=False)
+        radio.sync_in()
+        self.assertTrue(self.simulator.hispeed_requested)
+        self.assertEqual(9600, self.simulator.baudrate)
+        self.assertEqual(radio.get_memsize(), len(radio._mmap))
+
+    def test_sync_out_hispeed_not_accepted(self):
+        radio = self._radio(accept_hispeed=False)
+        self._sync_out(radio)
+        self.assertEqual(9600, self.simulator.baudrate)
+
+    def test_sync_in_hispeed_not_accepted_at_4800(self):
+        radio = self._radio(accept_hispeed=False, baudrate=4800,
+                            radio_baud=4800)
+        radio.sync_in()
+        self.assertEqual(4800, self.simulator.baudrate)
+
+
+class TestFallbackBaud(unittest.TestCase):
+    """Radios that only answer the ID query at a different baud rate"""
+
+    def _radio(self, fallback):
+        # The ID-880H [DATA] jack set to 4800 baud, which ignores hispeed
+        cls = directory.get_radio('Icom_ID-880H')
+
+        class FallbackRadio(cls):
+            _fallback_baud_rates = fallback
+
+        radio = FallbackRadio(None)
+        self.simulator = icom_clone_simulator.FakeIcomRadio(radio)
+        self.simulator.radio_baud = 4800
+        self.simulator.accept_hispeed = False
+        radio.set_pipe(self.simulator)
+        return radio
+
+    def test_sync_in_falls_back(self):
+        radio = self._radio((4800,))
+        self.assertEqual(9600, self.simulator.baudrate)
+        radio.sync_in()
+        self.assertEqual(4800, self.simulator.baudrate)
+        self.assertEqual(radio.get_memsize(), len(radio._mmap))
+
+    def test_sync_out_falls_back(self):
+        radio = self._radio((4800,))
+        radio._mmap = memmap.MemoryMapBytes(
+            bytes(b'\x00') * radio.get_memsize())
+        start = radio._ranges[0][0]
+        radio._mmap[start] = bytes(b'abcdefgh')
+        radio.sync_out()
+        self.assertEqual(4800, self.simulator.baudrate)
+        self.assertEqual(b'abcdefgh', self.simulator._memory[start:start + 8])
+
+    def test_no_fallback_configured(self):
+        radio = self._radio(())
+        self.assertRaises(errors.RadioNoResponse, radio.sync_in)
+        self.assertEqual(9600, self.simulator.baudrate)
+
+    def test_fallback_fails_restores_baud(self):
+        radio = self._radio((19200, 38400))
+        self.assertRaises(errors.RadioNoResponse, radio.sync_in)
+        self.assertEqual(9600, self.simulator.baudrate)
+
+    def test_id880h_data_jack(self):
+        radio = directory.get_radio('Icom_ID-880H')(None)
+        self.assertEqual((4800,), radio._fallback_baud_rates)
+        self.simulator = icom_clone_simulator.FakeIcomRadio(radio)
+        self.simulator.radio_baud = 4800
+        self.simulator.accept_hispeed = False
+        radio.set_pipe(self.simulator)
+        radio.sync_in()
+        self.assertEqual(4800, self.simulator.baudrate)
 
 
 class TestRawRadioData(unittest.TestCase):
