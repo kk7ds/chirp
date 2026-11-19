@@ -38,6 +38,7 @@ GROUP_SIZE = 141
 def make_image(file_type=b"MemList", channels=None):
     """Build a memory list file holding @channels: {number: (record, group)}"""
     plain = bytearray(ftx1.FILE_SIZE - ftx1.HEADER_SIZE)
+    plain[:16] = ftx1.FILE_BODY_START
     plain[CHANNELS:CHANNELS + 999 * 89] = b"\xff" * (999 * 89)
     for number, (record, group) in (channels or {}).items():
         assert len(record) == 89
@@ -369,14 +370,23 @@ class TestFTX1(base.BaseTest):
             self.assertEqual(ftx1.NEW_MODE_SETTINGS,
                              self._plain()[CHANNELS + 5:CHANNELS + 50])
 
-    def test_file_only(self):
-        # Not offered for programming over a cable
-        self.assertNotIsInstance(self.radio, chirp_common.CloneModeRadio)
-        # A file holds the radio's format only, whatever its name
+    def test_file_under_another_name(self):
+        # What the radio wrote is known by its content
+        with open(self._path("in.dat"), "rb") as f:
+            self.radio = self._open(f.read(), "copy.img")
+        self.assertEqual("DB0BRO", self.radio.get_memory(109).name)
+
+    def test_file_as_image_and_back(self):
         saved = self._save("copy.img")
-        self.assertEqual(self._save(), saved)
-        radio = directory.get_radio_by_image(self._path("copy.img"))
-        self.assertEqual("DB0BRO", radio.get_memory(109).name)
+        self.assertEqual(ftx1.MEMORY_SIZE,
+                         saved.index(chirp_common.CloneModeRadio.MAGIC))
+        self.radio = directory.get_radio_by_image(self._path("copy.img"))
+        self.assertIsInstance(self.radio, ftx1.FTX1Radio)
+        self.assertEqual("DB0BRO", self.radio.get_memory(109).name)
+        with open(self._path("in.dat"), "rb") as f:
+            original = f.read()
+        self.assertEqual(original[ftx1.HEADER_SIZE:],
+                         self._save()[ftx1.HEADER_SIZE:])
 
     def test_incomplete_type_line(self):
         image = make_image()
@@ -402,3 +412,345 @@ class TestFTX1(base.BaseTest):
         record = DB0BRO[:51] + b"\x40" + DB0BRO[52:]
         self.radio = self._open(make_image(channels={1: (record, 4)}))
         self.assertRaises(errors.RadioError, self.radio.get_memory, 1)
+
+    def test_preamp_and_name_switch_share_the_mode_byte(self):
+        # FM with AMP1 and the name shown
+        record = b"\xa6" + DB0BRO[1:]
+        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        mem = self.radio.get_memory(1)
+        self.assertEqual("FM", mem.mode)
+        self.assertEqual("AMP1", str(mem.extra["ipo"].value))
+        self.assertEqual("On", str(mem.extra["tag"].value))
+        mem.mode = "NFM"
+        mem.extra["ipo"].value = "AMP2"
+        self.radio.set_memory(mem)
+        self.assertEqual(0xc7, self._plain()[CHANNELS])
+
+    def test_c4fm_and_ams_modes(self):
+        self.radio = self._open(make_image(channels={
+            number: (bytes([code]) + DB0BRO[1:], 4)
+            for number, code in enumerate((0x10, 0x13, 0x1e), 1)}))
+        self.assertEqual(
+            ["DN", "DN", "Auto"],
+            [self.radio.get_memory(number).mode for number in (1, 2, 3)])
+
+    def test_channel_settings(self):
+        self.radio.set_memory(self._memory(1, 14200000, mode="USB"))
+        mem = self.radio.get_memory(1)
+        for name, value in (("att", "On"), ("narrow", "On"), ("nb", "5"),
+                            ("dnr", "10"), ("notch", "On"), ("dnf", "On"),
+                            ("rx_dgid", "12"), ("tx_dgid", "34")):
+            self.assertTrue(mem.extra[name].value.get_mutable(), name)
+            mem.extra[name].value = value
+        self.radio.set_memory(mem)
+        record = self._plain()[CHANNELS:CHANNELS + 89]
+        # USB, ATT, DNR next to the shift, narrow SSB, NB
+        self.assertEqual(bytes.fromhex("01204a8005"), record[:5])
+        # Notch and DNF of the SSB group, next to its AGC
+        self.assertEqual(0x85, record[5])
+        self.assertEqual(ftx1.NEW_MODE_SETTINGS[1:], record[6:50])
+        self.assertEqual(bytes([12, 34]), record[87:])
+        mem = self.radio.get_memory(1)
+        self.assertEqual(
+            ["On", "5", "10", "On", "12"],
+            [str(mem.extra[name].value)
+             for name in ("narrow", "nb", "dnr", "notch", "rx_dgid")])
+
+    def test_settings_depend_on_the_mode(self):
+        # (mode, settings that can be changed)
+        cases = [("USB", {"narrow", "notch", "contour", "dnf", "bk_in"}),
+                 ("CW", {"narrow", "notch", "contour", "dnf", "apf",
+                         "bk_in"}),
+                 ("RTTY", {"narrow", "notch", "contour", "dnf"}),
+                 ("AM", {"notch", "contour", "dnf", "bk_in"}),
+                 ("FM", {"bk_in"}),
+                 ("DN", {"narrow"}),
+                 ("WFM", set())]
+        names = ("narrow", "notch", "contour", "dnf", "apf", "bk_in")
+        for number, (mode, mutable) in enumerate(cases, 1):
+            self.radio.set_memory(self._memory(number, 145500000, mode=mode))
+            extra = self.radio.get_memory(number).extra
+            self.assertEqual(
+                mutable,
+                {name for name in names if extra[name].value.get_mutable()},
+                mode)
+
+    def test_mode_change_keeps_the_settings_of_the_new_mode(self):
+        self.radio.set_memory(self._memory(1, 145500000, mode="DN"))
+        mem = self.radio.get_memory(1)
+        # C4FM has no AGC, FM has, and a new channel has it on Auto
+        self.assertEqual("Off", str(mem.extra["agc"].value))
+        mem.mode = "FM"
+        self.radio.set_memory(mem)
+        self.assertEqual("Auto",
+                         str(self.radio.get_memory(1).extra["agc"].value))
+
+    def test_name_without_characters(self):
+        record = DB0BRO[:59] + bytes(24) + DB0BRO[83:]
+        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self.assertEqual("", self.radio.get_memory(1).name)
+
+    def test_setting_of_another_mode_is_left_alone(self):
+        self.radio.set_memory(self._memory(1, 145500000, mode="FM"))
+        mem = self.radio.get_memory(1)
+        # Not a setting of FM, as an import from another radio brings it
+        mem.extra["notch"].value.set_mutable(True)
+        mem.extra["notch"].value = "On"
+        self.radio.set_memory(mem)
+        self.assertEqual(ftx1.NEW_MODE_SETTINGS,
+                         self._plain()[CHANNELS + 5:CHANNELS + 50])
+
+    def test_unknown_setting_value_is_kept(self):
+        # A noise blanker level above the 10 the radio has
+        record = DB0BRO[:4] + b"\x0f" + DB0BRO[5:]
+        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        mem = self.radio.get_memory(1)
+        self.assertEqual("Off", str(mem.extra["nb"].value))
+        mem.name = "Renamed"
+        self.radio.set_memory(mem)
+        self.assertEqual(0x0f, self._plain()[CHANNELS + 4])
+
+    def test_memory_group(self):
+        mgrp, mgrp_list = 0x012E, GROUPS + 10 * GROUP_SIZE
+        mem = self.radio.get_memory(109)
+        self.assertEqual("Off", str(mem.extra["mgrp"].value))
+        mem.extra["mgrp"].value = "On"
+        self.radio.set_memory(mem)
+        byte, mask = 108 // 8, 1 << (108 % 8)
+        self.assertEqual([mask, mask], [self._plain()[start + byte]
+                                        for start in (mgrp, mgrp_list)])
+        self.assertEqual(
+            "On", str(self.radio.get_memory(109).extra["mgrp"].value))
+        self.radio.erase_memory(109)
+        self.assertEqual([0, 0], [self._plain()[start + byte]
+                                  for start in (mgrp, mgrp_list)])
+
+    def test_hf_group_is_the_amateur_bands(self):
+        self.radio.set_memory(self._memory(1, 14200000, mode="USB"))
+        self.radio.set_memory(self._memory(2, 15000000, mode="AM"))
+        self.radio.set_memory(self._memory(3, 110000000, mode="AM"))
+        self.assertEqual([True, False, False],
+                         [self._used(number, 1) for number in (1, 2, 3)])
+        self.assertFalse(self._used(3, 3))
+
+    def test_pms_channels(self):
+        rf = self.radio.get_features()
+        self.assertEqual(100, len(rf.valid_special_chans))
+        self.assertEqual(["P-01L", "P-01U", "P-02L"],
+                         rf.valid_special_chans[:3])
+        self.assertEqual("P-50U", rf.valid_special_chans[-1])
+        mem = self.radio.get_memory("P-02U")
+        self.assertTrue(mem.empty)
+        self.assertEqual((1003, "P-02U"), (mem.number, mem.extd_number))
+        self.radio.set_memory(self._memory(1003, 14350000, mode="USB"))
+        mem = self.radio.get_memory("P-02U")
+        self.assertEqual((14350000, "USB"), (mem.freq, mem.mode))
+        record = self._plain()[CHANNELS + 1002 * 89:CHANNELS + 1003 * 89]
+        self.assertEqual(14350000, int.from_bytes(record[55:59], "big"))
+        self.assertTrue(self._used(1003, 1))
+        self.assertEqual("", self.radio.get_memory(999).extd_number)
+        with self.assertRaises(errors.InvalidMemoryLocation) as raised:
+            self.radio.get_memory(1100)
+        self.assertIn("1099", str(raised.exception))
+        self.assertRaises(errors.InvalidMemoryLocation,
+                          self.radio.get_memory, "P-51L")
+
+
+def _shift(data, by):
+    return bytes((byte + by) & 0xFF for byte in data)
+
+
+class FakeRadio:
+    """Answers the block commands like the radio does"""
+    # Makes ";" show up within the answers
+    KEY = 0x3b
+
+    def __init__(self, memory=None, model=b"AH084M"):
+        self.memory = bytearray(memory or ftx1.MEMORY_SIZE)
+        self.model = model
+        self.restarted = False
+        self.blocks = []
+        self.timeout = None
+        self._out = b""
+
+    def write(self, data):
+        if data == b"PS9;":
+            self.restarted = True
+            return
+        command = data[:-2]
+        assert data[-1:] == b";" and data[-2] == sum(command) & 0xFF, data
+        if command == b"A1":
+            payload = len(self.memory).to_bytes(3, "big")
+        elif command == b"A2":
+            payload = self.model + b"\x00\x01"
+        else:
+            self.blocks.append(command[:3])
+            request = _shift(command[4:], -command[3])
+            address = int.from_bytes(request[:3], "big")
+            size = int.from_bytes(request[3:5], "big")
+            if command[:3] == b"A0R":
+                assert len(request) == 5
+                block = self.memory[address:address + size]
+                payload = request + bytes(block).ljust(1024, b"\xee")
+            else:
+                assert command[:3] == b"A0W" and len(request) == 5 + 1024
+                self.memory[address:address + size] = request[5:5 + size]
+                payload = b"\x06"
+        # A block answer repeats the R or W of the command
+        name = command[:3] if command[:2] == b"A0" else command
+        answer = name + bytes([self.KEY]) + _shift(payload, self.KEY)
+        self._out += answer + bytes([sum(answer) & 0xFF]) + b";"
+
+    def read(self, size):
+        data, self._out = self._out[:size], self._out[size:]
+        return data
+
+    def reset_input_buffer(self):
+        self._out = b""
+
+
+class TestFTX1Clone(base.BaseTest):
+    # What the driver transfers: info with home, and the channels
+    RANGES = [(0x2079, 0x2A7D), (0x70D6, 0x1F7F3)]
+
+    def _radio(self, pipe):
+        radio = ftx1.FTX1Radio(pipe)
+        radio.status_fn = lambda status: None
+        return radio
+
+    def _programmed(self):
+        """Return the memory of a radio with a memory and a PMS channel"""
+        radio = self._radio(None)
+        memory = bytearray(ftx1.MEMORY_SIZE)
+        # A radio has a record in every channel, the weather channels too
+        memory[0x70D6 + 1124 * 89:0x70D6 + 1125 * 89] = ftx1.NEW_MEMORY
+        radio._mmap = ftx1.memmap.MemoryMapBytes(bytes(memory))
+        radio.process_mmap()
+        mem = chirp_common.Memory()
+        mem.number = 7
+        mem.freq = 145500000
+        mem.name = "2M CALL"
+        radio.set_memory(mem)
+        mem.number = 1000
+        mem.freq = 144000000
+        radio.set_memory(mem)
+        return radio._mmap.get_byte_compatible().get_packed()
+
+    def test_layout(self):
+        memory = self._programmed()
+        # Channel 7 at its address in the radio, in use and on the VHF list
+        record = memory[0x70D6 + 6 * 89:0x70D6 + 7 * 89]
+        self.assertEqual(145500000, int.from_bytes(record[55:59], "big"))
+        self.assertEqual("2M CALL     ", record[59:83].decode("utf-16-be"))
+        for bitmap in (0x2079 + 4, 0x2079 + 4 + 4 * 141,
+                       0x2079 + 4 + 8 * 141):
+            self.assertEqual(0x40, memory[bitmap])
+        self.assertEqual(0x80, memory[0x2079 + 4 + 124])
+
+    def test_download(self):
+        memory = bytearray(b"\x55" * ftx1.MEMORY_SIZE)
+        programmed = self._programmed()
+        for start, end in self.RANGES:
+            memory[start:end] = programmed[start:end]
+        pipe = FakeRadio(memory)
+        radio = self._radio(pipe)
+        radio.sync_in()
+        self.assertEqual("2M CALL", radio.get_memory(7).name)
+        self.assertEqual(144000000, radio.get_memory("P-01L").freq)
+        self.assertTrue(radio.get_memory(8).empty)
+        image = radio._mmap.get_byte_compatible().get_packed()
+        self.assertEqual(ftx1.MEMORY_SIZE, len(image))
+        # Nothing but the channels and what goes with them is read
+        self.assertEqual(programmed, image)
+        self.assertEqual({b"A0R"}, set(pipe.blocks))
+        self.assertFalse(pipe.restarted)
+
+    def test_upload(self):
+        pipe = FakeRadio(b"\x55" * ftx1.MEMORY_SIZE)
+        radio = self._radio(pipe)
+        radio._mmap = ftx1.memmap.MemoryMapBytes(self._programmed())
+        radio.process_mmap()
+        radio.sync_out()
+        expected = bytearray(b"\x55" * ftx1.MEMORY_SIZE)
+        for start, end in self.RANGES:
+            expected[start:end] = self._programmed()[start:end]
+        self.assertEqual(expected, pipe.memory)
+        self.assertEqual({b"A0W"}, set(pipe.blocks))
+        self.assertTrue(pipe.restarted)
+
+    def test_download_as_file(self):
+        radio = self._radio(FakeRadio(self._programmed()))
+        radio.sync_in()
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = os.path.join(tempdir, "MemList.dat")
+            radio.save(path)
+            self.assertEqual(ftx1.FILE_SIZE, os.path.getsize(path))
+            radio = directory.get_radio_by_image(path)
+        self.assertEqual("2M CALL", radio.get_memory(7).name)
+        self.assertEqual(144000000, radio.get_memory("P-01L").freq)
+
+    def test_upload_of_a_file(self):
+        # The file ends within the second 5 MHz channel
+        end = 0x70D6 + 1100 * 89 + 88
+        programmed = bytearray(self._programmed())
+        programmed[end:] = bytes(len(programmed) - end)
+        pipe = FakeRadio(b"\x55" * ftx1.MEMORY_SIZE)
+        radio = self._radio(pipe)
+        radio._mmap = ftx1.memmap.MemoryMapBytes(bytes(programmed))
+        radio.process_mmap()
+        radio.sync_out()
+        self.assertEqual(programmed[0x70D6:end], pipe.memory[0x70D6:end])
+        # What the file does not have stays as it is in the radio
+        self.assertEqual(b"\x55" * (ftx1.MEMORY_SIZE - end),
+                         pipe.memory[end:])
+        self.assertTrue(pipe.restarted)
+
+    def test_other_radio(self):
+        for pipe in (FakeRadio(model=b"AH000X"), FakeRadio(bytes(1000))):
+            radio = self._radio(pipe)
+            self.assertRaises(errors.RadioError, radio.sync_in)
+            self.assertEqual([], pipe.blocks)
+
+    def test_damaged_answer(self):
+        class Damaging(FakeRadio):
+            def read(self, size):
+                data = super().read(size)
+                # Within the data of a block
+                return data[:500] + b"\x00" + data[501:]
+
+        radio = self._radio(Damaging())
+        self.assertRaises(errors.RadioError, radio.sync_in)
+
+    def test_input_from_before_the_transfer(self):
+        pipe = FakeRadio(self._programmed())
+        # Like the radio sends on its own with auto information on
+        pipe._out = b"FA014200000;"
+        radio = self._radio(pipe)
+        radio.sync_in()
+        self.assertEqual("2M CALL", radio.get_memory(7).name)
+
+    def test_upload_given_up(self):
+        class Failing(FakeRadio):
+            def read(self, size):
+                return b"" if len(self.blocks) > 3 else super().read(size)
+
+        for pipe, partial in ((Failing(), True),
+                              (FakeRadio(model=b"AH000X"), False)):
+            radio = self._radio(pipe)
+            radio._mmap = ftx1.memmap.MemoryMapBytes(self._programmed())
+            radio.process_mmap()
+            with self.assertRaises(errors.RadioError) as raised:
+                radio.sync_out()
+            self.assertEqual(partial,
+                             "upload again" in str(raised.exception))
+            self.assertFalse(pipe.restarted)
+
+    def test_silent_radio(self):
+        class Silent(FakeRadio):
+            def read(self, size):
+                return b""
+
+        radio = self._radio(Silent())
+        with self.assertRaises(errors.RadioError) as raised:
+            radio.sync_in()
+        self.assertIn("38400", str(raised.exception))
