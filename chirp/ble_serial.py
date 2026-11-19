@@ -13,348 +13,212 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import collections
-import functools
+import asyncio
 import logging
 import os
-import re
-import signal
-import subprocess
-import sys
 import threading
-import time
-
-import wx
 
 from chirp import serialtrace
-from chirp.wxui import common
 
-_ = wx.GetTranslation
 LOG = logging.getLogger(__name__)
 
 
-# Scans for available BLE devices using the ble-scan command.
-def scan_ble_device_lists():
-    result = subprocess.run(
-        [sys.executable, '-m', 'ble_serial.scan'],
-        capture_output=True, text=True, timeout=30, check=False)
-    if result.returncode:
-        details = result.stderr.strip() or result.stdout.strip()
-        raise RuntimeError(
-            _('ble-scan exited with status %s: %s') %
-            (result.returncode, details))
-    scan_errors = [
-        line for line in result.stdout.splitlines()
-        if line.startswith('ERROR:')]
-    if scan_errors:
-        raise RuntimeError('\n'.join(scan_errors))
-    return parse_ble_scan_output(result.stdout)
+def scan_ble_devices():
+    from ble_serial.scan.main import scan
+
+    async def run_scan():
+        return await asyncio.wait_for(scan('hci0', 5.0, None), timeout=30)
+
+    try:
+        devices = asyncio.run(run_scan())
+    except asyncio.TimeoutError as e:
+        raise TimeoutError('Bluetooth scan timed out') from e
+    return [(dev.address, dev.name.strip() if dev.name is not None else 'None')
+            for dev, _adv in devices.values()]
 
 
-# Formats the list of devices from ble-scan output, removing RSSI, e.g.:
-# 00:11:22:33:44:55: My Device
-def parse_ble_scan_output(output):
-    scan_line = re.compile(r'^(\S+)\s+\(RSSI=[^)]+\):\s*(.*)$',
-                           re.IGNORECASE)
-    devices = []
-    for line in output.splitlines():
-        match = scan_line.match(line.strip())
-        if match:
-            devices.append((match.group(1), match.group(2).strip()))
-    return devices
-
-
-# Formats the selected BLE device name for display in a menu or dialog,
-# falling back to the MAC address if no name is available, e.g.:
-# BLE: My Device
-def device(address, name):
-    if not name or name.casefold() == 'none':
-        name = address
-    return _('BLE: %s') % name
-
-
-class BluetoothConnection:
-    def __init__(self, address, rclass, open_serial, on_complete):
+class BluetoothBridge(serialtrace.SerialTrace):
+    def __init__(self, address):
         self._address = address
-        self._rclass = rclass
-        self._open_serial = open_serial
-        self._on_complete = on_complete
-        self._cancelled = threading.Event()
         self._lock = threading.Lock()
-        self._pipe = None
-        self._process = None
-        self._process_lock = threading.Lock()
+        self._ready = threading.Event()
+        self._endpoint_path = None
+        self._error = None
+        self._stopped = threading.Event()
+        self._thread = None
+        self._loop = None
+        self._task = None
+        super().__init__()
 
-    @staticmethod
-    def _read_output(process, ready, output, ports):
-        if process.stdout is None:
-            return
-        port_line = re.compile(r'Port endpoint created on (.+?) -> .+$')
-        for line in process.stdout:
-            line = line.rstrip()
-            output.append(line)
-            LOG.debug('ble-serial: %s', line)
-            match = port_line.search(line)
-            if match:
-                ports.append(match.group(1))
-            if 'Running main loop!' in line:
-                ready.set()
 
-    def _start_process(self):
-        if self._cancelled.is_set():
-            raise InterruptedError('Bluetooth connection cancelled')
-        process = subprocess.Popen(
-            [sys.executable, '-m', 'ble_serial', '-d', self._address],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, bufsize=1)
-        with self._process_lock:
-            self._process = process
-        ready = threading.Event()
-        output = collections.deque(maxlen=20)
-        ports = []
+    async def _run_bridge(self):
+        import tty
+
+        from ble_serial import DEFAULT_PORT
+        from ble_serial.bluetooth.ble_client import BLE_client
+
+        loop = asyncio.get_running_loop()
+        # Keep the slave open until shutdown, including while BLE connects.
+        controller, endpoint = os.openpty()
+        client = None
+        tasks = []
+        failure = loop.create_future()
+        reader_added = False
+        link_info = None
         try:
-            reader = threading.Thread(
-                target=self._read_output,
-                args=(process, ready, output, ports), daemon=True)
-            reader.start()
-            deadline = time.monotonic() + 30
-            while time.monotonic() < deadline:
-                if self._cancelled.is_set():
+            with self._lock:
+                if self._stopped.is_set():
                     raise InterruptedError('Bluetooth connection cancelled')
-                if process.poll() is not None:
-                    reader.join(timeout=1)
-                    details = '\n'.join(output)
-                    raise RuntimeError(
-                        _('ble-serial exited before connecting '
-                          '(status %s). %s') %
-                        (process.returncode, details))
-                if ready.wait(0.1):
-                    if process.poll() is not None:
-                        reader.join(timeout=1)
-                        details = '\n'.join(output)
-                        raise RuntimeError(
-                            _('ble-serial stopped after connecting. %s') %
-                            details)
-                    if not ports:
-                        raise RuntimeError(
-                            _('ble-serial did not report a serial port. %s') %
-                            '\n'.join(output))
-                    port = ports[-1]
-                    if not os.path.exists(port):
-                        raise RuntimeError(
-                            _('ble-serial connected but %s is unavailable') %
-                            port)
-                    LOG.info('ble-serial connected; using %s', port)
-                    return port
-            details = '\n'.join(output)
-            raise RuntimeError(
-                _('Timed out waiting for ble-serial to connect. %s') % details)
-        except Exception:
-            self.stop()
-            raise
+                self._loop = loop
+                self._task = asyncio.current_task()
+            endpoint_path = os.ttyname(endpoint)
+            os.symlink(endpoint_path, DEFAULT_PORT)
+            link_info = os.lstat(DEFAULT_PORT)
+            tty.setraw(controller)
+            os.set_blocking(controller, False)
+            client = BLE_client('hci0', None)
+            outgoing = asyncio.Queue()
 
-    def stop(self):
-        with self._process_lock:
-            process = self._process
-            if process is None:
-                return
-            if process.poll() is not None:
-                self._process = None
-                return
-            try:
+            def receive_serial():
                 try:
-                    process.send_signal(signal.SIGINT)
-                    process.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    process.terminate()
-                    try:
-                        process.wait(timeout=3)
-                    except subprocess.TimeoutExpired:
-                        process.kill()
-                        process.wait()
-            except OSError:
-                LOG.exception('Failed to stop ble-serial')
-                return
-            self._process = None
+                    data = os.read(controller, 20)
+                    if not data:
+                        raise RuntimeError('Bluetooth serial port closed')
+                    client.queue_send(data)
+                except BlockingIOError:
+                    return
+                except Exception as e:
+                    loop.remove_reader(controller)
+                    if not failure.done():
+                        failure.set_exception(e)
 
-    def _open_port(self):
-        if not self._address:
-            raise RuntimeError(_('Select a Bluetooth device first'))
-        port = self._start_process()
-        LOG.info('Opening Bluetooth device %s on %s', self._address, port)
+            def receive_bluetooth(data):
+                outgoing.put_nowait(data)
+
+            async def write_serial():
+                while True:
+                    data = await outgoing.get()
+                    while data:
+                        try:
+                            written = os.write(controller, data)
+                        except BlockingIOError:
+                            writable = loop.create_future()
+
+                            def serial_writable(writable=writable):
+                                if not writable.done():
+                                    writable.set_result(None)
+
+                            loop.add_writer(controller, serial_writable)
+                            try:
+                                await writable
+                            finally:
+                                loop.remove_writer(controller)
+                            continue
+                        if not written:
+                            raise OSError('Bluetooth serial write failed')
+                        data = data[written:]
+
+            client.set_receiver(receive_bluetooth)
+            loop.add_reader(controller, receive_serial)
+            reader_added = True
+            await client.connect(self._address, 'public', None, 5.0)
+            await client.setup_chars(None, None, 'rw', False)
+            tasks = [asyncio.create_task(client.send_loop()),
+                     asyncio.create_task(client.check_loop()),
+                     asyncio.create_task(write_serial())]
+            self._endpoint_path = DEFAULT_PORT
+            self._ready.set()
+            done, _ = await asyncio.wait(
+                [*tasks, failure], return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                task.result()
+            if not self._stopped.is_set():
+                raise RuntimeError('Bluetooth connection closed')
+        finally:
+            with self._lock:
+                self._loop = None
+                self._task = None
+            if reader_added:
+                loop.remove_reader(controller)
+            for task in tasks:
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+            if not failure.done():
+                failure.cancel()
+            elif not failure.cancelled():
+                failure.exception()
+            if client is not None:
+                try:
+                    await client.disconnect()
+                except Exception:
+                    LOG.exception('Failed to disconnect Bluetooth')
+            try:
+                if link_info is not None:
+                    try:
+                        current_link = os.lstat(DEFAULT_PORT)
+                    except FileNotFoundError:
+                        LOG.warning('Bluetooth serial link was removed: %s',
+                                    DEFAULT_PORT)
+                    else:
+                        if (current_link.st_dev, current_link.st_ino) == (
+                                link_info.st_dev, link_info.st_ino):
+                            os.unlink(DEFAULT_PORT)
+                        else:
+                            LOG.warning('Bluetooth serial link was replaced: '
+                                        '%s', DEFAULT_PORT)
+            finally:
+                try:
+                    os.close(controller)
+                finally:
+                    os.close(endpoint)
+
+    def _run_thread(self):
         try:
-            if self._cancelled.is_set():
-                raise InterruptedError('Bluetooth connection cancelled')
-            serial_factory = functools.partial(
-                serialtrace.SerialTrace, on_close=self.stop, is_ble=True)
-            return self._open_serial(
-                port, self._rclass, serial_factory=serial_factory)
-        except Exception:
-            self.stop()
-            raise
+            asyncio.run(self._run_bridge())
+        except asyncio.CancelledError:
+            if not self._ready.is_set():
+                self._error = InterruptedError(
+                    'Bluetooth connection cancelled')
+        except Exception as e:
+            LOG.exception('Bluetooth bridge failed')
+            if not self._ready.is_set():
+                self._error = e
+        finally:
+            if not self._ready.is_set():
+                if self._error is None:
+                    self._error = RuntimeError(
+                        'Bluetooth connection closed')
+                self._ready.set()
 
     def start(self):
-        threading.Thread(target=self._connect, daemon=True).start()
-
-    def cancel(self):
         with self._lock:
-            self._cancelled.set()
-            pipe = self._pipe
-            self._pipe = None
-        if pipe is not None:
-            pipe.close()
+            if self._stopped.is_set():
+                raise InterruptedError('Bluetooth connection cancelled')
+            self._thread = threading.Thread(
+                target=self._run_thread, daemon=True)
+            self._thread.start()
+        if not self._ready.wait(timeout=30):
+            self.stop()
+            raise RuntimeError(
+                'Timed out waiting for Bluetooth connection')
+        if self._error is not None:
+            raise self._error
+        if self._stopped.is_set():
+            raise InterruptedError('Bluetooth connection cancelled')
+        return self._endpoint_path
 
-    def _connect(self):
+    def stop(self):
+        with self._lock:
+            stopping = self._stopped.is_set()
+            self._stopped.set()
+            loop = self._loop
+            task = self._task
+            if not stopping and loop is not None and task is not None:
+                loop.call_soon_threadsafe(task.cancel)
+
+    def close(self):
         try:
-            pipe = self._open_port()
-        except Exception as e:
-            if not self._cancelled.is_set():
-                LOG.exception('Failed to connect to Bluetooth radio')
-                wx.CallAfter(self._deliver, str(e))
-            return
-
-        with self._lock:
-            if self._cancelled.is_set():
-                cancelled = True
-            else:
-                self._pipe = pipe
-                cancelled = False
-        if cancelled:
-            pipe.close()
-        else:
-            wx.CallAfter(self._deliver, None)
-
-    def _deliver(self, error):
-        with self._lock:
-            if self._cancelled.is_set():
-                return
-            pipe = self._pipe
-            self._pipe = None
-        on_complete = self._on_complete
-        self._on_complete = None
-        if on_complete is not None:
-            on_complete(pipe, error)
-
-
-class BluetoothDeviceDialog(wx.Dialog):
-    def __init__(self, parent, selected=None):
-        super().__init__(parent, title=_('Bluetooth device'))
-        self._devices = []
-        self._selected = selected
-        self._scan_thread = None
-        self._scan_id = 0
-        self._alive = True
-
-        self._device = wx.Choice(self, choices=[])
-        self._device.SetMinSize((400, -1))
-        self._refresh = wx.Button(self, label=_('Refresh'))
-        self._status = wx.StaticText(self, label='')
-
-        device_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        device_sizer.Add(self._device, proportion=1,
-                         flag=wx.EXPAND | wx.RIGHT, border=5)
-        device_sizer.Add(self._refresh)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(device_sizer, proportion=0,
-                  flag=wx.EXPAND | wx.ALL, border=10)
-        sizer.Add(self._status, proportion=0,
-                  flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM,
-                  border=10)
-        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL),
-                  flag=wx.ALL, border=10)
-        self.SetSizer(sizer)
-        self.SetMinSize((500, 120))
-        self.Fit()
-        self.CenterOnParent()
-
-        self.Bind(wx.EVT_BUTTON, self._refresh_devices, self._refresh)
-        self.Bind(wx.EVT_CHOICE, self._selected_device, self._device)
-        self.Bind(wx.EVT_WINDOW_DESTROY, self._window_destroyed)
-        self._refresh_devices()
-
-    def get_selected_device(self):
-        device = self.get_selected_device_info()
-        return device[0] if device else None
-
-    def get_selected_device_info(self):
-        index = self._device.GetSelection()
-        if 0 <= index < len(self._devices):
-            return self._devices[index]
-        return None
-
-    def _selected_device(self, _event):
-        self._selected = self.get_selected_device()
-        self._update_ok_button()
-
-    def _update_ok_button(self):
-        button = self.FindWindowById(self.GetAffirmativeId())
-        button.Enable(bool(self.get_selected_device()))
-
-    def _show_scanning(self):
-        self._devices = []
-        self._device.SetItems([_('Scanning...')])
-        self._device.SetSelection(0)
-        self._device.Disable()
-        self._status.SetLabel('')
-        self._update_ok_button()
-
-    def _refresh_devices(self, _event=None):
-        if self._scan_thread and self._scan_thread.is_alive():
-            return
-
-        self._refresh.Disable()
-        self._show_scanning()
-        self._scan_id += 1
-        scan_id = self._scan_id
-        self._scan_thread = threading.Thread(
-            target=self._scan_devices_async,
-            args=(scan_id,), daemon=True)
-        self._scan_thread.start()
-
-    def _scan_devices_async(self, scan_id):
-        try:
-            devices = scan_ble_device_lists()
-        except (OSError, subprocess.SubprocessError, RuntimeError) as e:
-            LOG.exception('Bluetooth device scan failed')
-            wx.CallAfter(self._scan_complete, scan_id, None, str(e))
-        else:
-            wx.CallAfter(self._scan_complete, scan_id, devices, None)
-
-    def _scan_complete(self, scan_id, devices, error):
-        if not self._alive or scan_id != self._scan_id:
-            return
-
-        self._scan_thread = None
-        self._refresh.Enable()
-        self._device.Enable()
-        if error:
-            self._device.SetItems([])
-            self._status.SetLabel(_('Bluetooth scan failed'))
-            common.error_proof.show_error(
-                error, parent=self, title=_('Bluetooth scan failed'))
-            self._update_ok_button()
-            return
-
-        previous = self._selected
-        self._devices = devices
-        labels = [
-            '{}: {}'.format(address, name or 'None')
-            for address, name in devices]
-        self._device.SetItems(labels)
-        selection = next(
-            (i for i, (address, _) in enumerate(devices)
-             if address == previous),
-            0 if devices else -1)
-        self._device.SetSelection(selection)
-        if devices:
-            self._status.SetLabel('')
-        else:
-            self._status.SetLabel(_('No Bluetooth devices found'))
-        self._selected = self.get_selected_device()
-        self._update_ok_button()
-
-    def _window_destroyed(self, event):
-        if event.GetEventObject() is self:
-            self._alive = False
-        event.Skip()
+            super().close()
+        finally:
+            self.stop()
