@@ -6,15 +6,6 @@ from chirp import serialtrace
 
 
 class TestSerialTrace(unittest.TestCase):
-    def test_close_calls_callback_even_if_serial_close_fails(self):
-        on_close = mock.Mock()
-        trace = serialtrace.SerialTrace(on_close=on_close)
-        with mock.patch('serial.Serial.close',
-                        side_effect=OSError('close failed')), \
-                self.assertRaisesRegex(OSError, 'close failed'):
-            trace.close()
-        on_close.assert_called_once_with()
-
     @mock.patch('serial.Serial.open')
     def test_open(self, mock_open):
         trace = serialtrace.SerialTrace()

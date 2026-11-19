@@ -27,8 +27,8 @@ from serial.tools import list_ports
 import wx
 import wx.lib.sized_controls
 
-from chirp import chirp_common
 from chirp import ble_serial
+from chirp import chirp_common
 from chirp import directory
 from chirp.drivers import fake
 from chirp import errors
@@ -71,6 +71,89 @@ def get_fakes():
         'Fake AT778': developer.FakeAT778,
         'Fake Open Error': developer.FakeErrorOpenSerial,
     }
+
+
+def get_ble_device_label(address, name):
+    if not name or name.casefold() == 'none':
+        name = address
+    return _('BLE: %s') % name
+
+
+class BluetoothConnection(threading.Thread):
+    def __init__(self, address, rclass, open_serial, on_complete):
+        super().__init__(name='BluetoothConnection', daemon=True)
+        self._address = address
+        self._rclass = rclass
+        self._open_serial = open_serial
+        self._on_complete = on_complete
+        self._cancelled = threading.Event()
+        self._lock = threading.Lock()
+        self._pipe = None
+        self._serial = ble_serial.BluetoothBridge(address)
+
+    def _open_port(self):
+        if not self._address:
+            raise RuntimeError(_('Select a Bluetooth device first'))
+        port = self._serial.start()
+        LOG.info('Opening Bluetooth device %s on %s', self._address, port)
+        try:
+            if self._cancelled.is_set():
+                raise InterruptedError('Bluetooth connection cancelled')
+            return self._open_serial(port, self._rclass, pipe=self._serial)
+        except Exception:
+            self._serial.stop()
+            raise
+
+    def cancel(self):
+        with self._lock:
+            self._cancelled.set()
+            pipe = self._pipe
+            self._pipe = None
+            self._on_complete = None
+        if pipe is not None:
+            pipe.close()
+        else:
+            self._serial.stop()
+
+    def run(self):
+        try:
+            pipe = self._open_port()
+        except Exception as e:
+            if not self._cancelled.is_set():
+                LOG.exception('Failed to connect to Bluetooth radio')
+                message = str(e) or type(e).__name__
+                messages = {
+                    'Bluetooth connection closed':
+                        _('Bluetooth connection closed'),
+                    'Timed out waiting for Bluetooth connection':
+                        _('Timed out waiting for Bluetooth connection'),
+                }
+                wx.CallAfter(self._deliver, messages.get(message, message))
+            return
+
+        with self._lock:
+            if self._cancelled.is_set():
+                cancelled = True
+            else:
+                self._pipe = pipe
+                cancelled = False
+        if cancelled:
+            pipe.close()
+        else:
+            wx.CallAfter(self._deliver, None)
+
+    def _deliver(self, error):
+        with self._lock:
+            if self._cancelled.is_set():
+                return
+            pipe = self._pipe
+            self._pipe = None
+            on_complete = self._on_complete
+            self._on_complete = None
+        if on_complete is not None:
+            on_complete(pipe, error)
+        elif pipe is not None:
+            pipe.close()
 
 
 class CloneThread(threading.Thread):
@@ -157,8 +240,8 @@ class SettingsThread(threading.Thread):
         wx.CallAfter(self._dialog.Update, 100, newmsg=_('Complete'))
 
 
-def open_serial(port, rclass, serial_factory=None):
-    if port.startswith('Fake'):
+def open_serial(port, rclass, pipe=None):
+    if pipe is None and port.startswith('Fake'):
         # Duck-typed test doubles are not OS serial ports. They skip the
         # timeout/flow setup below, same as before this default existed.
         return get_fakes()[port]()
@@ -166,7 +249,7 @@ def open_serial(port, rclass, serial_factory=None):
     # peer stops reading (Bluetooth SPP, dead cable). 2s covers a normal
     # write and is applied to every real port opened here.
     write_timeout = 2
-    if '://' in port:
+    if pipe is None and '://' in port:
         pipe = serial.serial_for_url(port, do_not_open=True)
         pipe.timeout = 0.25
         pipe.write_timeout = write_timeout
@@ -180,13 +263,12 @@ def open_serial(port, rclass, serial_factory=None):
             pipe.open()
         pipe.baudrate = rclass.BAUD_RATE
     else:
-        if serial_factory is None:
-            serial_factory = serialtrace.SerialTrace
-        pipe = serial_factory(
-            baudrate=rclass.BAUD_RATE,
-            rtscts=rclass.HARDWARE_FLOW,
-            timeout=0.25,
-            write_timeout=write_timeout)
+        if pipe is None:
+            pipe = serialtrace.SerialTrace()
+        pipe.baudrate = rclass.BAUD_RATE
+        pipe.rtscts = rclass.HARDWARE_FLOW
+        pipe.timeout = 0.25
+        pipe.write_timeout = write_timeout
         pipe.rts = rclass.WANTS_RTS
         pipe.dtr = rclass.WANTS_DTR
         pipe.port = port
@@ -547,8 +629,8 @@ class ChirpCloneDialog(wx.Dialog):
             if self._ble_device_address:
                 self.ports.append((
                     BLUETOOTH,
-                    ble_serial.device(self._ble_device_address,
-                                      self._ble_device_name)))
+                    get_ble_device_label(self._ble_device_address,
+                                     self._ble_device_name)))
 
         if not select:
             select = CONF.get('last_port', 'state')
@@ -582,7 +664,7 @@ class ChirpCloneDialog(wx.Dialog):
         return selected
 
     def _select_ble_device(self):
-        dialog = ble_serial.BluetoothDeviceDialog(
+        dialog = BluetoothDeviceDialog(
             self, selected=self._ble_device_address)
         try:
             if dialog.ShowModal() == wx.ID_OK:
@@ -596,14 +678,14 @@ class ChirpCloneDialog(wx.Dialog):
             return False
         self._clear_ble_error()
         self._ble_device_address, self._ble_device_name = device
-        self.set_ports(select=ble_serial.device(*device))
+        self.set_ports(select=get_ble_device_label(*device))
         return True
 
     def _open_selected_port(self, port, rclass, continuation):
         if port != BLUETOOTH:
             continuation(open_serial(port, rclass))
             return
-        connection = ble_serial.BluetoothConnection(
+        connection = BluetoothConnection(
             self._ble_device_address, rclass, open_serial,
             lambda pipe, error: self._ble_connection_complete(
                 continuation, pipe, error))
@@ -636,8 +718,8 @@ class ChirpCloneDialog(wx.Dialog):
 
     def set_selected_port(self, devname):
         if devname == BLUETOOTH and self._ble_device_address:
-            name = ble_serial.device(self._ble_device_address,
-                                     self._ble_device_name)
+            name = get_ble_device_label(self._ble_device_address,
+                                    self._ble_device_name)
             self._port.SetStringSelection(name)
             self._current_port_selection = name
             return True
@@ -750,9 +832,7 @@ class ChirpCloneDialog(wx.Dialog):
             self._prolific_assist(event)
             okay_btn.Enable(False)
             return
-
-        port = self.get_selected_port()
-        if port == BLUETOOTH and selected == BLUETOOTH:
+        elif selected == BLUETOOTH:
             if self._select_ble_device():
                 self._persist_choices()
                 okay_btn.Enable(True)
@@ -1171,3 +1251,127 @@ class ChirpUploadDialog(ChirpCloneDialog):
         CONF.set('last_vendor', self._vendor.GetStringSelection(), 'state')
         CONF.set('last_model', model, 'state')
         CONF.set('last_port', self.get_selected_port(), 'state')
+
+
+class BluetoothDeviceDialog(wx.Dialog):
+    def __init__(self, parent, selected=None):
+        super().__init__(parent, title=_('Bluetooth device'))
+        self._devices = []
+        self._selected = selected
+        self._scanning = False
+        self._alive = True
+
+        self._device = wx.Choice(self, choices=[])
+        self._device.SetMinSize((400, -1))
+        self._refresh = wx.Button(self, label=_('Refresh'))
+        self._status = wx.StaticText(self, label='')
+
+        device_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        device_sizer.Add(self._device, proportion=1,
+                         flag=wx.EXPAND | wx.RIGHT, border=5)
+        device_sizer.Add(self._refresh)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(device_sizer, proportion=0,
+                  flag=wx.EXPAND | wx.ALL, border=10)
+        sizer.Add(self._status, proportion=0,
+                  flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM,
+                  border=10)
+        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL),
+                  flag=wx.ALL, border=10)
+        self.SetSizer(sizer)
+        self.SetMinSize((500, 120))
+        self.Fit()
+        self.CenterOnParent()
+
+        self.Bind(wx.EVT_BUTTON, self._refresh_devices, self._refresh)
+        self.Bind(wx.EVT_CHOICE, self._selected_device, self._device)
+        self.Bind(wx.EVT_WINDOW_DESTROY, self._window_destroyed)
+        self._refresh_devices()
+
+    def get_selected_device(self):
+        device = self.get_selected_device_info()
+        return device[0] if device else None
+
+    def get_selected_device_info(self):
+        index = self._device.GetSelection()
+        if 0 <= index < len(self._devices):
+            return self._devices[index]
+        return None
+
+    def _selected_device(self, _event):
+        self._selected = self.get_selected_device()
+        self._update_ok_button()
+
+    def _update_ok_button(self):
+        button = self.FindWindow(self.GetAffirmativeId())
+        button.Enable(not self._scanning and bool(self.get_selected_device()))
+
+    def _show_scanning(self):
+        self._devices = []
+        self._device.SetItems([_('Scanning...')])
+        self._device.SetSelection(0)
+        self._device.Disable()
+        self._status.SetLabel('')
+        self._update_ok_button()
+
+    def _refresh_devices(self, _event=None):
+        if self._scanning:
+            return
+
+        self._scanning = True
+        self._refresh.Disable()
+        self._show_scanning()
+        threading.Thread(target=self._scan_devices_async, daemon=True).start()
+
+    def _scan_devices_async(self):
+        try:
+            devices = ble_serial.scan_ble_devices()
+        except TimeoutError:
+            LOG.exception('Bluetooth device scan failed')
+            wx.CallAfter(self._scan_complete, None,
+                         _('Bluetooth scan timed out'))
+        except Exception as e:
+            LOG.exception('Bluetooth device scan failed')
+            wx.CallAfter(self._scan_complete, None,
+                         str(e) or type(e).__name__)
+        else:
+            wx.CallAfter(self._scan_complete, devices, None)
+
+    def _scan_complete(self, devices, error):
+        if not self._alive:
+            return
+
+        self._scanning = False
+        self._refresh.Enable()
+        self._device.Enable()
+        if error:
+            self._device.SetItems([])
+            self._status.SetLabel(_('Bluetooth scan failed'))
+            common.error_proof.show_error(
+                error, parent=self, title=_('Bluetooth scan failed'))
+            self._update_ok_button()
+            return
+
+        previous = self._selected
+        self._devices = devices
+        labels = [
+            '{}: {}'.format(address, name or 'None')
+            for address, name in devices]
+        self._device.SetItems(labels)
+        selection = next(
+            (i for i, (address, _) in enumerate(devices)
+             if address == previous),
+            0 if devices else -1)
+        self._device.SetSelection(selection)
+        if devices:
+            self._status.SetLabel('')
+        else:
+            self._status.SetLabel(_('No Bluetooth devices found'))
+        self._selected = self.get_selected_device()
+        self._update_ok_button()
+
+    def _window_destroyed(self, event):
+        if event.GetEventObject() is self:
+            self._alive = False
+        event.Skip()

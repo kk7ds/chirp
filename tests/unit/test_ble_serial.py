@@ -1,7 +1,8 @@
-import io
+import asyncio
 import importlib.util
-import signal
+import os
 import sys
+import tempfile
 import threading
 import unittest
 from pathlib import Path
@@ -20,19 +21,13 @@ modules = {
     'chirp.wxui.developer': mock.MagicMock(),
 }
 with mock.patch.dict(sys.modules, modules):
-    import chirp
-
     chirp_path = Path(__file__).resolve().parents[2] / 'chirp'
-    ble_spec = importlib.util.spec_from_file_location(
-        'chirp._ble_serial_test', chirp_path / 'ble_serial.py')
-    ble = importlib.util.module_from_spec(ble_spec)
-    ble_spec.loader.exec_module(ble)
-    with mock.patch.object(chirp, 'ble_serial', ble, create=True):
-        spec = importlib.util.spec_from_file_location(
-            'chirp.wxui._clone_ble_test', chirp_path / 'wxui' / 'clone.py')
-        clone = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(clone)
+    spec = importlib.util.spec_from_file_location(
+        'chirp.wxui._clone_ble_test', chirp_path / 'wxui' / 'clone.py')
+    clone = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(clone)
 
+from chirp import ble_serial as backend  # noqa: E402
 from chirp import chirp_common, errors, platform  # noqa: E402
 from chirp.drivers import baofeng_uv17Pro  # noqa: E402
 
@@ -45,27 +40,153 @@ class _Radio(object):
 
 
 class TestBleSerial(unittest.TestCase):
-    def test_parse_ble_scan_output(self):
-        output = (
-            'Started BLE scan\n'
-            '20:91:48:4C:4C:54 (rssi=-56): UV Radio\n'
-            '55AEB150-5AF1-4318-A02E-19A46223F572 (RSSI=-70):\n'
-            'Finished BLE scan\n')
-        self.assertEqual(ble.parse_ble_scan_output(output), [
-            ('20:91:48:4C:4C:54', 'UV Radio'),
-            ('55AEB150-5AF1-4318-A02E-19A46223F572', ''),
-        ])
+    def setUp(self):
+        tempdir = tempfile.TemporaryDirectory()
+        self.addCleanup(tempdir.cleanup)
+        self.ble_port = os.path.join(tempdir.name, 'ttyBLE')
+        port_patch = mock.patch('ble_serial.DEFAULT_PORT', self.ble_port)
+        port_patch.start()
+        self.addCleanup(port_patch.stop)
+
+    def test_scan_ble_devices(self):
+        first = mock.Mock(address='20:91:48:4C:4C:54')
+        first.name = 'UV Radio'
+        second = mock.Mock(address='55AEB150-5AF1-4318-A02E-19A46223F572')
+        second.name = None
+        devices = {
+            'first': (first, mock.Mock()),
+            'second': (second, mock.Mock()),
+        }
+        with mock.patch('ble_serial.scan.main.BleakScanner.discover',
+                        new_callable=mock.AsyncMock,
+                        return_value=devices) as discover:
+            self.assertEqual(backend.scan_ble_devices(), [
+                ('20:91:48:4C:4C:54', 'UV Radio'),
+                ('55AEB150-5AF1-4318-A02E-19A46223F572', 'None'),
+            ])
+        discover.assert_awaited_once_with(
+            adapter='hci0', timeout=5.0, return_adv=True)
+
+    def test_scan_runs_on_worker_thread(self):
+        dialog = mock.Mock()
+        dialog._scanning = False
+        dialog._scan_devices_async.side_effect = (
+            lambda: clone.BluetoothDeviceDialog._scan_devices_async(dialog))
+        started = threading.Event()
+        release = threading.Event()
+        scheduled = threading.Event()
+        worker_threads = []
+        devices = [('address', 'Radio')]
+
+        def scan():
+            worker_threads.append(threading.current_thread())
+            started.set()
+            if not release.wait(2):
+                raise TimeoutError('test did not release BLE scan')
+            return devices
+
+        def call_after(*args):
+            scheduled.set()
+
+        with mock.patch.object(backend, 'scan_ble_devices',
+                               side_effect=scan), \
+                mock.patch.object(wx, 'CallAfter',
+                                  side_effect=call_after) as call_after_mock:
+            try:
+                clone.BluetoothDeviceDialog._refresh_devices(dialog)
+                self.assertTrue(started.wait(1))
+                self.assertIsNot(worker_threads[0], threading.current_thread())
+                release.set()
+                self.assertTrue(scheduled.wait(2))
+                worker_threads[0].join(2)
+            finally:
+                release.set()
+        call_after_mock.assert_called_once_with(
+            dialog._scan_complete, devices, None)
+
+    def test_scan_stays_active_until_callback_is_processed(self):
+        dialog = mock.Mock()
+        dialog._scanning = False
+        dialog._alive = True
+        dialog._selected = None
+        dialog.get_selected_device.return_value = None
+        with mock.patch.object(clone.threading, 'Thread') as thread:
+            clone.BluetoothDeviceDialog._refresh_devices(dialog)
+            clone.BluetoothDeviceDialog._refresh_devices(dialog)
+        thread.assert_called_once()
+        self.assertTrue(dialog._scanning)
+        dialog._refresh.Disable.assert_called_once_with()
+
+        clone.BluetoothDeviceDialog._scan_complete(dialog, [], None)
+        self.assertFalse(dialog._scanning)
+        dialog._refresh.Enable.assert_called_once_with()
+
+    def test_scan_callback_after_dialog_destroy_is_ignored(self):
+        dialog = mock.Mock()
+        dialog._alive = False
+        clone.BluetoothDeviceDialog._scan_complete(dialog, [], None)
+        dialog._refresh.Enable.assert_not_called()
+
+    def test_scan_disables_ok_until_completion(self):
+        dialog = mock.Mock()
+        dialog.get_selected_device.return_value = 'address'
+        button = dialog.FindWindow.return_value
+        parent_button = dialog.FindWindowById.return_value
+        dialog._scanning = True
+
+        clone.BluetoothDeviceDialog._update_ok_button(dialog)
+        button.Enable.assert_called_with(False)
+
+        dialog._scanning = False
+        clone.BluetoothDeviceDialog._update_ok_button(dialog)
+        button.Enable.assert_called_with(True)
+
+        dialog.get_selected_device.return_value = None
+        clone.BluetoothDeviceDialog._update_ok_button(dialog)
+        button.Enable.assert_called_with(False)
+        parent_button.Enable.assert_not_called()
+
+    def test_scan_timeout_is_reported(self):
+        with mock.patch('ble_serial.scan.main.scan',
+                        new_callable=mock.AsyncMock,
+                        side_effect=asyncio.TimeoutError), \
+                self.assertRaisesRegex(TimeoutError,
+                                       'Bluetooth scan timed out'):
+            backend.scan_ble_devices()
+
+    def test_scan_failure_is_reported_by_worker(self):
+        dialog = mock.Mock()
+        for error, message in ((ValueError('Bluetooth unavailable'),
+                                'Bluetooth unavailable'),
+                               (ValueError(), 'ValueError')):
+            with self.subTest(error=message), \
+                    mock.patch.object(backend, 'scan_ble_devices',
+                                      side_effect=error), \
+                    mock.patch.object(wx, 'CallAfter') as call_after:
+                clone.BluetoothDeviceDialog._scan_devices_async(dialog)
+            call_after.assert_called_once_with(
+                dialog._scan_complete, None, message)
+
+    def test_scan_timeout_is_translated_by_worker(self):
+        dialog = mock.Mock()
+        with mock.patch.object(backend, 'scan_ble_devices',
+                               side_effect=TimeoutError), \
+                mock.patch.object(clone, '_',
+                                  return_value='translated timeout'), \
+                mock.patch.object(wx, 'CallAfter') as call_after:
+            clone.BluetoothDeviceDialog._scan_devices_async(dialog)
+        call_after.assert_called_once_with(
+            dialog._scan_complete, None, 'translated timeout')
 
     def test_scanned_device_labels_and_selected_address(self):
         dialog = mock.Mock()
         dialog._alive = True
-        dialog._scan_id = 1
         dialog.get_selected_device.return_value = None
         dialog._selected = 'address-2'
         devices = [('address-1', 'Radio'), ('address-2', ''),
                    ('address-3', 'None')]
 
-        ble.BluetoothDeviceDialog._scan_complete(dialog, 1, devices, None)
+        clone.BluetoothDeviceDialog._scan_complete(dialog, devices, None)
         dialog._device.SetItems.assert_called_once_with([
             'address-1: Radio', 'address-2: None', 'address-3: None'])
         dialog._device.SetSelection.assert_called_once_with(1)
@@ -73,34 +194,72 @@ class TestBleSerial(unittest.TestCase):
     def test_ble_device_prefers_name_and_falls_back_to_address(self):
         address = '20:91:48:4C:4C:54'
         self.assertEqual(
-            ble.device(address, 'walkie-talkie'),
+            clone.get_ble_device_label(address, 'walkie-talkie'),
             'BLE: walkie-talkie')
         self.assertEqual(
-            ble.device(address, 'None'),
+            clone.get_ble_device_label(address, 'None'),
             'BLE: {}'.format(address))
 
-    def test_start_ble_serial_uses_selected_device(self):
-        connection = ble.BluetoothConnection(
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_bridge_connects_and_transfers_serial_data(self):
+        client = mock.Mock()
+        client.connect = mock.AsyncMock()
+        client.setup_chars = mock.AsyncMock()
+        client.disconnect = mock.AsyncMock()
+
+        async def wait_for_stop():
+            await asyncio.Event().wait()
+
+        client.send_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        client.check_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        received = threading.Event()
+        client.queue_send.side_effect = lambda data: received.set()
+        connection = clone.BluetoothConnection(
             '20:91:48:4C:4C:54', _Radio, clone.open_serial, mock.Mock())
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.stdout = io.StringIO(
-            'INFO | linux_pty.py: Port endpoint created on '
-            '/tmp/ttyBLE -> /dev/ttys012\n'
-            'INFO | main.py: Running main loop!\n')
-        with mock.patch.object(ble.subprocess, 'Popen',
-                               return_value=process) as popen, \
-                mock.patch.object(ble.os.path, 'exists',
-                                  return_value=True) as exists, \
-                mock.patch.object(ble.time, 'monotonic', return_value=0):
-            self.assertEqual(connection._start_process(), '/tmp/ttyBLE')
-        exists.assert_called_once_with('/tmp/ttyBLE')
-        popen.assert_called_once_with(
-            [sys.executable, '-m', 'ble_serial', '-d',
-             '20:91:48:4C:4C:54'],
-            stdout=ble.subprocess.PIPE,
-            stderr=ble.subprocess.STDOUT,
-            text=True, bufsize=1)
+        with tempfile.TemporaryDirectory() as trace_dir, \
+                mock.patch.object(backend.serialtrace.SerialTrace, 'trace_dir',
+                                  new_callable=mock.PropertyMock,
+                                  return_value=trace_dir), \
+                mock.patch.object(backend.serialtrace, 'TRACEFILES', []), \
+                mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                           return_value=client) as factory:
+            try:
+                pipe = connection._open_port()
+                try:
+                    self.assertEqual(pipe.port, self.ble_port)
+                    self.assertTrue(os.path.islink(self.ble_port))
+                    pipe.write(b'hello')
+                    self.assertTrue(received.wait(2))
+                    client.queue_send.assert_called_once_with(b'hello')
+                    receive = client.set_receiver.call_args.args[0]
+                    connection._serial._loop.call_soon_threadsafe(
+                        receive, b'world')
+                    self.assertEqual(pipe.read(5), b'world')
+                finally:
+                    pipe.close()
+            finally:
+                connection._serial.stop()
+                connection._serial._thread.join(2)
+        factory.assert_called_once_with('hci0', None)
+        client.connect.assert_awaited_once_with(
+            '20:91:48:4C:4C:54', 'public', None, 5.0)
+        client.setup_chars.assert_awaited_once_with(None, None, 'rw', False)
+        client.disconnect.assert_awaited_once()
+        self.assertFalse(connection._serial._thread.is_alive())
+        self.assertFalse(os.path.lexists(self.ble_port))
+
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_existing_ble_port_is_not_replaced_or_removed(self):
+        with open(self.ble_port, 'w') as existing:
+            existing.write('existing port')
+        connection = clone.BluetoothConnection(
+            'address', _Radio, clone.open_serial, mock.Mock())
+
+        with self.assertRaises(FileExistsError):
+            connection._serial.start()
+        connection._serial._thread.join(2)
+        with open(self.ble_port) as existing:
+            self.assertEqual(existing.read(), 'existing port')
 
     def test_bluetooth_connection_runs_in_background(self):
         pipe = mock.Mock()
@@ -126,7 +285,7 @@ class TestBleSerial(unittest.TestCase):
             callbacks.append(args)
             scheduled.set()
 
-        with mock.patch.object(ble.BluetoothConnection, '_open_port',
+        with mock.patch.object(clone.BluetoothConnection, '_open_port',
                                side_effect=open_ble), \
                 mock.patch.object(wx, 'CallAfter', side_effect=call_after):
             try:
@@ -146,37 +305,35 @@ class TestBleSerial(unittest.TestCase):
         dialog._stop_ble_activity.assert_called_once()
 
     def test_bluetooth_selection_requires_device(self):
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             None, _Radio, clone.open_serial, mock.Mock())
-        with mock.patch.object(connection, '_start_process') as start, \
+        with mock.patch.object(connection._serial, 'start') as start, \
                 self.assertRaisesRegex(RuntimeError, 'Select a Bluetooth'):
             connection._open_port()
         start.assert_not_called()
 
     def test_ble_port_opens_with_managed_serial_trace(self):
-        process = mock.Mock()
-        pipe = mock.Mock()
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-        with mock.patch.object(connection, '_start_process',
+        pipe = connection._serial
+        with mock.patch.object(connection._serial, 'start',
                                return_value='/tmp/ttyBLE'), \
-                mock.patch.object(ble.serialtrace, 'SerialTrace',
-                                  return_value=pipe) as factory:
+                mock.patch.object(pipe, 'open') as serial_open:
             result = connection._open_port()
 
         self.assertIs(result, pipe)
-        factory.assert_called_once_with(
-            on_close=connection.stop, is_ble=True, baudrate=_Radio.BAUD_RATE,
-            rtscts=_Radio.HARDWARE_FLOW, timeout=0.25, write_timeout=2)
+        self.assertEqual(pipe.baudrate, _Radio.BAUD_RATE)
+        self.assertEqual(pipe.rtscts, _Radio.HARDWARE_FLOW)
+        self.assertEqual(pipe.timeout, 0.25)
+        self.assertEqual(pipe.write_timeout, 2)
         self.assertEqual(pipe.port, '/tmp/ttyBLE')
-        pipe.open.assert_called_once_with()
+        serial_open.assert_called_once_with()
 
     def test_non_bluetooth_selection_opens_serial_port(self):
         dialog = mock.Mock()
         continuation = mock.Mock()
         with mock.patch.object(clone, 'open_serial') as open_serial, \
-                mock.patch.object(ble, 'BluetoothConnection') as open_ble:
+                mock.patch.object(clone, 'BluetoothConnection') as open_ble:
             clone.ChirpCloneDialog._open_selected_port(
                 dialog, '/dev/ttyUSB0', _Radio, continuation)
         continuation.assert_called_once_with(open_serial.return_value)
@@ -184,66 +341,31 @@ class TestBleSerial(unittest.TestCase):
         open_ble.assert_not_called()
         dialog._start_ble_activity.assert_not_called()
 
-    def test_ble_port_open_failure_stops_process(self):
-        process = mock.Mock()
-        pipe = mock.Mock()
-        pipe.open.side_effect = OSError('port unavailable')
-        connection = ble.BluetoothConnection(
+    def test_ble_port_open_failure_stops_bridge(self):
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-        with mock.patch.object(connection, '_start_process',
+        with mock.patch.object(connection._serial, 'start',
                                return_value='/tmp/ttyBLE'), \
-                mock.patch.object(connection, 'stop') as stop, \
-                mock.patch.object(clone.serialtrace, 'SerialTrace',
-                                  return_value=pipe), \
+                mock.patch.object(connection._serial, 'stop') as stop, \
+                mock.patch.object(connection._serial, 'open',
+                                  side_effect=OSError('port unavailable')), \
                 self.assertRaisesRegex(OSError, 'port unavailable'):
             connection._open_port()
         stop.assert_called_once_with()
 
-    def test_missing_ble_serial_port_fails_and_stops_process(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.stdout = io.StringIO('Running main loop!\n')
-        connection = ble.BluetoothConnection(
-            'device', _Radio, clone.open_serial, mock.Mock())
-        with mock.patch.object(ble.subprocess, 'Popen',
-                               return_value=process), \
-                mock.patch.object(connection, 'stop') as stop, \
-                self.assertRaisesRegex(RuntimeError, 'did not report'):
-            connection._start_process()
-        stop.assert_called_once_with()
-
-    def test_cancelled_start_stops_ble_process(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.stdout = io.StringIO('')
-        connection = ble.BluetoothConnection(
-            'device', _Radio, clone.open_serial, mock.Mock())
-
-        def start_process(*args, **kwargs):
-            connection._cancelled.set()
-            return process
-
-        with mock.patch.object(ble.subprocess, 'Popen',
-                               side_effect=start_process), \
-                mock.patch.object(connection, 'stop') as stop, \
-                self.assertRaises(InterruptedError):
-            connection._start_process()
-        stop.assert_called_once_with()
-
-    def test_cancelled_connection_does_not_start_process(self):
-        connection = ble.BluetoothConnection(
+    def test_cancelled_connection_does_not_start_bridge(self):
+        connection = clone.BluetoothConnection(
             'device', _Radio, clone.open_serial, mock.Mock())
         connection.cancel()
-        with mock.patch.object(ble.subprocess, 'Popen') as popen, \
+        with mock.patch.object(backend.threading, 'Thread') as thread, \
                 self.assertRaises(InterruptedError):
-            connection._start_process()
-        popen.assert_not_called()
+            connection._serial.start()
+        thread.assert_not_called()
 
     def test_cancel_before_connection_callback_closes_pipe(self):
         dialog = mock.Mock()
         continuation = mock.Mock()
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, continuation)
         pipe = mock.Mock()
         connection._pipe = pipe
@@ -254,7 +376,18 @@ class TestBleSerial(unittest.TestCase):
 
         pipe.close.assert_called_once_with()
         continuation.assert_not_called()
+        self.assertIsNone(connection._on_complete)
         dialog._stop_ble_activity.assert_not_called()
+
+    def test_delivery_without_callback_closes_pipe(self):
+        connection = clone.BluetoothConnection(
+            'address', _Radio, clone.open_serial, None)
+        pipe = mock.Mock()
+        connection._pipe = pipe
+
+        connection._deliver(None)
+
+        pipe.close.assert_called_once_with()
 
     def test_cancel_during_connection_closes_late_pipe(self):
         dialog = mock.Mock()
@@ -272,7 +405,7 @@ class TestBleSerial(unittest.TestCase):
                 raise TimeoutError('test did not release BLE connection')
             return pipe
 
-        with mock.patch.object(ble.BluetoothConnection, '_open_port',
+        with mock.patch.object(clone.BluetoothConnection, '_open_port',
                                side_effect=open_ble), \
                 mock.patch.object(wx, 'CallAfter') as call_after:
             try:
@@ -375,68 +508,74 @@ class TestBleSerial(unittest.TestCase):
         show_error.assert_called_once()
         dialog.enable_running.assert_called_once_with()
 
-    def test_bluetooth_connection_timeout_stops_process_and_reports_error(
-            self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.stdout = io.StringIO('')
+    def test_bluetooth_connection_timeout_stops_bridge_and_reports_error(self):
         on_complete = mock.Mock()
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'device', _Radio, clone.open_serial, on_complete)
-        with mock.patch.object(ble.subprocess, 'Popen',
-                               return_value=process), \
-                mock.patch.object(ble.time, 'monotonic',
-                                  side_effect=[0, 31]), \
+        with mock.patch.object(backend.threading, 'Thread'), \
+                mock.patch.object(connection._serial._ready, 'wait',
+                                  return_value=False), \
+                mock.patch.object(connection._serial, 'stop') as stop, \
                 mock.patch.object(wx, 'CallAfter') as call_after:
-            connection._connect()
+            connection.run()
             callback, *args = call_after.call_args.args
             callback(*args)
 
         pipe, error = on_complete.call_args.args
         self.assertIsNone(pipe)
-        self.assertIn('Timed out waiting for ble-serial to connect', error)
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-        process.wait.assert_called_once_with(timeout=3)
-        self.assertIsNone(connection._process)
+        self.assertIn('Timed out waiting for Bluetooth connection', error)
+        stop.assert_called_once_with()
 
-    def test_non_radio_ble_process_failure_is_reported(self):
-        process = mock.Mock()
-        process.poll.return_value = 0
-        process.returncode = 0
-        process.stdout = io.StringIO(
-            'AssertionError: No characteristic in builtin write list found!\n')
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_ble_connect_timeout_preserves_error(self):
+        client = mock.Mock()
+        client.connect = mock.AsyncMock(
+            side_effect=TimeoutError('BLE connection timed out'))
+        client.disconnect = mock.AsyncMock()
+        connection = clone.BluetoothConnection(
+            'device', _Radio, clone.open_serial, mock.Mock())
+        with mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                        return_value=client), \
+                self.assertRaisesRegex(TimeoutError,
+                                       'BLE connection timed out'):
+            connection._serial.start()
+        connection._serial._thread.join(2)
+        client.disconnect.assert_awaited_once()
+
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_non_radio_ble_connection_failure_is_reported(self):
+        client = mock.Mock()
+        client.connect = mock.AsyncMock()
+        client.setup_chars = mock.AsyncMock(
+            side_effect=AssertionError('No matching characteristic'))
+        client.disconnect = mock.AsyncMock()
         dialog = mock.Mock()
         continuation = mock.Mock()
         dialog._ble_connection_complete.side_effect = (
             lambda *args: clone.ChirpCloneDialog._ble_connection_complete(
                 dialog, *args))
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'non-radio', _Radio, clone.open_serial,
             lambda pipe, error: dialog._ble_connection_complete(
                 continuation, pipe, error))
-        with mock.patch.object(ble.subprocess, 'Popen',
-                               return_value=process), \
+        with mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                        return_value=client), \
                 mock.patch.object(wx, 'CallAfter') as call_after:
-            connection._connect()
+            connection.run()
             callback, *args = call_after.call_args.args
             callback(*args)
 
-        self.assertIn('status 0', dialog.fail.call_args.args[0])
-        self.assertIn('No characteristic in builtin write list found',
+        self.assertIn('No matching characteristic',
                       dialog.fail.call_args.args[0])
-        self.assertIsNone(connection._process)
+        client.disconnect.assert_awaited_once()
         dialog._stop_ble_activity.assert_called_once_with()
         continuation.assert_not_called()
 
     def test_non_radio_silent_serial_reports_no_response_and_stops_ble(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'non-radio', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-        pipe = clone.serialtrace.SerialTrace(
-            on_close=connection.stop, is_ble=True)
-        pipe.port = '/tmp/other-ble-port'
+        pipe = connection._serial
+        pipe.port = '/tmp/ttyBLE'
         radio = baofeng_uv17Pro.UV5RMini(pipe)
         dialog = mock.Mock()
         thread = clone.CloneThread(radio, dialog, 'sync_in')
@@ -454,9 +593,7 @@ class TestBleSerial(unittest.TestCase):
         self.assertIsInstance(error, errors.RadioNoResponse)
         self.assertEqual(str(error), 'No response from radio')
         dialog.complete.assert_not_called()
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-        process.wait.assert_called_once_with(timeout=3)
-        self.assertIsNone(connection._process)
+        self.assertTrue(connection._serial._stopped.is_set())
 
     def test_action_is_ignored_while_connection_is_pending(self):
         dialog = mock.Mock()
@@ -482,7 +619,7 @@ class TestBleSerial(unittest.TestCase):
             callbacks.append(args)
             scheduled.set()
 
-        with mock.patch.object(ble.BluetoothConnection, '_open_port',
+        with mock.patch.object(clone.BluetoothConnection, '_open_port',
                                side_effect=OSError('connection failed')), \
                 mock.patch.object(wx, 'CallAfter', side_effect=call_after):
             clone.ChirpCloneDialog._open_selected_port(
@@ -539,58 +676,32 @@ class TestBleSerial(unittest.TestCase):
                                  ['open', 'prompt', 'upload'])
 
     def test_unselected_bluetooth_upload_prompts_then_selects_then_opens(self):
-        dialog = mock.Mock()
-        radio = mock.Mock()
-        radio.BAUD_RATE = 19200
-        radio.pipe = None
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_upload_ble = 'Bluetooth upload'
-        radio.get_prompts.return_value = prompts
-        dialog._radio = radio
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._ble_device_address = None
-        dialog._upload_before_serial.side_effect = (
-            lambda *args: clone.ChirpUploadDialog
-            ._upload_before_serial(dialog, *args))
-        events = []
-        dialog._select_ble_device.side_effect = (
-            lambda: events.append('picker') or True)
-        dialog._open_selected_port.side_effect = (
-            lambda *args: events.append('connect'))
-        prompt = mock.Mock()
-        prompt.ShowModal.side_effect = (
-            lambda: events.append('prompt') or clone.wx.ID_OK)
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpUploadDialog._actual_action(dialog, mock.Mock())
-
-        self.assertEqual(events, ['prompt', 'picker', 'connect'])
-
-    def test_unselected_bluetooth_upload_prompts_before_open_when_required(
-            self):
-        dialog = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_upload_ble = 'Bluetooth upload'
-        prompts.display_pre_upload_prompt_before_opening_port = False
-        dialog._radio.get_prompts.return_value = prompts
-        dialog._radio.pipe = None
-        dialog._ble_device_address = None
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        events = []
-        dialog._upload_before_serial.side_effect = (
-            lambda *args: clone.ChirpUploadDialog
-            ._upload_before_serial(dialog, *args))
-        dialog._select_ble_device.side_effect = (
-            lambda: events.append('picker') or True)
-        dialog._open_selected_port.side_effect = (
-            lambda *args: events.append('connect'))
-        prompt = mock.Mock()
-        prompt.ShowModal.side_effect = (
-            lambda: events.append('prompt') or clone.wx.ID_OK)
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpUploadDialog._actual_action(dialog, mock.Mock())
-        self.assertEqual(events, ['prompt', 'picker', 'connect'])
+        for before_open in (True, False):
+            with self.subTest(before_open=before_open):
+                dialog = mock.Mock()
+                prompts = chirp_common.RadioPrompts()
+                prompts.pre_upload_ble = 'Bluetooth upload'
+                prompts.display_pre_upload_prompt_before_opening_port = (
+                    before_open)
+                dialog._radio.get_prompts.return_value = prompts
+                dialog._radio.pipe = None
+                dialog._ble_device_address = None
+                dialog.get_selected_port.return_value = clone.BLUETOOTH
+                events = []
+                dialog._upload_before_serial.side_effect = (
+                    lambda *args: clone.ChirpUploadDialog
+                    ._upload_before_serial(dialog, *args))
+                dialog._select_ble_device.side_effect = (
+                    lambda: events.append('picker') or True)
+                dialog._open_selected_port.side_effect = (
+                    lambda *args: events.append('connect'))
+                prompt = mock.Mock()
+                prompt.ShowModal.side_effect = (
+                    lambda: events.append('prompt') or clone.wx.ID_OK)
+                with mock.patch.object(clone, 'ChirpRadioPromptDialog',
+                                       return_value=prompt):
+                    clone.ChirpUploadDialog._actual_action(dialog, mock.Mock())
+                self.assertEqual(events, ['prompt', 'picker', 'connect'])
 
     def test_cancelling_upload_device_picker_does_not_connect(self):
         dialog = mock.Mock()
@@ -666,10 +777,8 @@ class TestBleSerial(unittest.TestCase):
                           baofeng_uv17Pro.RadioddityGM30Plus):
                 with self.subTest(radio=radio.MODEL):
                     prompts = radio.get_prompts()
-                    self.assertIn('interface cable', prompts.pre_download)
-                    self.assertIn('interface cable', prompts.pre_upload)
-                    self.assertIn('Enable Bluetooth', prompts.pre_download_ble)
-                    self.assertIn('Enable Bluetooth', prompts.pre_upload_ble)
+                    self.assertTrue(prompts.pre_download_ble)
+                    self.assertTrue(prompts.pre_upload_ble)
 
     def test_download_prompt_matches_selected_port_and_radio(self):
         for port, has_ble, expected in (
@@ -739,28 +848,6 @@ class TestBleSerial(unittest.TestCase):
         dialog._select_ble_device.assert_called_once_with()
         dialog._open_selected_port.assert_not_called()
         dialog.cancel_action.assert_called_once_with()
-
-    def test_pre_download_prompt_follows_device_selection_on_ok(self):
-        dialog = mock.Mock()
-        radio = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_download_ble = 'Bluetooth download'
-        radio.get_prompts.return_value = prompts
-        dialog.get_selected_rclass.return_value = radio
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._ble_device_address = 'device-address'
-        events = []
-        dialog._open_selected_port.side_effect = (
-            lambda *args: events.append('open'))
-        event = mock.Mock()
-        event.GetEventObject.return_value.GetId.return_value = clone.wx.ID_OK
-        prompt = mock.Mock()
-        prompt.ShowModal.side_effect = (
-            lambda: events.append('prompt') or clone.wx.ID_OK)
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpDownloadDialog._actual_action(dialog, event)
-        self.assertEqual(events, ['prompt', 'open'])
 
     def test_pre_download_prompt_then_picker_then_connection_when_unselected(
             self):
@@ -837,9 +924,9 @@ class TestBleSerial(unittest.TestCase):
                                  'pre_upload')
                 dialog._upload_with_serial.assert_called_once()
 
-    def test_ble_pipe_with_reported_path_is_detected(self):
-        pipe = clone.serialtrace.SerialTrace(is_ble=True)
-        pipe.port = '/tmp/other-ble-port'
+    def test_managed_ble_pipe_is_detected(self):
+        pipe = backend.BluetoothBridge('address')
+        pipe.port = '/tmp/ttyBLE'
         self.assertTrue(platform.UnixPlatform.is_ble_serial(None, pipe))
         pipe.close()
 
@@ -859,15 +946,6 @@ class TestBleSerial(unittest.TestCase):
                 self.assertFalse(
                     platform.UnixPlatform.is_ble_serial(None, pipe))
 
-    def test_ble_device_list_dialog_returns_selected_address(self):
-        dialog = mock.Mock()
-        dialog._devices = [('20:91:48:4C:4C:54', 'UV Radio')]
-        dialog._device.GetSelection.return_value = 0
-
-        self.assertEqual(
-            ble.BluetoothDeviceDialog.get_selected_device_info(dialog),
-            ('20:91:48:4C:4C:54', 'UV Radio'))
-
     def test_select_ble_device_updates_selection_and_closes_dialog(self):
         parent = mock.Mock()
         parent._ble_device_address = 'old-address'
@@ -875,7 +953,7 @@ class TestBleSerial(unittest.TestCase):
         chooser.ShowModal.return_value = clone.wx.ID_OK
         chooser.get_selected_device_info.return_value = ('address', 'Radio')
 
-        with mock.patch.object(ble, 'BluetoothDeviceDialog',
+        with mock.patch.object(clone, 'BluetoothDeviceDialog',
                                return_value=chooser) as create_dialog:
             self.assertTrue(clone.ChirpCloneDialog._select_ble_device(parent))
 
@@ -894,7 +972,7 @@ class TestBleSerial(unittest.TestCase):
         chooser = mock.Mock()
         chooser.ShowModal.return_value = clone.wx.ID_CANCEL
 
-        with mock.patch.object(ble, 'BluetoothDeviceDialog',
+        with mock.patch.object(clone, 'BluetoothDeviceDialog',
                                return_value=chooser):
             self.assertFalse(clone.ChirpCloneDialog._select_ble_device(parent))
 
@@ -1016,14 +1094,10 @@ class TestBleSerial(unittest.TestCase):
         self.assertEqual(dialog._ble_device_address, 'old-address')
         dialog._persist_choices.assert_not_called()
 
-    def test_closing_ble_pipe_stops_process(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        connection = ble.BluetoothConnection(
+    def test_closing_ble_pipe_stops_bridge(self):
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-        pipe = clone.serialtrace.SerialTrace(
-            on_close=connection.stop, is_ble=True)
+        pipe = connection._serial
 
         with mock.patch.object(clone.serialtrace.serial.Serial, 'close') as \
                 close:
@@ -1031,92 +1105,138 @@ class TestBleSerial(unittest.TestCase):
             pipe.close()
 
         self.assertEqual(close.call_count, 2)
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-        process.wait.assert_called_once_with(timeout=3)
+        self.assertTrue(connection._serial._stopped.is_set())
+
+    def test_ble_close_stops_bridge_even_if_serial_close_fails(self):
+        pipe = backend.BluetoothBridge('address')
+        with mock.patch('serial.Serial.close',
+                        side_effect=OSError('close failed')), \
+                mock.patch.object(pipe, 'stop') as stop, \
+                self.assertRaisesRegex(OSError, 'close failed'):
+            pipe.close()
+        stop.assert_called_once_with()
 
     def test_delivered_pipe_stops_its_connection(self):
-        process = mock.Mock()
-        process.poll.return_value = None
         callback = mock.Mock()
-        connection = ble.BluetoothConnection(
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, callback)
-        connection._process = process
-        with mock.patch.object(connection, '_start_process',
+        with mock.patch.object(connection._serial, 'start',
                                return_value='/tmp/ttyBLE'), \
                 mock.patch.object(clone.serialtrace.SerialTrace, 'open'), \
                 mock.patch.object(clone.serialtrace.serial.Serial, 'close'), \
                 mock.patch.object(wx, 'CallAfter') as call_after:
-            connection._connect()
+            connection.run()
             deliver, *args = call_after.call_args.args
             deliver(*args)
             pipe, error = callback.call_args.args
             self.assertIsNone(error)
             pipe.close()
 
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-        process.wait.assert_called_once_with(timeout=3)
+        self.assertTrue(connection._serial._stopped.is_set())
 
-    def test_stop_escalates_and_is_idempotent(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.wait.side_effect = [
-            ble.subprocess.TimeoutExpired('ble-serial', 3),
-            ble.subprocess.TimeoutExpired('ble-serial', 3),
-            None]
-        connection = ble.BluetoothConnection(
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_cancel_during_ble_connect_disconnects_and_stops_bridge(self):
+        started = threading.Event()
+        client = mock.Mock()
+
+        async def connect(*args):
+            started.set()
+            await asyncio.Event().wait()
+
+        client.connect = mock.AsyncMock(side_effect=connect)
+        client.disconnect = mock.AsyncMock()
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
+        with mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                        return_value=client), \
+                mock.patch.object(wx, 'CallAfter') as call_after:
+            connection.start()
+            try:
+                self.assertTrue(started.wait(2))
+                connection.cancel()
+                connection.join(2)
+                connection._serial._thread.join(2)
+                self.assertFalse(connection.is_alive())
+                self.assertFalse(connection._serial._thread.is_alive())
+                client.disconnect.assert_awaited_once()
+                call_after.assert_not_called()
+            finally:
+                connection.cancel()
+                connection.join(2)
+                connection._serial._thread.join(2)
 
-        connection.stop()
-        connection.stop()
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_full_serial_buffer_does_not_block_bridge_shutdown(self):
+        client = mock.Mock()
+        client.connect = mock.AsyncMock()
+        client.setup_chars = mock.AsyncMock()
+        client.disconnect = mock.AsyncMock()
 
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-        process.terminate.assert_called_once_with()
-        process.kill.assert_called_once_with()
-        self.assertEqual(process.wait.call_count, 3)
+        async def wait_for_stop():
+            await asyncio.Event().wait()
 
-    def test_concurrent_stop_signals_process_once(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        entered = threading.Event()
+        client.send_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        client.check_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        connection = clone.BluetoothConnection(
+            'address', _Radio, clone.open_serial, mock.Mock())
+        with mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                        return_value=client):
+            try:
+                connection._serial.start()
+                receive = client.set_receiver.call_args.args[0]
+                responsive = threading.Event()
+
+                def queue_data():
+                    receive(b'x' * (1024 * 1024))
+                    connection._serial._loop.call_later(0.1, responsive.set)
+
+                connection._serial._loop.call_soon_threadsafe(queue_data)
+                self.assertTrue(responsive.wait(2))
+            finally:
+                connection._serial.stop()
+                connection._serial._thread.join(2)
+        self.assertFalse(connection._serial._thread.is_alive())
+        client.disconnect.assert_awaited_once()
+
+    @unittest.skipUnless(hasattr(os, 'openpty'), 'requires a pseudo-terminal')
+    def test_repeated_stop_does_not_interrupt_bridge_cleanup(self):
+        disconnecting = threading.Event()
         release = threading.Event()
+        client = mock.Mock()
+        client.connect = mock.AsyncMock()
+        client.setup_chars = mock.AsyncMock()
 
-        def send_signal(_signal):
-            entered.set()
-            if not release.wait(2):
-                raise TimeoutError('test did not release process shutdown')
+        async def wait_for_stop():
+            await asyncio.Event().wait()
 
-        process.send_signal.side_effect = send_signal
-        connection = ble.BluetoothConnection(
+        async def disconnect():
+            disconnecting.set()
+            await asyncio.to_thread(release.wait, 2)
+
+        client.send_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        client.check_loop = mock.AsyncMock(side_effect=wait_for_stop)
+        client.disconnect = mock.AsyncMock(side_effect=disconnect)
+        connection = clone.BluetoothConnection(
             'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-        first = threading.Thread(target=connection.stop)
-        second = threading.Thread(target=connection.stop)
-        try:
-            first.start()
-            self.assertTrue(entered.wait(1))
-            second.start()
-        finally:
-            release.set()
-            first.join(timeout=2)
-            if second.ident is not None:
-                second.join(timeout=2)
-
-        self.assertFalse(first.is_alive())
-        self.assertFalse(second.is_alive())
-        process.send_signal.assert_called_once_with(signal.SIGINT)
-
-    def test_failed_stop_can_be_retried(self):
-        process = mock.Mock()
-        process.poll.return_value = None
-        process.send_signal.side_effect = [OSError('unavailable'), None]
-        connection = ble.BluetoothConnection(
-            'address', _Radio, clone.open_serial, mock.Mock())
-        connection._process = process
-
-        with self.assertLogs(ble.LOG, level='ERROR'):
-            connection.stop()
-        connection.stop()
-
-        self.assertEqual(process.send_signal.call_count, 2)
-        process.wait.assert_called_once_with(timeout=3)
+        with mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
+                        return_value=client):
+            connection._serial.start()
+            first = threading.Thread(target=connection._serial.stop)
+            second = threading.Thread(target=connection._serial.stop)
+            try:
+                first.start()
+                self.assertTrue(disconnecting.wait(2))
+                second.start()
+                first.join(0.5)
+                second.join(0.5)
+                self.assertFalse(first.is_alive())
+                self.assertFalse(second.is_alive())
+                self.assertTrue(connection._serial._thread.is_alive())
+                release.set()
+                connection._serial._thread.join(2)
+                self.assertFalse(connection._serial._thread.is_alive())
+                client.disconnect.assert_awaited_once()
+            finally:
+                release.set()
+                connection._serial.stop()
+                connection._serial._thread.join(2)
