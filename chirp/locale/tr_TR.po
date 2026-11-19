@@ -1160,11 +1160,6 @@ msgstr ""
 msgid "Available modules"
 msgstr "Mevcut modüller"
 
-#: ../ble_serial.py:55
-#, python-format
-msgid "BLE: %s"
-msgstr "BLE: %s"
-
 #: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr "Bant planı"
@@ -1184,18 +1179,6 @@ msgstr "Bin"
 
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
-msgstr ""
-
-#: ../ble_serial.py:239
-msgid "Bluetooth device"
-msgstr "Bluetooth cihazı"
-
-#: ../ble_serial.py:331 ../ble_serial.py:333
-msgid "Bluetooth scan failed"
-msgstr "Bluetooth taraması başarısız oldu"
-
-#: ../wxui/clone.py:45
-msgid "Bluetooth..."
 msgstr ""
 
 #: ../wxui/main.py:161
@@ -1430,10 +1413,6 @@ msgid ""
 msgstr ""
 "Arayüz kablonuzu 'TX/RX' ünitesinin arkasındaki\n"
 "PC Bağlantı Noktasına bağlayın. Kafadaki Com Portu DEĞİL.\n"
-
-#: ../wxui/clone.py:576
-msgid "Connecting to Bluetooth radio..."
-msgstr "Bluetooth telsize bağlanılıyor..."
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
@@ -2072,7 +2051,7 @@ msgstr ""
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2085,29 +2064,6 @@ msgstr ""
 "2 - Arayüz kablonuzu bağlayın\n"
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin indirilmesini gerçekleştirin\n"
-
-#: ../drivers/baofeng_uv17Pro.py:514
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:526
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-"Verilerinizi indirmek için bu talimatları izleyin:\n"
-"1 - Telsizinizi açın\n"
-"2 - Telsizinizde Bluetooth'u etkinleştirin\n"
-"3 - Listeden telsizinizi seçin\n"
-"4 - Telsizinizden veri indirmeye başlamak için OK düğmesine basın\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -2210,29 +2166,6 @@ msgstr ""
 "3 - Telsizinizi açın\n"
 "4 - Telsiz verilerinizin yüklemesini gerçekleştirin\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Verilerinizi yüklemek için bu talimatları izleyin:\n"
-"1 - Telsizinizi açın\n"
-"2 - Telsizinizde Bluetooth'u etkinleştirin\n"
-"3 - Listeden telsizinizi seçin\n"
-"4 - Telsizinize veri yüklemeye başlamak için OK düğmesine basın\n"
-
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
@@ -2293,6 +2226,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2892,10 +2826,6 @@ msgstr "Yeni Pencere"
 msgid "New version available"
 msgstr "Yeni sürüm mevcut"
 
-#: ../ble_serial.py:351
-msgid "No Bluetooth devices found"
-msgstr "Bluetooth cihazı bulunamadı"
-
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
 msgstr ""
@@ -3375,10 +3305,6 @@ msgstr "Yinele"
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
-#: ../ble_serial.py:248
-msgid "Refresh"
-msgstr "Yenile"
-
 #: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr "Yenileme Gerekli"
@@ -3510,10 +3436,6 @@ msgstr "Tarama kontrolü (atlama, dahil etme, öncelik vb.)"
 msgid "Scanlists"
 msgstr "Tarama listeleri"
 
-#: ../ble_serial.py:294
-msgid "Scanning..."
-msgstr "Taranıyor..."
-
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr "Karıştırıcı"
@@ -3542,10 +3464,6 @@ msgstr "Modları Seç"
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
 msgstr "İçe Aktarılacak Modları Seçin"
-
-#: ../ble_serial.py:181
-msgid "Select a Bluetooth device first"
-msgstr "Önce bir Bluetooth cihazı seçin"
 
 #: ../wxui/main.py:2192
 msgid "Select a bandplan"
@@ -4226,11 +4144,6 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr "Bu, bir web sitesi kaydından bir modül yükleyecektir"
 
-#: ../ble_serial.py:150
-#, python-format
-msgid "Timed out waiting for ble-serial to connect. %s"
-msgstr "ble-serial bağlantısı beklenirken zaman aşımına uğradı. %s"
-
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "Ton"
@@ -4641,31 +4554,6 @@ msgstr ""
 msgid "bits"
 msgstr "bitler"
 
-#: ../ble_serial.py:65
-#, python-format
-msgid "ble-scan exited with status %s: %s"
-msgstr "ble-scan %s durumuyla çıktı: %s"
-
-#: ../ble_serial.py:144
-#, python-format
-msgid "ble-serial connected but %s is unavailable"
-msgstr "ble-serial bağlandı ancak %s kullanılamıyor"
-
-#: ../ble_serial.py:139
-#, python-format
-msgid "ble-serial did not report a serial port. %s"
-msgstr "ble-serial bir seri bağlantı noktası bildirmedi. %s"
-
-#: ../ble_serial.py:127
-#, python-format
-msgid "ble-serial exited before connecting (status %s). %s"
-msgstr "ble-serial bağlanmadan önce çıktı (durum %s). %s"
-
-#: ../ble_serial.py:135
-#, python-format
-msgid "ble-serial stopped after connecting. %s"
-msgstr "ble-serial bağlandıktan sonra durduruldu. %s"
-
 #: ../wxui/developer.py:190
 msgid "bytes"
 msgstr "bytes"
@@ -4771,10 +4659,6 @@ msgstr "{bank} dolu"
 
 #~ msgid "%i errors during open, check the debug log for details"
 #~ msgstr "Açma sırasında %i hata, ayrıntılar için hata ayıklama günlüğünü kontrol edin"
-
-#, python-format
-#~ msgid "%s already exists. Stop any running ble-serial session and remove a stale port before connecting."
-#~ msgstr "%s zaten mevcut. Bağlanmadan önce çalışan tüm ble-serial oturumlarını durdurun ve eski bir bağlantı noktasını kaldırın."
 
 #~ msgid ""
 #~ "1. Turn radio off.\n"

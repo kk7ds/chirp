@@ -1170,11 +1170,6 @@ msgstr ""
 msgid "Available modules"
 msgstr "利用可能なモジュール"
 
-#: ../ble_serial.py:55
-#, python-format
-msgid "BLE: %s"
-msgstr "BLE: %s"
-
 #: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr "バンドプラン"
@@ -1194,18 +1189,6 @@ msgstr "Bin"
 
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
-msgstr ""
-
-#: ../ble_serial.py:239
-msgid "Bluetooth device"
-msgstr "Bluetooth デバイス"
-
-#: ../ble_serial.py:331 ../ble_serial.py:333
-msgid "Bluetooth scan failed"
-msgstr "Bluetooth スキャンに失敗しました"
-
-#: ../wxui/clone.py:45
-msgid "Bluetooth..."
 msgstr ""
 
 #: ../wxui/main.py:161
@@ -1434,10 +1417,6 @@ msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr "インターフェースケーブルを 'TX/RX' ユニット背面の PC ポートに接続してください。ヘッドの Com ポートではありません。\n"
-
-#: ../wxui/clone.py:576
-msgid "Connecting to Bluetooth radio..."
-msgstr "Bluetooth 無線機に接続しています..."
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
@@ -2073,7 +2052,7 @@ msgstr ""
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2086,29 +2065,6 @@ msgstr ""
 "2 - インターフェースケーブルを接続\n"
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのダウンロードを実行\n"
-
-#: ../drivers/baofeng_uv17Pro.py:514
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:526
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-"データをダウンロードするには、次の手順に従ってください:\n"
-"1 - 無線機の電源を入れる\n"
-"2 - 無線機のBluetoothを有効にする\n"
-"3 - 一覧から無線機を選択する\n"
-"4 - OKを押して無線機からのデータのダウンロードを開始する\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -2211,29 +2167,6 @@ msgstr ""
 "3 - 無線機の電源をオン\n"
 "4 - 無線機データのアップロードを実行\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"データをアップロードするには、次の手順に従ってください:\n"
-"1 - 無線機の電源を入れる\n"
-"2 - 無線機のBluetoothを有効にする\n"
-"3 - 一覧から無線機を選択する\n"
-"4 - OKを押して無線機へのデータのアップロードを開始する\n"
-
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
@@ -2294,6 +2227,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2893,10 +2827,6 @@ msgstr "新規ウィンドウ"
 msgid "New version available"
 msgstr "新しいバージョンが利用可能です"
 
-#: ../ble_serial.py:351
-msgid "No Bluetooth devices found"
-msgstr "Bluetooth デバイスが見つかりません"
-
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
 msgstr ""
@@ -3376,10 +3306,6 @@ msgstr "やり直し"
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
-#: ../ble_serial.py:248
-msgid "Refresh"
-msgstr "更新"
-
 #: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr "更新が必要です"
@@ -3509,10 +3435,6 @@ msgstr "スキャン制御 (スキップ、含める、優先など)"
 msgid "Scanlists"
 msgstr "スキャンリスト"
 
-#: ../ble_serial.py:294
-msgid "Scanning..."
-msgstr "スキャン中..."
-
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr "スクランブル"
@@ -3541,10 +3463,6 @@ msgstr "モードを選択"
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
 msgstr "インポートするモードを選択"
-
-#: ../ble_serial.py:181
-msgid "Select a Bluetooth device first"
-msgstr "先に Bluetooth デバイスを選択してください"
 
 #: ../wxui/main.py:2192
 msgid "Select a bandplan"
@@ -4213,11 +4131,6 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr "ウェブサイトのIssueからモジュールをロードします"
 
-#: ../ble_serial.py:150
-#, python-format
-msgid "Timed out waiting for ble-serial to connect. %s"
-msgstr "ble-serial の接続を待機中にタイムアウトしました。%s"
-
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "トーン(Hz)"
@@ -4628,31 +4541,6 @@ msgstr ""
 msgid "bits"
 msgstr "ビット"
 
-#: ../ble_serial.py:65
-#, python-format
-msgid "ble-scan exited with status %s: %s"
-msgstr "ble-scan がステータス %s で終了しました: %s"
-
-#: ../ble_serial.py:144
-#, python-format
-msgid "ble-serial connected but %s is unavailable"
-msgstr "ble-serial は接続しましたが、%s は利用できません"
-
-#: ../ble_serial.py:139
-#, python-format
-msgid "ble-serial did not report a serial port. %s"
-msgstr "ble-serial はシリアルポートを通知しませんでした。%s"
-
-#: ../ble_serial.py:127
-#, python-format
-msgid "ble-serial exited before connecting (status %s). %s"
-msgstr "ble-serial は接続前に終了しました（ステータス %s）。%s"
-
-#: ../ble_serial.py:135
-#, python-format
-msgid "ble-serial stopped after connecting. %s"
-msgstr "ble-serial は接続後に停止しました。%s"
-
 #: ../wxui/developer.py:190
 msgid "bytes"
 msgstr "バイト"
@@ -4741,10 +4629,6 @@ msgstr "{bank} は一杯です"
 
 #~ msgid "%i errors during open, check the debug log for details"
 #~ msgstr "%i errors during open, check the debug log for details"
-
-#, python-format
-#~ msgid "%s already exists. Stop any running ble-serial session and remove a stale port before connecting."
-#~ msgstr "%s は既に存在します。接続する前に、実行中の ble-serial セッションをすべて停止し、古いポートを削除してください。"
 
 #~ msgid "CHIRP Files"
 #~ msgstr "ファイル"

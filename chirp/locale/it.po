@@ -1223,11 +1223,6 @@ msgstr "Blocca automaticamente la tastiera per evitare modifiche accidentali."
 msgid "Available modules"
 msgstr "Moduli disponibili"
 
-#: ../ble_serial.py:55
-#, python-format
-msgid "BLE: %s"
-msgstr "BLE: %s"
-
 #: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr "Bandplan"
@@ -1248,18 +1243,6 @@ msgstr "Bin"
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
 msgstr "Disabilita il ricevitore radio FM commerciale. Quando questa opzione è disattivata, la radio FM può essere utilizzata normalmente."
-
-#: ../ble_serial.py:239
-msgid "Bluetooth device"
-msgstr "Dispositivo Bluetooth"
-
-#: ../ble_serial.py:331 ../ble_serial.py:333
-msgid "Bluetooth scan failed"
-msgstr "Scansione Bluetooth non riuscita"
-
-#: ../wxui/clone.py:45
-msgid "Bluetooth..."
-msgstr ""
 
 #: ../wxui/main.py:161
 msgid "Browser"
@@ -1493,10 +1476,6 @@ msgid ""
 msgstr ""
 "Collega il cavo dell'interfaccia alla porta del PC\n"
 "situata sul retro dell'unita 'TX/RX'. NON alla porta COM del pannello frontale.\n"
-
-#: ../wxui/clone.py:576
-msgid "Connecting to Bluetooth radio..."
-msgstr "Connessione alla radio Bluetooth..."
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
@@ -2138,7 +2117,7 @@ msgstr ""
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2151,29 +2130,6 @@ msgstr ""
 "2 - Collega il cavo dati dell'interfaccia\n"
 "3 - Accendi la radio\n"
 "4 - Effettua il download dei dati della radio\n"
-
-#: ../drivers/baofeng_uv17Pro.py:514
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:526
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-"Seguire queste istruzioni per scaricare i dati:\n"
-"1 - Accendere la radio\n"
-"2 - Attivare il Bluetooth sulla radio\n"
-"3 - Selezionare la radio dall'elenco\n"
-"4 - Premere OK per iniziare a scaricare i dati dalla radio\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -2279,29 +2235,6 @@ msgstr ""
 "3 - Accendi la radio\n"
 "4 - Effettua il caricamento dei dati sulla radio\n"
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Seguire queste istruzioni per caricare i dati:\n"
-"1 - Accendere la radio\n"
-"2 - Attivare il Bluetooth sulla radio\n"
-"3 - Selezionare la radio dall'elenco\n"
-"4 - Premere OK per iniziare a caricare i dati sulla radio\n"
-
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
@@ -2362,6 +2295,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2963,10 +2897,6 @@ msgstr "Nuova finestra"
 msgid "New version available"
 msgstr "Nuova versione disponibile"
 
-#: ../ble_serial.py:351
-msgid "No Bluetooth devices found"
-msgstr "Nessun dispositivo Bluetooth trovato"
-
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
 msgstr "Nessun canale estratto dall'operazione incolla"
@@ -3447,10 +3377,6 @@ msgstr "Rifai"
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr "Attenua di 20 dB tutti i segnali ricevuti. È utile quando stazioni molto vicine con segnali estremamente forti o livelli elevati di rumore peggiorano la ricezione. Tra 30 kHz e 1,7 MHz la radio applica sempre l'attenuazione, indipendentemente da questa impostazione."
 
-#: ../ble_serial.py:248
-msgid "Refresh"
-msgstr "Aggiorna"
-
 #: ../wxui/common.py:722
 msgid "Refresh required"
 msgstr "Aggiornamento necessario"
@@ -3582,10 +3508,6 @@ msgstr "Controllo della scansione (salto, inclusione, priorità, ecc.)"
 msgid "Scanlists"
 msgstr "Elenco delle scansioni"
 
-#: ../ble_serial.py:294
-msgid "Scanning..."
-msgstr "Scansione..."
-
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr "Scrambler"
@@ -3614,10 +3536,6 @@ msgstr "Seleziona modi"
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
 msgstr "Seleziona le modalità da importare"
-
-#: ../ble_serial.py:181
-msgid "Select a Bluetooth device first"
-msgstr "Selezionare prima un dispositivo Bluetooth"
 
 #: ../wxui/main.py:2192
 msgid "Select a bandplan"
@@ -4304,11 +4222,6 @@ msgstr "Questo valore non è modificabile"
 msgid "This will load a module from a website issue"
 msgstr "Caricherà un modulo dal sito"
 
-#: ../ble_serial.py:150
-#, python-format
-msgid "Timed out waiting for ble-serial to connect. %s"
-msgstr "Timeout durante l’attesa della connessione di ble-serial. %s"
-
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "Tono"
@@ -4719,31 +4632,6 @@ msgstr "Codice postale"
 msgid "bits"
 msgstr "bit"
 
-#: ../ble_serial.py:65
-#, python-format
-msgid "ble-scan exited with status %s: %s"
-msgstr "ble-scan è terminato con stato %s: %s"
-
-#: ../ble_serial.py:144
-#, python-format
-msgid "ble-serial connected but %s is unavailable"
-msgstr "ble-serial è connesso, ma %s non è disponibile"
-
-#: ../ble_serial.py:139
-#, python-format
-msgid "ble-serial did not report a serial port. %s"
-msgstr "ble-serial non ha indicato una porta seriale. %s"
-
-#: ../ble_serial.py:127
-#, python-format
-msgid "ble-serial exited before connecting (status %s). %s"
-msgstr "ble-serial è terminato prima della connessione (stato %s). %s"
-
-#: ../ble_serial.py:135
-#, python-format
-msgid "ble-serial stopped after connecting. %s"
-msgstr "ble-serial si è arrestato dopo la connessione. %s"
-
 #: ../wxui/developer.py:190
 msgid "bytes"
 msgstr "byte"
@@ -4829,7 +4717,3 @@ msgstr "non specificato"
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "{bank} è pieno"
-
-#, python-format
-#~ msgid "%s already exists. Stop any running ble-serial session and remove a stale port before connecting."
-#~ msgstr "%s esiste già. Arrestare tutte le sessioni ble-serial in esecuzione e rimuovere una porta obsoleta prima di connettersi."

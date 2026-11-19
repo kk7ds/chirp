@@ -839,11 +839,6 @@ msgstr ""
 msgid "Available modules"
 msgstr ""
 
-#: ../ble_serial.py:55
-#, python-format
-msgid "BLE: %s"
-msgstr "BLE: %s"
-
 #: ../wxui/main.py:2193
 msgid "Bandplan"
 msgstr "Χάρτης συχνοτήτων"
@@ -863,18 +858,6 @@ msgstr "Bin"
 
 #: ../drivers/baofeng_uv17Pro.py:1089
 msgid "Blocks use of the broadcast FM radio receiver. When it is off, the FM radio can be used as normal."
-msgstr ""
-
-#: ../ble_serial.py:239
-msgid "Bluetooth device"
-msgstr "Συσκευή Bluetooth"
-
-#: ../ble_serial.py:331 ../ble_serial.py:333
-msgid "Bluetooth scan failed"
-msgstr "Η σάρωση Bluetooth απέτυχε"
-
-#: ../wxui/clone.py:45
-msgid "Bluetooth..."
 msgstr ""
 
 #: ../wxui/main.py:161
@@ -1106,10 +1089,6 @@ msgid ""
 "Connect your interface cable to the PC Port on the\n"
 "back of the 'TX/RX' unit. NOT the Com Port on the head.\n"
 msgstr ""
-
-#: ../wxui/clone.py:576
-msgid "Connecting to Bluetooth radio..."
-msgstr "Σύνδεση με τον ασύρματο Bluetooth..."
 
 #: ../drivers/baofeng_uv17Pro.py:848
 msgid "Controls what scanning does after finding a signal. Time resumes after a preset time, Carrier resumes after the signal disappears, and Search stops scanning on the detected frequency or channel."
@@ -1743,7 +1722,7 @@ msgstr ""
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
 #: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -1751,29 +1730,6 @@ msgid ""
 "3 - Turn on your radio\n"
 "4 - Do the download of your radio data\n"
 msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:514
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:526
-msgid ""
-"Follow these instructions to download your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start downloading data from your radio\n"
-msgstr ""
-"Ακολουθήστε αυτές τις οδηγίες για να λάβετε τα δεδομένα σας:\n"
-"1 - Ενεργοποιήστε τον πομποδέκτη σας\n"
-"2 - Ενεργοποιήστε το Bluetooth στον πομποδέκτη σας\n"
-"3 - Επιλέξτε τον πομποδέκτη σας από τη λίστα\n"
-"4 - Πατήστε OK για να ξεκινήσει η λήψη δεδομένων από τον πομποδέκτη\n"
 
 #: ../drivers/tk690.py:569 ../drivers/tk760g.py:686
 msgid ""
@@ -1841,29 +1797,6 @@ msgid ""
 "4 - Do the upload of your radio data\n"
 msgstr ""
 
-#: ../drivers/baofeng_uv17Pro.py:520
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn off your radio\n"
-"2 - Connect your interface cable\n"
-"3 - Turn on your radio\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-
-#: ../drivers/baofeng_uv17Pro.py:532
-msgid ""
-"Follow these instructions to upload your info:\n"
-"1 - Turn on your radio\n"
-"2 - Enable Bluetooth on your radio\n"
-"3 - Select your radio from the list\n"
-"4 - Press OK to start uploading data to your radio\n"
-msgstr ""
-"Ακολουθήστε αυτές τις οδηγίες για να μεταφέρετε τα δεδομένα σας:\n"
-"1 - Ενεργοποιήστε τον πομποδέκτη σας\n"
-"2 - Ενεργοποιήστε το Bluetooth στον πομποδέκτη σας\n"
-"3 - Επιλέξτε τον πομποδέκτη σας από τη λίστα\n"
-"4 - Πατήστε OK για να ξεκινήσει η μεταφορά δεδομένων στον πομποδέκτη\n"
-
 #: ../drivers/tk690.py:575 ../drivers/tk760g.py:692
 msgid ""
 "Follow these instructions to upload your radio:\n"
@@ -1904,6 +1837,7 @@ msgstr ""
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
 #: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
+#: ../drivers/baofeng_uv17Pro.py:520
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2510,10 +2444,6 @@ msgstr ""
 msgid "New version available"
 msgstr "Διαθέσιμη νέα έκδοση"
 
-#: ../ble_serial.py:351
-msgid "No Bluetooth devices found"
-msgstr "Δεν βρέθηκαν συσκευές Bluetooth"
-
 #: ../wxui/memedit.py:2671
 msgid "No channels extracted from paste"
 msgstr ""
@@ -3000,10 +2930,6 @@ msgstr ""
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
-#: ../ble_serial.py:248
-msgid "Refresh"
-msgstr "Ανανέωση"
-
 #: ../wxui/common.py:722
 #, fuzzy
 msgid "Refresh required"
@@ -3132,10 +3058,6 @@ msgstr ""
 msgid "Scanlists"
 msgstr ""
 
-#: ../ble_serial.py:294
-msgid "Scanning..."
-msgstr "Σάρωση..."
-
 #: ../drivers/ksun_m6.py:418 ../drivers/uvk5.py:936
 msgid "Scrambler"
 msgstr ""
@@ -3166,10 +3088,6 @@ msgstr ""
 #: ../wxui/query_sources.py:1300
 msgid "Select Modes to Import"
 msgstr ""
-
-#: ../ble_serial.py:181
-msgid "Select a Bluetooth device first"
-msgstr "Επιλέξτε πρώτα μια συσκευή Bluetooth"
 
 #: ../wxui/main.py:2192
 msgid "Select a bandplan"
@@ -3823,11 +3741,6 @@ msgstr ""
 msgid "This will load a module from a website issue"
 msgstr ""
 
-#: ../ble_serial.py:150
-#, python-format
-msgid "Timed out waiting for ble-serial to connect. %s"
-msgstr "Έληξε το χρονικό όριο αναμονής για τη σύνδεση του ble-serial. %s"
-
 #: ../wxui/memedit.py:525
 msgid "Tone"
 msgstr "Τόνος"
@@ -4242,31 +4155,6 @@ msgstr ""
 msgid "bits"
 msgstr "bits"
 
-#: ../ble_serial.py:65
-#, python-format
-msgid "ble-scan exited with status %s: %s"
-msgstr "Το ble-scan τερματίστηκε με κατάσταση %s: %s"
-
-#: ../ble_serial.py:144
-#, python-format
-msgid "ble-serial connected but %s is unavailable"
-msgstr "Το ble-serial συνδέθηκε, αλλά το %s δεν είναι διαθέσιμο"
-
-#: ../ble_serial.py:139
-#, python-format
-msgid "ble-serial did not report a serial port. %s"
-msgstr "Το ble-serial δεν ανέφερε σειριακή θύρα. %s"
-
-#: ../ble_serial.py:127
-#, python-format
-msgid "ble-serial exited before connecting (status %s). %s"
-msgstr "Το ble-serial τερματίστηκε πριν από τη σύνδεση (κατάσταση %s). %s"
-
-#: ../ble_serial.py:135
-#, python-format
-msgid "ble-serial stopped after connecting. %s"
-msgstr "Το ble-serial σταμάτησε μετά τη σύνδεση. %s"
-
 #: ../wxui/developer.py:190
 msgid "bytes"
 msgstr "bytes"
@@ -4352,10 +4240,6 @@ msgstr ""
 #, python-brace-format
 msgid "{bank} is full"
 msgstr "H {bank} είναι γεμάτη"
-
-#, python-format
-#~ msgid "%s already exists. Stop any running ble-serial session and remove a stale port before connecting."
-#~ msgstr "%s υπάρχει ήδη. Σταματήστε κάθε ενεργή συνεδρία ble-serial και αφαιρέστε μια παλιά θύρα πριν συνδεθείτε."
 
 #, fuzzy
 #~ msgid "Band"
