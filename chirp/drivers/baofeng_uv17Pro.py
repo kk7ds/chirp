@@ -525,13 +525,13 @@ class UV17Pro(bfc.BaofengCommonHT):
         rp.pre_download_ble = _(
             "Follow these instructions to download your info:\n"
             "1 - Turn on your radio\n"
-            "2 - Enable Bluetooth on your radio\n"
+            "2 - Enable 'Wireless Cps' on your radio\n"
             "3 - Select your radio from the list\n"
             "4 - Press OK to start downloading data from your radio\n")
         rp.pre_upload_ble = _(
             "Follow these instructions to upload your info:\n"
             "1 - Turn on your radio\n"
-            "2 - Enable Bluetooth on your radio\n"
+            "2 - Enable 'Wireless Cps' on your radio\n"
             "3 - Select your radio from the list\n"
             "4 - Press OK to start uploading data to your radio\n")
         return rp
