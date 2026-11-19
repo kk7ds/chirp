@@ -85,4 +85,4 @@ Baojie_BJ-9900_Left:
 Yaesu_FTX-1:
   - class: TestCaseCopyAll
     test: test_copy
-    reason: The file stores a shift direction but no offset amount
+    reason: A channel stores a shift direction but no offset amount
