@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CHIRP\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 18:06-0800\n"
+"POT-Creation-Date: 2026-11-20 14:49-0800\n"
 "PO-Revision-Date: 2025-05-29 11:07-0400\n"
 "Last-Translator: Alexandre J. Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
@@ -49,7 +49,12 @@ msgstr[1] "%i Mémoires et décaler le bloc vers le haut"
 msgid "%s %s, row %d"
 msgstr ""
 
-#: ../wxui/main.py:1632
+#: ../wxui/printing.py:251
+#, python-format
+msgid "%s Preview"
+msgstr ""
+
+#: ../wxui/main.py:1634
 #, python-format
 msgid "%s has not been saved. Save before closing?"
 msgstr "%s n'a pas été enregistré. Enregistrer avant de fermer ?"
@@ -1080,7 +1085,7 @@ msgstr ""
 msgid "A floating point value is required"
 msgstr ""
 
-#: ../wxui/main.py:2269
+#: ../wxui/main.py:2254
 msgid "A new CHIRP version is available. Please visit the website as soon as possible to download it!"
 msgstr "Une nouvelle version de CHIRP est disponible. Visitez le site internet dès que possible pour la télécharger!"
 
@@ -1092,11 +1097,11 @@ msgstr "Le mode AM ne permet pas le duplex ou le tone"
 msgid "About"
 msgstr "À propos"
 
-#: ../wxui/main.py:2023
+#: ../wxui/main.py:2012
 msgid "About CHIRP"
 msgstr "À propos de CHIRP"
 
-#: ../wxui/main.py:2078
+#: ../wxui/main.py:2067
 msgid "Agree"
 msgstr "D'accord"
 
@@ -1108,15 +1113,15 @@ msgstr ""
 msgid "All"
 msgstr "Tout"
 
-#: ../wxui/main.py:1461
+#: ../wxui/main.py:1463
 msgid "All Files"
 msgstr "Tous les fichiers"
 
-#: ../wxui/main.py:1472
+#: ../wxui/main.py:1474
 msgid "All supported formats"
 msgstr "Tous les formats supportés"
 
-#: ../drivers/ft450d.py:1646
+#: ../drivers/ft450d.py:1647
 msgid "Allows tuning away from a recalled memory or Home channel with the MAIN DIAL, as with a VFO. The stored channel does not change unless you write the new settings to it."
 msgstr ""
 
@@ -1124,7 +1129,7 @@ msgstr ""
 msgid "Always On keeps it lit all the time."
 msgstr ""
 
-#: ../wxui/clone.py:636
+#: ../wxui/clone.py:658
 msgid "Always start with recent list"
 msgstr "Toujours commencer avec la liste récente"
 
@@ -1144,27 +1149,27 @@ msgstr ""
 msgid "Announces the channel number and other operations out loud as you use the radio. It can be intrusive in quiet surroundings."
 msgstr ""
 
-#: ../wxui/clone.py:146
+#: ../wxui/clone.py:147
 msgid "Applying settings"
 msgstr "Application des préférences"
 
-#: ../drivers/ft450d.py:1847
+#: ../drivers/ft450d.py:1848
 msgid "Assigns one of the radio's functions to the DWN key of the microphone. DOWN, its normal function, steps the frequency or memory channel down."
 msgstr ""
 
-#: ../drivers/ft450d.py:1855
+#: ../drivers/ft450d.py:1856
 msgid "Assigns one of the radio's functions to the FST key of the microphone. FAST, its normal function, speeds up tuning like the front panel FAST button."
 msgstr ""
 
-#: ../drivers/ft450d.py:1863
+#: ../drivers/ft450d.py:1864
 msgid "Assigns one of the radio's functions to the UP key of the microphone. UP, its normal function, steps the frequency or memory channel up."
 msgstr ""
 
-#: ../drivers/ft450d.py:1676
+#: ../drivers/ft450d.py:1677
 msgid "Assigns one of the radio's functions to the front panel C.S/VOICE button, for example MONI to listen to your own transmission, SWR to transmit a 10 W carrier and measure the antenna SWR, or PLAY1 to send CW beacon message 1. Choices named after a front panel button act like that button."
 msgstr ""
 
-#: ../drivers/ft450d.py:1663
+#: ../drivers/ft450d.py:1664
 msgid "Assigns the second function the DSP/SEL knob takes on after it is pressed briefly: adjusting the CW sidetone volume, the CW keyer speed, the microphone gain or the RF power, or tuning in 100 kHz or 1 MHz steps."
 msgstr ""
 
@@ -1172,7 +1177,7 @@ msgstr ""
 msgid "Attempting login..."
 msgstr ""
 
-#: ../wxui/main.py:1729
+#: ../wxui/main.py:1731
 msgid "Automatic from system"
 msgstr "Selon le système"
 
@@ -1184,7 +1189,7 @@ msgstr ""
 msgid "Available modules"
 msgstr "Modules disponibles"
 
-#: ../wxui/main.py:2193
+#: ../wxui/main.py:2182
 msgid "Bandplan"
 msgstr "Plan de fréquences"
 
@@ -1230,19 +1235,19 @@ msgstr "Sujet du bogue:"
 msgid "Building Radio Browser"
 msgstr "Établissement navigateur radio"
 
-#: ../wxui/main.py:1758
+#: ../wxui/main.py:1760
 msgid "CHIRP must be restarted for the new selection to take effect"
 msgstr "CHIRP doit être redémarré pour que la nouvelle sélection soit prise en compte"
 
-#: ../drivers/ft450d.py:1511
+#: ../drivers/ft450d.py:1512
 msgid "CW beacon message 1, up to 40 characters, sent in CW mode by the PLAY1 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
-#: ../drivers/ft450d.py:1520
+#: ../drivers/ft450d.py:1521
 msgid "CW beacon message 2, up to 40 characters, sent in CW mode by the PLAY2 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
-#: ../drivers/ft450d.py:1529
+#: ../drivers/ft450d.py:1530
 msgid "CW beacon message 3, up to 40 characters, sent in CW mode by the PLAY3 function of a programmable button. The radio can send A to Z, 0 to 9, /, space and @."
 msgstr ""
 
@@ -1268,7 +1273,7 @@ msgstr ""
 msgid "Channels with equivalent TX and RX %s are represented by tone mode of \"%s\""
 msgstr "Les canaux avec TX et RX équivalents %s sont représentés par le mode de tonalité de \"%s\""
 
-#: ../wxui/main.py:1460
+#: ../wxui/main.py:1462
 msgid "Chirp Image Files"
 msgstr "Fichiers image Chirp"
 
@@ -1290,11 +1295,11 @@ msgstr "Choisir tonalité %s"
 msgid "Choose Cross Mode"
 msgstr "Choisir mode cross"
 
-#: ../wxui/main.py:1297
+#: ../wxui/main.py:1299
 msgid "Choose Diff Target"
 msgstr "Choisir la cible de comparaison"
 
-#: ../wxui/clone.py:617
+#: ../wxui/clone.py:639
 msgid "Choose a recent model"
 msgstr "Choisir un modèle récent"
 
@@ -1321,7 +1326,7 @@ msgstr ""
 msgid "Chooses what a short press of side key %i does."
 msgstr ""
 
-#: ../drivers/ft450d.py:1594
+#: ../drivers/ft450d.py:1595
 msgid "Chooses what the SQL/RF GAIN knob controls. RF-Gain sets the gain of the receiver's RF and IF stages, Squelch mutes the receiver while no signal is present. Scanning needs Squelch, because the scanner stops on signals strong enough to open the squelch."
 msgstr ""
 
@@ -1333,11 +1338,11 @@ msgstr ""
 msgid "Chooses where a CTCSS or DCS code found by scanning in Frequency (VFO) mode is saved: Both saves it as the receive and transmit code, RX only as the receive code, and TX only as the transmit code."
 msgstr ""
 
-#: ../drivers/ft450d.py:987
+#: ../drivers/ft450d.py:988
 msgid "Chooses whether the contour filter boosts (Peak) or cuts (Null) the part of the passband it is set to."
 msgstr ""
 
-#: ../drivers/ft450d.py:1617
+#: ../drivers/ft450d.py:1618
 msgid "Chooses which knob sets the clarifier offset after CLAR is pressed: the MAIN DIAL or the DSP/SEL knob. The clarifier shifts the receive frequency without changing the transmit frequency."
 msgstr ""
 
@@ -1349,11 +1354,11 @@ msgstr ""
 msgid "City"
 msgstr "Ville"
 
-#: ../wxui/main.py:2064
+#: ../wxui/main.py:2053
 msgid "Click here for full license text"
 msgstr "Appuyez ici pour le texte complet de la licence"
 
-#: ../wxui/main.py:2043
+#: ../wxui/main.py:2032
 msgid "Click here for online documentation"
 msgstr "Appuyez ici pour la documentation web"
 
@@ -1391,7 +1396,7 @@ msgstr "Téléchargement depuis la radio - Lire"
 msgid "Cloning to radio"
 msgstr "Téléchargement vers la radio - Écrire"
 
-#: ../wxui/main.py:1171 ../wxui/main.py:2079
+#: ../wxui/main.py:1173 ../wxui/main.py:2068
 msgid "Close"
 msgstr "Fermer"
 
@@ -1399,7 +1404,7 @@ msgstr "Fermer"
 msgid "Close String"
 msgstr "Fermer la chaîne de texte"
 
-#: ../wxui/main.py:1172
+#: ../wxui/main.py:1174
 msgid "Close file"
 msgstr "Fermer fichier"
 
@@ -1418,11 +1423,11 @@ msgstr[1] "Mémoires groupement %i"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: ../wxui/clone.py:329
+#: ../wxui/clone.py:351
 msgid "Communicate with radio"
 msgstr "Communiquer avec la radio"
 
-#: ../wxui/clone.py:154 ../sources/repeaterbook.py:150
+#: ../wxui/clone.py:155 ../sources/repeaterbook.py:152
 msgid "Complete"
 msgstr "Terminé"
 
@@ -1484,11 +1489,11 @@ msgstr "Mode cross"
 msgid "Cross tone mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:578
+#: ../wxui/clone.py:600
 msgid "Custom Port"
 msgstr "Port personnalisé"
 
-#: ../wxui/clone.py:42
+#: ../wxui/clone.py:43
 msgid "Custom..."
 msgstr "Personnalisation..."
 
@@ -1551,7 +1556,7 @@ msgstr "Décodage DTMF"
 msgid "DV Memory"
 msgstr "Mémoire DV"
 
-#: ../wxui/main.py:2102
+#: ../wxui/main.py:2091
 msgid "Danger Ahead"
 msgstr "Danger"
 
@@ -1593,7 +1598,7 @@ msgstr "Informations détaillées"
 msgid "Developer Mode"
 msgstr "Mode développeur"
 
-#: ../wxui/main.py:2111
+#: ../wxui/main.py:2100
 #, python-format
 msgid "Developer state is now %s. CHIRP must be restarted to take effect"
 msgstr "Le mode développement est maintenant %s. CHIRP doit être redémarré pour que ceci prenne effet"
@@ -1614,7 +1619,7 @@ msgstr "Code numérique"
 msgid "Digital Modes"
 msgstr "Modes numériques"
 
-#: ../wxui/main.py:2124
+#: ../wxui/main.py:2113
 msgid "Disable reporting"
 msgstr "Désactiver le rapport d'utilisation"
 
@@ -1631,16 +1636,16 @@ msgstr ""
 msgid "Distance"
 msgstr "Distance"
 
-#: ../drivers/ft450d.py:1312
+#: ../drivers/ft450d.py:1313
 msgid "Divides the 500 regular memory channels into ten groups of 50, numbered M-01-01 to M-10-50. Channels are then selected and scanned one group at a time."
 msgstr ""
 
-#: ../wxui/clone.py:217
+#: ../wxui/clone.py:238
 #, python-format
 msgid "Do not prompt again for %s"
 msgstr "Ne plus demander pour %s"
 
-#: ../wxui/clone.py:214
+#: ../wxui/clone.py:235
 msgid "Do you accept the risk?"
 msgstr "Acceptez-vous les risques?"
 
@@ -1652,15 +1657,15 @@ msgstr ""
 msgid "Double-click to change bank name"
 msgstr "Double-cliquer pour modifier le nom de la banque"
 
-#: ../wxui/main.py:1173
+#: ../wxui/main.py:1175
 msgid "Download"
 msgstr "Télécharger"
 
-#: ../sources/repeaterbook.py:207
+#: ../sources/repeaterbook.py:209
 msgid "Download complete"
 msgstr ""
 
-#: ../wxui/main.py:1174
+#: ../wxui/main.py:1176
 msgid "Download from radio"
 msgstr "Télécharger depuis la radio"
 
@@ -1668,11 +1673,11 @@ msgstr "Télécharger depuis la radio"
 msgid "Download from radio..."
 msgstr "Télécharger depuis la radio..."
 
-#: ../wxui/clone.py:801
+#: ../wxui/clone.py:823
 msgid "Download instructions"
 msgstr "Instructions de téléchargement"
 
-#: ../sources/repeaterbook.py:173
+#: ../sources/repeaterbook.py:175
 msgid "Downloading"
 msgstr ""
 
@@ -1756,11 +1761,11 @@ msgstr "Activé"
 msgid "Enables or disables the alarm sound."
 msgstr ""
 
-#: ../drivers/ft450d.py:1284
+#: ../drivers/ft450d.py:1285
 msgid "Enables the RTS line of the CAT jack. Turn it off when the computer or cable does not provide RTS. A radio that follows the frequency of another radio set to F-TRANS also needs it off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1353
+#: ../drivers/ft450d.py:1354
 msgid "Enables transmit and receive on the Alaska emergency channel, 5167.5 kHz, which then appears as MEM-EMG in Memory mode. It may only be used by stations in or within 92.6 km of Alaska, and only for emergency communications involving the immediate protection of life or property."
 msgstr ""
 
@@ -1781,7 +1786,7 @@ msgstr "Saisir la fréquence d'émission (MHz)"
 msgid "Enter a new name for bank %s:"
 msgstr "Saisir un nouveau nom pour la banque %s:"
 
-#: ../wxui/clone.py:577
+#: ../wxui/clone.py:599
 msgid "Enter custom port:"
 msgstr "Saisir un port personnalisé:"
 
@@ -1818,7 +1823,7 @@ msgstr "Erreur lors de l'application du filtre"
 msgid "Error applying settings"
 msgstr "Erreur lors de l'application des préférences"
 
-#: ../wxui/clone.py:706
+#: ../wxui/clone.py:728
 msgid "Error communicating with radio"
 msgstr "Erreur de communication avec la radio"
 
@@ -1863,7 +1868,7 @@ msgstr "Exclure les répéteurs privés ou fermés"
 msgid "Expected: %s"
 msgstr ""
 
-#: ../wxui/clone.py:760
+#: ../wxui/clone.py:782
 msgid "Experimental driver"
 msgstr "Pilote expérimental"
 
@@ -1871,7 +1876,7 @@ msgstr "Pilote expérimental"
 msgid "Export can only write CSV files"
 msgstr "L'exportation ne peut écrire que des fichiers CSV"
 
-#: ../wxui/main.py:1617
+#: ../wxui/main.py:1619
 msgid "Export to CSV"
 msgstr "Exporter vers un fichier CSV"
 
@@ -1927,7 +1932,7 @@ msgstr "Échec d'analyse des résultats"
 msgid "Failed to send bug report:"
 msgstr "Échec d'envoi du rapport de bogue:"
 
-#: ../sources/repeaterbook.py:192
+#: ../sources/repeaterbook.py:194
 msgid "Failed to write RepeaterBook data to disk"
 msgstr ""
 
@@ -1964,8 +1969,8 @@ msgstr "Soumettre un nouveau bogue"
 msgid "File does not exist: %s"
 msgstr "Fichier inexistant: %s"
 
-#: ../wxui/main.py:1464 ../wxui/main.py:1544 ../wxui/main.py:1554
-#: ../wxui/main.py:1613 ../wxui/main.py:1993 ../wxui/main.py:1994
+#: ../wxui/main.py:1466 ../wxui/main.py:1546 ../wxui/main.py:1556
+#: ../wxui/main.py:1615 ../wxui/main.py:1982 ../wxui/main.py:1983
 msgid "Files"
 msgstr "Fichiers"
 
@@ -1985,7 +1990,7 @@ msgstr "Filtrer les résultats avec emplacement correspondant a cette chaine de 
 msgid "Filter..."
 msgstr "Filtrer..."
 
-#: ../wxui/main.py:1687
+#: ../wxui/main.py:1689
 msgid "Find"
 msgstr "Rechercher"
 
@@ -2076,9 +2081,10 @@ msgstr ""
 
 #: ../drivers/mursv1.py:341 ../drivers/baofeng_wp970i.py:327
 #: ../drivers/btech.py:636 ../drivers/gmrsuv1.py:395
-#: ../drivers/tdxone_tdq8a.py:444 ../drivers/uv6r.py:343
+#: ../drivers/tdxone_tdq8a.py:457 ../drivers/uv6r.py:343
 #: ../drivers/uv5x3.py:421 ../drivers/gmrsv2.py:363
-#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/bf_t1.py:484
+#: ../drivers/baofeng_uv17Pro.py:514 ../drivers/br3.py:123
+#: ../drivers/bf_t1.py:484
 msgid ""
 "Follow these instructions to download your info:\n"
 "1 - Turn off your radio\n"
@@ -2254,9 +2260,9 @@ msgstr ""
 
 #: ../drivers/vgc.py:592 ../drivers/mursv1.py:347
 #: ../drivers/baofeng_wp970i.py:333 ../drivers/gmrsuv1.py:401
-#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:450
+#: ../drivers/lt725uv.py:492 ../drivers/tdxone_tdq8a.py:463
 #: ../drivers/uv6r.py:349 ../drivers/uv5x3.py:427 ../drivers/gmrsv2.py:369
-#: ../drivers/baofeng_uv17Pro.py:520
+#: ../drivers/baofeng_uv17Pro.py:520 ../drivers/br3.py:129
 msgid ""
 "Follow this instructions to upload your info:\n"
 "1 - Turn off your radio\n"
@@ -2341,7 +2347,7 @@ msgstr "GMRS"
 msgid "Getting settings"
 msgstr "Acquisition des préférences"
 
-#: ../sources/repeaterbook.py:158
+#: ../sources/repeaterbook.py:160
 #, python-format
 msgid "Got error code %i (%s) from server"
 msgstr ""
@@ -2372,7 +2378,7 @@ msgstr ""
 msgid "Help"
 msgstr "Aide"
 
-#: ../wxui/clone.py:41
+#: ../wxui/clone.py:42
 msgid "Help Me..."
 msgstr "Aidez-moi..."
 
@@ -2388,7 +2394,7 @@ msgstr "Cacher les mémoires vides"
 msgid "Hold the * key on the radio to lock or unlock the keypad."
 msgstr ""
 
-#: ../drivers/ft450d.py:1654
+#: ../drivers/ft450d.py:1655
 msgid "Holds the peak S-meter reading for one second, which makes the meter easier to read."
 msgstr ""
 
@@ -2430,7 +2436,7 @@ msgstr ""
 msgid "Image is %(image)i bytes, but this driver only writes below 0x%(limit)x; 0x%(limit)x and above is the multi-bootloader on these firmwares and writing there can destroy the radio. Use an image that stops before it."
 msgstr ""
 
-#: ../wxui/main.py:1599
+#: ../wxui/main.py:1601
 msgid "Import"
 msgstr "Importer"
 
@@ -2443,11 +2449,11 @@ msgstr "Importer %i mémoires"
 msgid "Import from file..."
 msgstr "Importer depuis un fichier..."
 
-#: ../wxui/main.py:1603
+#: ../wxui/main.py:1605
 msgid "Import messages"
 msgstr "Importer les messages"
 
-#: ../wxui/main.py:1597
+#: ../wxui/main.py:1599
 msgid "Import not recommended"
 msgstr "Import non recommandé"
 
@@ -2463,12 +2469,12 @@ msgstr ""
 msgid "Include Cached"
 msgstr "Inclure les éléments en cache"
 
-#: ../drivers/ft450d.py:1871
+#: ../drivers/ft450d.py:1872
 #, python-format
 msgid "Includes %s in the modes the MODE buttons step through. Turn off the modes you never use to reach the others with fewer presses."
 msgstr ""
 
-#: ../drivers/ft450d.py:1914
+#: ../drivers/ft450d.py:1915
 #, python-format
 msgid "Includes the %s band in the bands the BAND buttons step through. Turn off the bands you never use to reach the others with fewer presses."
 msgstr ""
@@ -2501,11 +2507,11 @@ msgstr "Installer une icône sur le bureau?"
 msgid "Interact with driver"
 msgstr "Intéragir avec le pilote"
 
-#: ../drivers/ft450d.py:959
+#: ../drivers/ft450d.py:960
 msgid "Intercept point optimization. Bypasses the receiver's RF preamplifier so that the incoming signal goes straight to the first mixer. This gives up some sensitivity in exchange for better handling of strong signals and high noise levels."
 msgstr ""
 
-#: ../wxui/clone.py:823
+#: ../wxui/clone.py:845
 msgid "Internal driver error"
 msgstr "Erreur interne du pilote"
 
@@ -2513,7 +2519,7 @@ msgstr "Erreur interne du pilote"
 msgid "Internal driver error: Attempt to modify frozen memory; Please report this as a bug using \"Report or update a bug\" in the Help menu"
 msgstr ""
 
-#: ../sources/repeaterbook.py:105
+#: ../sources/repeaterbook.py:107
 msgid "Internal error - check log"
 msgstr ""
 
@@ -2549,7 +2555,7 @@ msgstr ""
 msgid "Invalid locator"
 msgstr "Localisateur invalide"
 
-#: ../wxui/main.py:1990
+#: ../wxui/main.py:1979
 msgid "Invalid or unsupported module file"
 msgstr "Fichier module invalide ou pas supporté"
 
@@ -2576,7 +2582,7 @@ msgstr "Problème numero:"
 msgid "LIVE"
 msgstr "LIVE"
 
-#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:950 ../wxui/main.py:1743
+#: ../drivers/radtel_rt490.py:1024 ../wxui/main.py:950 ../wxui/main.py:1745
 msgid "Language"
 msgstr "Changer la langue"
 
@@ -2590,11 +2596,11 @@ msgstr "Latitude"
 msgid "Length must be %i"
 msgstr "La longueur doit être %i"
 
-#: ../drivers/ft450d.py:1482
+#: ../drivers/ft450d.py:1483
 msgid "Lets the KEY jack send CW while the radio is in SSB mode, so you can answer a station in CW without changing mode. When off, the KEY jack only works in CW mode."
 msgstr ""
 
-#: ../drivers/ft450d.py:1541
+#: ../drivers/ft450d.py:1542
 msgid "Lets the MAIN DIAL knob change the frequency in AM and FM modes. When off, the MAIN DIAL does not tune in these modes."
 msgstr ""
 
@@ -2628,7 +2634,7 @@ msgstr "Limiter l'utilisation"
 msgid "Limits disabled for modified firmware"
 msgstr ""
 
-#: ../drivers/ft450d.py:1274 ../drivers/baofeng_uv17Pro.py:682
+#: ../drivers/ft450d.py:1275 ../drivers/baofeng_uv17Pro.py:682
 msgid "Limits how long a single transmission may last. When the time runs out the radio stops transmitting until PTT is released, which prevents overheating and stops a stuck PTT from blocking the channel for everyone else."
 msgstr ""
 
@@ -2642,7 +2648,7 @@ msgstr ""
 msgid "Line %i: %s"
 msgstr ""
 
-#: ../wxui/main.py:1845
+#: ../wxui/main.py:1834
 msgid "Live Radio"
 msgstr "Radio en direct"
 
@@ -2658,15 +2664,15 @@ msgstr "Chargement module pour un problème"
 msgid "Load module from issue..."
 msgstr "Chargement module pour un problème..."
 
-#: ../wxui/main.py:2160
+#: ../wxui/main.py:2149
 msgid "Loading a module will not affect open tabs. It is recommended (unless instructed otherwise) to close all tabs before loading a module."
 msgstr "Charger un module n'affectera pas les onglets ouverts. Il est recommandé (sauf instructions contraires) de fermer tous les onglets avant de charger un module."
 
-#: ../wxui/main.py:1997
+#: ../wxui/main.py:1986
 msgid "Loading modules can be extremely dangerous, leading to damage to your computer, radio, or both. NEVER load a module from a source you do not trust, and especially not from anywhere other than the main CHIRP website (chirpmyradio.com). Loading a module from another source is akin to giving them direct access to your computer and everything on it! Proceed despite this risk?"
 msgstr "Charger des modules peut être extrêmement dangereux, causant des dommages à votre ordinateur, radio ou les deux. NE JAMAIS charger un module issu d'une source dont vous n'avez pas confiance, et plus spécialement d'ailleurs que du site internet principal de CHIRP (chirpmyradio.com). Charger un module depuis une autre source revient à donner un accès direct à votre ordinateur et à tout ce qu'il contient! Continuez malgré le risque?"
 
-#: ../wxui/clone.py:148
+#: ../wxui/clone.py:149
 msgid "Loading settings"
 msgstr "Chargement des préférences"
 
@@ -2684,7 +2690,7 @@ msgstr ""
 msgid "Locator"
 msgstr "Localisateur"
 
-#: ../drivers/ft450d.py:1729
+#: ../drivers/ft450d.py:1730
 msgid "Locks the controls selected by Lock Mode against accidental changes, as the LOCK button does."
 msgstr ""
 
@@ -2717,11 +2723,11 @@ msgstr "Texte logo 2 (12 caractères)"
 msgid "Longitude"
 msgstr "Longitude"
 
-#: ../drivers/ft450d.py:1447
+#: ../drivers/ft450d.py:1448
 msgid "Makes the CW sidetone volume follow the AF GAIN knob, offset by the CW sidetone linked volume. When off, the sidetone plays at the CW sidetone fixed volume whatever the AF GAIN setting."
 msgstr ""
 
-#: ../drivers/ft450d.py:1556
+#: ../drivers/ft450d.py:1557
 msgid "Makes the beep volume follow the AF GAIN knob, offset by the Linked beep volume. When off, the beep plays at the Fixed beep volume whatever the AF GAIN setting."
 msgstr ""
 
@@ -2785,7 +2791,7 @@ msgstr ""
 msgid "Mode %s not supported"
 msgstr ""
 
-#: ../wxui/clone.py:367
+#: ../wxui/clone.py:389
 msgid "Model"
 msgstr "Modèle"
 
@@ -2793,15 +2799,15 @@ msgstr "Modèle"
 msgid "Modes"
 msgstr "Modes"
 
-#: ../wxui/main.py:1994
+#: ../wxui/main.py:1983
 msgid "Module"
 msgstr "Module"
 
-#: ../wxui/main.py:1966
+#: ../wxui/main.py:1955
 msgid "Module Loaded"
 msgstr "Module chargé"
 
-#: ../wxui/main.py:2171
+#: ../wxui/main.py:2160
 msgid "Module loaded successfully"
 msgstr "Module chargé avec succès"
 
@@ -2809,7 +2815,7 @@ msgstr "Module chargé avec succès"
 msgid "More Info"
 msgstr "Plus d'information"
 
-#: ../wxui/clone.py:525
+#: ../wxui/clone.py:547
 #, python-format
 msgid "More than one port found: %s"
 msgstr "Plus d'un port trouvé: %s"
@@ -2831,7 +2837,7 @@ msgstr "Monter"
 msgid "Move operations are disabled while the view is sorted"
 msgstr "Les déplacements sont désactivés lorsque la vue est triée"
 
-#: ../drivers/ft450d.py:1003
+#: ../drivers/ft450d.py:1004
 msgid "Moves the part of the passband the contour filter acts on, from -2 at the low end through Center to +2 at the high end."
 msgstr ""
 
@@ -2852,7 +2858,7 @@ msgstr ""
 msgid "New Window"
 msgstr "Nouvelle fenêtre"
 
-#: ../wxui/main.py:2271
+#: ../wxui/main.py:2256
 msgid "New version available"
 msgstr "Nouvelle version disponible"
 
@@ -2891,7 +2897,7 @@ msgstr "Il n'y a plus d'espace disponible; certaines mémoires n'ont pas été a
 msgid "No results"
 msgstr "Aucun résultat"
 
-#: ../sources/repeaterbook.py:204 ../sources/repeaterbook.py:371
+#: ../sources/repeaterbook.py:206 ../sources/repeaterbook.py:373
 msgid "No results!"
 msgstr "Aucun résultat!"
 
@@ -2900,7 +2906,7 @@ msgstr "Aucun résultat!"
 msgid "No room to add callsign %s"
 msgstr ""
 
-#: ../wxui/main.py:2181
+#: ../wxui/main.py:2170
 msgid "No traces stored"
 msgstr ""
 
@@ -2970,7 +2976,7 @@ msgstr "Seuls les onglets des mémoires peuvent être exportés"
 msgid "Only working repeaters"
 msgstr "Uniquement les répéteurs en fonctionnement"
 
-#: ../wxui/main.py:1167 ../wxui/main.py:1599
+#: ../wxui/main.py:1169 ../wxui/main.py:1601
 msgid "Open"
 msgstr "Ouvrir"
 
@@ -2982,11 +2988,11 @@ msgstr "Ouvrir récent"
 msgid "Open Stock Config"
 msgstr "Ouvrir base de données"
 
-#: ../wxui/main.py:1168 ../wxui/main.py:1475
+#: ../wxui/main.py:1170 ../wxui/main.py:1477
 msgid "Open a file"
 msgstr "Ouvrir un fichier"
 
-#: ../wxui/main.py:2012
+#: ../wxui/main.py:2001
 msgid "Open a module"
 msgstr "Ouvrir un module"
 
@@ -3061,7 +3067,7 @@ msgstr ""
 "Seul un sous-ensemble des plus de 130 paramètres radio disponibles\n"
 "est pris en charge dans cette version.\n"
 
-#: ../sources/repeaterbook.py:299 ../sources/dmrmarc.py:52
+#: ../sources/repeaterbook.py:301 ../sources/dmrmarc.py:52
 #: ../sources/przemienniki_eu.py:48 ../sources/przemienniki_net.py:50
 #: ../sources/mapy73pl.py:52
 msgid "Parsing"
@@ -3111,11 +3117,11 @@ msgstr "La mémoire collee va écraser la mémoire %s"
 msgid "Periodically checks both the A and B displayed frequencies. When either receives a signal, the radio stays on it until that signal disappears."
 msgstr ""
 
-#: ../drivers/ft450d.py:1023
+#: ../drivers/ft450d.py:1024
 msgid "Places the IF notch filter below the center of the passband, at the center or above it. The exact notch frequency is fine tuned on the radio with the DSP/SEL knob."
 msgstr ""
 
-#: ../wxui/main.py:2275
+#: ../wxui/main.py:2260
 msgid "Please be sure to quit CHIRP before installing the new version!"
 msgstr "Soyez certain de quitter CHIRP avant d'installer la nouvelle version!"
 
@@ -3123,7 +3129,7 @@ msgstr "Soyez certain de quitter CHIRP avant d'installer la nouvelle version!"
 msgid "Please check the bug number and try again. If you do actually want to report against this bug, please comment on it via the website and ask for it to be re-opened."
 msgstr "Veuillez vérifier le numéro de bogue et réessayer. Si vous souhaitez véritablement faire un rapport sur ce bogue, ajoutez-y un commentaire via le site web et demandez à le rouvrir."
 
-#: ../wxui/main.py:2096
+#: ../wxui/main.py:2085
 msgid "Please note that developer mode is intended for use by developers of the CHIRP project, or under the direction of a developer. It enables behaviors and functions that can damage your computer and your radio if not used with EXTREME care. You have been warned! Proceed anyway?"
 msgstr "Veuillez noter que le mode developpeur est destiné à n'être utilisé que par les développeurs du projet CHIRP, ou en suivant les directives d'un developpeur. Il active des comportements et des fonctions qui peuvent endommager votre ordinateur et votre radio s'ils ne sont pas utilisés avec un EXTRÊME soin. Vous êtes prévenu! Continuer malgré tout?"
 
@@ -3131,7 +3137,7 @@ msgstr "Veuillez noter que le mode developpeur est destiné à n'être utilisé 
 msgid "Please wait"
 msgstr "Patientez s'il vous plaît"
 
-#: ../wxui/clone.py:502
+#: ../wxui/clone.py:524
 msgid "Plug in your cable and then click OK"
 msgstr "Branchez votre câble et cliquez sur OK"
 
@@ -3139,7 +3145,7 @@ msgstr "Branchez votre câble et cliquez sur OK"
 msgid "Polish repeaters database"
 msgstr "Base de données de répéteurs polonais"
 
-#: ../wxui/clone.py:352
+#: ../wxui/clone.py:374
 msgid "Port"
 msgstr "Port"
 
@@ -3169,11 +3175,15 @@ msgstr "Appuyez sur entrée pour inscrire ceci en mémoire"
 msgid "Prevents transmitting on a channel that is already in use. Pressing PTT on a busy channel sounds an alert tone instead of keying the transmitter."
 msgstr ""
 
-#: ../wxui/main.py:853
+#: ../wxui/printing.py:65
+msgid "Print Columns"
+msgstr ""
+
+#: ../wxui/main.py:853 ../wxui/printing.py:245
 msgid "Print Preview"
 msgstr "Apercu avant impression"
 
-#: ../wxui/printing.py:29
+#: ../wxui/printing.py:29 ../wxui/printing.py:228 ../wxui/printing.py:261
 msgid "Printing"
 msgstr "Impression"
 
@@ -3198,7 +3208,7 @@ msgstr ""
 msgid "Programs the radio's numeric Automatic Number Identification code. ANI is a DTMF PTT-ID that can identify this radio to a dispatcher or other compatible equipment."
 msgstr ""
 
-#: ../wxui/clone.py:536
+#: ../wxui/clone.py:558
 msgid "Prolific USB device"
 msgstr "Appareil USB avec puce Prolific"
 
@@ -3222,7 +3232,7 @@ msgstr ""
 msgid "QTH Locator"
 msgstr "Localisateur QTH"
 
-#: ../wxui/main.py:2209
+#: ../wxui/main.py:2198
 #, python-format
 msgid "Query %s"
 msgstr "Interroger %s"
@@ -3282,7 +3292,7 @@ msgstr ""
 msgid "Radio did not ack block %i"
 msgstr "La radio n'a pas accusé reception du bloc %i"
 
-#: ../wxui/clone.py:793 ../wxui/clone.py:893
+#: ../wxui/clone.py:815 ../wxui/clone.py:915
 msgid "Radio information"
 msgstr "Informations de la radio"
 
@@ -3316,11 +3326,11 @@ msgstr "Recevoir code DTCS"
 msgid "Receive frequency"
 msgstr "Fréquence de réception"
 
-#: ../wxui/clone.py:618
+#: ../wxui/clone.py:640
 msgid "Recent"
 msgstr "Récent"
 
-#: ../wxui/clone.py:359
+#: ../wxui/clone.py:381
 msgid "Recent..."
 msgstr "Récent..."
 
@@ -3332,7 +3342,7 @@ msgstr "55.2 recommandé"
 msgid "Redo"
 msgstr "Refaire"
 
-#: ../drivers/ft450d.py:968
+#: ../drivers/ft450d.py:969
 msgid "Reduces all incoming signals by 20 dB, for use when extremely strong nearby stations or high noise levels degrade reception. Between 30 kHz and 1.7 MHz the radio always attenuates, whatever this setting."
 msgstr ""
 
@@ -3367,11 +3377,11 @@ msgstr "Recharger pilote et fichier"
 msgid "Reload required"
 msgstr "Rechargement requis"
 
-#: ../wxui/clone.py:638
+#: ../wxui/clone.py:660
 msgid "Remove"
 msgstr "Retirer"
 
-#: ../wxui/clone.py:639
+#: ../wxui/clone.py:661
 msgid "Remove selected model from list"
 msgstr "Retirer le modèle sélectionné de la liste"
 
@@ -3387,7 +3397,7 @@ msgstr ""
 "RepeaterBook est l'annuaire GRATUIT de radio amateur\n"
 "le plus complet du monde."
 
-#: ../sources/repeaterbook.py:182
+#: ../sources/repeaterbook.py:184
 msgid "RepeaterBook returned invalid response"
 msgstr ""
 
@@ -3404,11 +3414,11 @@ msgstr "Rapporter un nouveau bogue: %r"
 msgid "Reporting enabled"
 msgstr "Rapport d'utilisation activé"
 
-#: ../wxui/main.py:2120
+#: ../wxui/main.py:2109
 msgid "Reporting helps the CHIRP project know which radio models and OS platforms to spend our limited efforts on. We would really appreciate if you left it enabled. Really disable reporting?"
 msgstr "Le rapport d'utilisation aide le projet CHIRP à savoir quelles radios et systèmes d'exploitation sont utilisés pour concentrer les efforts sur ceux-là. Nous apprécierions vraiment que vous le laissiez actif. Êtes-vous certain de vouloir désactiver le rapport d'utilisation?"
 
-#: ../wxui/main.py:1760 ../wxui/main.py:2113
+#: ../wxui/main.py:1762 ../wxui/main.py:2102
 msgid "Restart Required"
 msgstr "Redémarrage nécessaire"
 
@@ -3439,15 +3449,15 @@ msgid ""
 "up-to-date transmitter data."
 msgstr ""
 
-#: ../wxui/main.py:1169
+#: ../wxui/main.py:1171
 msgid "Save"
 msgstr "Enregistrer"
 
-#: ../wxui/main.py:1634
+#: ../wxui/main.py:1636
 msgid "Save before closing?"
 msgstr "Enregistrer avant de fermer?"
 
-#: ../wxui/main.py:1170 ../wxui/main.py:1558
+#: ../wxui/main.py:1172 ../wxui/main.py:1560
 msgid "Save file"
 msgstr "Enregistrer fichier"
 
@@ -3480,7 +3490,7 @@ msgstr "Choix d'un plan de fréquences..."
 msgid "Select Bands"
 msgstr "Choisir bandes"
 
-#: ../wxui/main.py:1743
+#: ../wxui/main.py:1745
 msgid "Select Language"
 msgstr "Choisir langue"
 
@@ -3492,13 +3502,17 @@ msgstr "Choisir modes"
 msgid "Select Modes to Import"
 msgstr ""
 
-#: ../wxui/main.py:2192
+#: ../wxui/main.py:2181
 msgid "Select a bandplan"
 msgstr "Choisir un plan de fréquences"
 
-#: ../wxui/main.py:1301
+#: ../wxui/main.py:1303
 msgid "Select a tab and memory to diff"
 msgstr "Sélectionner un onglet et une mémoire à comparer"
+
+#: ../wxui/printing.py:64
+msgid "Select columns to include in print output"
+msgstr ""
 
 #: ../wxui/query_sources.py:877
 msgid "Select prefixes"
@@ -3520,19 +3534,19 @@ msgstr ""
 msgid "Selects VFO B's transmitter power. Use the lowest power that provides reliable communication."
 msgstr ""
 
-#: ../drivers/ft450d.py:1706
+#: ../drivers/ft450d.py:1707
 msgid "Selects how quickly the automatic gain control lets the receiver recover after a strong signal. Fast suits CW and data, Slow suits SSB and AM, and Auto picks Slow for SSB and AM and Fast for the other modes. With AGC off the S-meter no longer moves and strong signals are likely to distort."
 msgstr ""
 
-#: ../drivers/ft450d.py:1817
+#: ../drivers/ft450d.py:1818
 msgid "Selects one of ten DSP equalizer curves for your transmitted voice. 0 is flat, 1 to 3 reduce the low, middle or high frequencies, and 4 to 6 boost the high, middle or low frequencies. 7 boosts the lows and reduces the highs, 8 reduces the lows and boosts the middle, and 9 reduces the lows and boosts the highs."
 msgstr ""
 
-#: ../drivers/ft450d.py:1474
+#: ../drivers/ft450d.py:1475
 msgid "Selects the characters the CW training feature sends: digits only, letters only, or both mixed. Training plays random five character Morse groups through the sidetone at the CW speed, without transmitting."
 msgstr ""
 
-#: ../drivers/ft450d.py:949
+#: ../drivers/ft450d.py:950
 msgid "Selects the data mode a DIG channel uses. RTTY is FSK radioteletype keyed by a terminal unit or RTTY software, while USER-L and USER-U carry audio based data modes such as packet on the lower or upper sideband. N/A is for channels that are not in DIG mode."
 msgstr ""
 
@@ -3540,7 +3554,7 @@ msgstr ""
 msgid "Selects the language of the menus and the spoken voice prompts."
 msgstr ""
 
-#: ../drivers/ft450d.py:1791
+#: ../drivers/ft450d.py:1792
 msgid "Selects the mark tone for RTTY: 2125 Hz for high tone operation or 1275 Hz for low tone operation."
 msgstr ""
 
@@ -3560,15 +3574,15 @@ msgstr ""
 msgid "Selects the tone-burst frequency sent for repeater access."
 msgstr ""
 
-#: ../drivers/ft450d.py:1605
+#: ../drivers/ft450d.py:1606
 msgid "Selects what the LOCK button locks. Frequencies locks the controls that change the frequency, including the microphone UP, DWN and FAST keys. Panel locks all front panel keys and knobs, and All locks both the front panel and the microphone keys. POWER and LOCK always remain usable."
 msgstr ""
 
-#: ../drivers/ft450d.py:1372
+#: ../drivers/ft450d.py:1373
 msgid "Selects what the TUNE button controls. ATAS is the optional ATAS-100/-120 active-tuning antenna, EXT ATU the optional FC-40 external tuner, and INT ATU the built-in tuner acting on the transmit signal only, while INTRATU puts the built-in tuner in the receive path as well. F-TRANS instead sends this radio's frequency to a second radio of the same model whenever TUNE is pressed, for single operator two radio (SO2R) operation."
 msgstr ""
 
-#: ../drivers/ft450d.py:1737
+#: ../drivers/ft450d.py:1738
 msgid "Selects what the meter shows while transmitting: PO the average power output, ALC the relative ALC voltage, or SWR the standing wave ratio of the antenna. While receiving it always shows the signal strength."
 msgstr ""
 
@@ -3591,7 +3605,7 @@ msgstr ""
 msgid "Selects which of the %i programmed DTMF PTT-ID codes this channel transmits. Edit the code itself under DTMF Encode Settings."
 msgstr ""
 
-#: ../drivers/ft450d.py:1055
+#: ../drivers/ft450d.py:1056
 msgid "Selects which of the eleven noise reduction algorithms is used. Each one is designed for a different kind of noise, so try them in turn to find the one that best suppresses the noise currently heard. Off also turns DSP Noise Reduction off."
 msgstr ""
 
@@ -3631,11 +3645,11 @@ msgstr ""
 msgid "Sets how far VFO B moves for each tuning step and while scanning in Frequency mode. Choose the spacing used by the frequencies you intend to tune."
 msgstr ""
 
-#: ../drivers/ft450d.py:1630
+#: ../drivers/ft450d.py:1631
 msgid "Sets how far the frequency moves for each step of the MAIN DIAL knob: 1, 10 or 20 Hz in SSB and CW, 100 or 200 Hz in AM and FM."
 msgstr ""
 
-#: ../drivers/ft450d.py:1639
+#: ../drivers/ft450d.py:1640
 msgid "Sets how long a button has to be held to activate its press and hold function. A shorter press activates the button's normal function."
 msgstr ""
 
@@ -3651,11 +3665,11 @@ msgstr ""
 msgid "Sets how long the menu stays open without a key press before the radio leaves it."
 msgstr ""
 
-#: ../drivers/ft450d.py:1397
+#: ../drivers/ft450d.py:1398
 msgid "Sets how long the transmitter stays on after you stop sending in semi break-in CW, in steps of 10 ms, so 25 means 250 ms. A longer delay suits operators who pause often while sending. The radio can also be set to FULL, full break-in, which lets you hear between the characters you send."
 msgstr ""
 
-#: ../drivers/ft450d.py:1749
+#: ../drivers/ft450d.py:1750
 msgid "Sets how long the transmitter stays on after you stop speaking in VOX operation, in steps of 100 ms, so 5 means 500 ms. A longer delay keeps short pauses in your speech from switching the radio back to receive."
 msgstr ""
 
@@ -3667,15 +3681,15 @@ msgstr ""
 msgid "Sets how strong a received signal must be before the speaker unmutes. 0 leaves the squelch open so you hear noise all the time, higher values reject more weak signals and noise. Raise this value if the speaker keeps unmuting on interference, lower it if distant stations are being cut off."
 msgstr ""
 
-#: ../drivers/ft450d.py:995
+#: ../drivers/ft450d.py:996
 msgid "Sets how strongly the contour filter boosts or cuts. Low gives a gentle effect, High a stronger one."
 msgstr ""
 
-#: ../drivers/ft450d.py:1466
+#: ../drivers/ft450d.py:1467
 msgid "Sets the CW sidetone volume, from 0 to 100, used when CW sidetone volume Linked is off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1767
+#: ../drivers/ft450d.py:1768
 msgid "Sets the VOX sensitivity used in DIG mode, so that the audio from the data equipment switches the transmitter on without a PTT line. 0 turns VOX off in DIG mode."
 msgstr ""
 
@@ -3683,23 +3697,23 @@ msgstr ""
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice."
 msgstr ""
 
-#: ../drivers/ft450d.py:1758
+#: ../drivers/ft450d.py:1759
 msgid "Sets the VOX sensitivity. Too sensitive a setting keys the transmitter on the noise around the radio, too insensitive a setting fails to pick up your voice. 1 is the least sensitive setting and 100 the most."
 msgstr ""
 
-#: ../drivers/ft450d.py:1303
+#: ../drivers/ft450d.py:1304
 msgid "Sets the baud rate of the CAT jack, which must match the computer control software. Data turns the CAT jack into an RTTY interface instead: RTTY software keys the FSK shift through the serial data input and uses RTS as PTT."
 msgstr ""
 
-#: ../drivers/ft450d.py:1564
+#: ../drivers/ft450d.py:1565
 msgid "Sets the beep volume relative to the receive audio level set by AF GAIN, when Beep volume Linked is on. 0 makes the beep as loud as the received audio, negative values make it quieter and positive values louder."
 msgstr ""
 
-#: ../drivers/ft450d.py:1573
+#: ../drivers/ft450d.py:1574
 msgid "Sets the beep volume, from 0 to 100, used when Beep volume Linked is off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1586
+#: ../drivers/ft450d.py:1587
 msgid "Sets the brightness of the display illumination, from 1 to 8."
 msgstr ""
 
@@ -3708,7 +3722,7 @@ msgstr ""
 msgid "Sets the call name for DTMF code %i, up to 10 characters long."
 msgstr ""
 
-#: ../drivers/ft450d.py:1579
+#: ../drivers/ft450d.py:1580
 msgid "Sets the contrast of the display, from 1 to 24. Changing it here has not been seen to have a visible effect on the radio."
 msgstr ""
 
@@ -3720,7 +3734,7 @@ msgstr ""
 msgid "Sets the delay before repeater squelch-tail elimination is applied. Match this timing to the repeater; use 0 ms when the feature is not required."
 msgstr ""
 
-#: ../drivers/ft450d.py:1438
+#: ../drivers/ft450d.py:1439
 msgid "Sets the delay between closing the key and the carrier being transmitted in QSK operation with the built-in keyer. At 25 ms keep the CW speed at 50 wpm or below, and at 30 ms at 42 wpm or below, or the radio cannot transmit."
 msgstr ""
 
@@ -3732,31 +3746,31 @@ msgstr ""
 msgid "Sets the difference in MHz between VFO B's receive and transmit frequencies. The Shift setting determines whether this offset is added or subtracted."
 msgstr ""
 
-#: ../drivers/ft450d.py:1429
+#: ../drivers/ft450d.py:1430
 msgid "Sets the dot to dash ratio of the built-in electronic keyer. At 1:3.0, the standard weighting, a dash lasts three times as long as a dot."
 msgstr ""
 
-#: ../drivers/ft450d.py:1783
+#: ../drivers/ft450d.py:1784
 msgid "Sets the frequency shift between the mark and space tones in FSK RTTY. Most amateur RTTY uses 170 Hz."
 msgstr ""
 
-#: ../drivers/ft450d.py:1829
+#: ../drivers/ft450d.py:1830
 msgid "Sets the microphone gain for SSB, AM and FM. Use Low with a microphone that has a high output, Normal with the supplied hand microphone and High with a microphone that has a low output. The speech processor is off at Low and on at the other settings."
 msgstr ""
 
-#: ../drivers/ft450d.py:1345
+#: ../drivers/ft450d.py:1346
 msgid "Sets the offset Quick Split applies. Holding SPLIT/STEP for a second sets the transmit VFO to the receive frequency plus this offset, in the same mode as the receive VFO, and turns split operation on."
 msgstr ""
 
-#: ../drivers/ft450d.py:1501
+#: ../drivers/ft450d.py:1502
 msgid "Sets the pause in seconds between repeats of a CW beacon message. 0 turns the repeat off, so that each message is sent once per button press, as with a CW message keyer."
 msgstr ""
 
-#: ../drivers/ft450d.py:1409
+#: ../drivers/ft450d.py:1410
 msgid "Sets the pitch of the CW sidetone, which is also the offset of the transmitted carrier and the center of the CW receive filter. Tuning a station in until its tone matches the sidetone puts you on its frequency."
 msgstr ""
 
-#: ../drivers/ft450d.py:1550
+#: ../drivers/ft450d.py:1551
 msgid "Sets the pitch of the beep the radio sounds to confirm button presses."
 msgstr ""
 
@@ -3768,11 +3782,11 @@ msgstr ""
 msgid "Sets the receive frequency shown on display line B in Frequency (VFO) mode."
 msgstr ""
 
-#: ../drivers/ft450d.py:1417
+#: ../drivers/ft450d.py:1418
 msgid "Sets the sending speed of the built-in electronic keyer in words per minute. The radio can also show it in characters per minute, five times the wpm value. With a CW QSK delay of 25 ms keep it at 50 wpm or below, and with 30 ms at 42 wpm or below, or the radio cannot transmit."
 msgstr ""
 
-#: ../drivers/ft450d.py:1456
+#: ../drivers/ft450d.py:1457
 msgid "Sets the sidetone volume relative to the receive audio level set by AF GAIN, when CW sidetone volume Linked is on. 0 makes the sidetone as loud as the received audio, negative values make it quieter and positive values louder."
 msgstr ""
 
@@ -3780,19 +3794,19 @@ msgstr ""
 msgid "Sets the silent gap between transmitted DTMF tones. Increase this if the receiving system cannot separate adjacent digits."
 msgstr ""
 
-#: ../drivers/ft450d.py:1294
+#: ../drivers/ft450d.py:1295
 msgid "Sets the time-out timer for computer control commands arriving on the CAT jack. Command input that continues for longer than this time is cut off."
 msgstr ""
 
-#: ../drivers/ft450d.py:1385
+#: ../drivers/ft450d.py:1386
 msgid "Sets the transmit power in watts. Use the lowest power that provides reliable communication, and a half to a third of full power for data transmissions longer than a few minutes."
 msgstr ""
 
-#: ../drivers/ft450d.py:1033
+#: ../drivers/ft450d.py:1034
 msgid "Sets the width of the DSP IF filter. A narrower filter rejects interference close to the signal, a wider one sounds more natural when the band is quiet. The widths depend on the mode: 1.8, 2.4 or 3.0 kHz for SSB, 300 Hz, 500 Hz or 2.4 kHz for CW, 300 Hz, 2.4 or 3.0 kHz for DIG, 3.0, 6.0 or 9.0 kHz for AM, and 2.5 or 5.0 kHz for FM. A width the mode does not offer is replaced with the closest one it does."
 msgstr ""
 
-#: ../drivers/ft450d.py:1319
+#: ../drivers/ft450d.py:1320
 msgid "Sets when the scan resumes after it has paused on a signal. 1 to 10 resumes after that many seconds, 0 selects BUSY, which waits until the signal has gone. In SSB, CW and SSB based data modes the scanner instead steps slowly across a signal, giving you time to stop it."
 msgstr ""
 
@@ -3813,11 +3827,11 @@ msgstr ""
 msgid "Shift amount (or transmit frequency) controlled by duplex"
 msgstr "Décalage (ou fréquence de transmission) contrôlée par duplex"
 
-#: ../drivers/ft450d.py:1329
+#: ../drivers/ft450d.py:1330
 msgid "Shifts the frequency of the radio's CPU clock slightly. Only use it to move an internally generated spurious signal, or birdie, off a frequency you want to listen on."
 msgstr ""
 
-#: ../drivers/ft450d.py:1775
+#: ../drivers/ft450d.py:1776
 msgid "Shifts the frequency shown on the display in the USER-L and USER-U data modes by this many hertz."
 msgstr ""
 
@@ -3837,7 +3851,7 @@ msgstr "Montrer les champs supplémentaires"
 msgid "Show image backup location"
 msgstr "Montrer l'emplacement du fichier de débogage"
 
-#: ../drivers/ft450d.py:1254
+#: ../drivers/ft450d.py:1255
 msgid "Shows all 62 items of the radio's Menu Mode. When off, the menu on the radio offers only the 16 most often used items."
 msgstr ""
 
@@ -3900,7 +3914,7 @@ msgstr "Tri"
 msgid "Sounds a short confirmation tone as you operate the radio. Turn it off when the radio has to be used discreetly."
 msgstr ""
 
-#: ../drivers/ft450d.py:1723
+#: ../drivers/ft450d.py:1724
 msgid "Speeds up tuning: the MAIN DIAL knob tunes ten times faster and the DSP/SEL knob twice as fast."
 msgstr ""
 
@@ -3912,7 +3926,7 @@ msgstr "État"
 msgid "State/Province"
 msgstr "État/Province"
 
-#: ../wxui/main.py:2172
+#: ../wxui/main.py:2161
 msgid "Success"
 msgstr "Réussi"
 
@@ -3920,15 +3934,15 @@ msgstr "Réussi"
 msgid "Successfully sent bug report:"
 msgstr "Succès d'envoi du rapport de bogue:"
 
-#: ../drivers/ft450d.py:1492
+#: ../drivers/ft450d.py:1493
 msgid "Swaps the dot and dash sides of a keyer paddle without rewiring it, for example for a left-handed operator. Normal sends dots from the plug tip and dashes from the ring, Reverse the other way round."
 msgstr ""
 
-#: ../drivers/ft450d.py:1807
+#: ../drivers/ft450d.py:1808
 msgid "Swaps the mark and space tones of your transmitted RTTY signal."
 msgstr ""
 
-#: ../drivers/ft450d.py:1799
+#: ../drivers/ft450d.py:1800
 msgid "Swaps the mark and space tones when receiving RTTY. Try Reverse if a station with a good signal cannot be decoded."
 msgstr ""
 
@@ -4032,10 +4046,18 @@ msgstr ""
 msgid "The profile %(profile)s suggests %(default)i bytes; this is only a guess and the radio is the authority. A loaded image sets this automatically, and anything at or above 0x%(limit)x is refused because that is the multi-bootloader region."
 msgstr ""
 
-#: ../wxui/main.py:1590
+#: ../wxui/main.py:1592
 #, python-format
 msgid "The recommended procedure for importing memories is to open the source file and copy/paste memories from it into your target image. If you continue with this import function, CHIRP will replace all memories in your currently-open file with those in %(file)s. Would you like to open this file to copy/paste memories across, or proceed with the import?"
 msgstr "La procedure préconisée d'importation des mémoires consiste à ouvrir le fichier source et copier/coller les mémoires depuis celui-ci vers l'image cible. Si vous continuez avec cette fonction d'importation, CHIRP va remplacer toutes les mémoires du fichier actuellement ouvert avec celles de %(file)s. Souhaitez-vous ouvrir ce fichier pour copier/coller entre eux ou l'importer?"
+
+#: ../wxui/printing.py:244
+msgid "There was a problem preparing the preview."
+msgstr ""
+
+#: ../wxui/printing.py:227
+msgid "There was a problem printing."
+msgstr ""
 
 #: ../wxui/memedit.py:2252
 msgid "This Memory"
@@ -4062,11 +4084,11 @@ msgstr "Cette image ne contient pas d'information sur le firmware. Elle a peut-�
 msgid "This image is read-only due to being from a radio with unsupported firmware"
 msgstr ""
 
-#: ../wxui/main.py:1842
+#: ../wxui/main.py:1831
 msgid "This is a live-mode radio, which means changes are sent to the radio in real-time as you make them. Upload is not necessary!"
 msgstr "Cette radio fonctionne en mode live, ce qui signifie que les changements sont envoyés à la radio en temps réel dès qu'ils sont faits. Un téléchargement vers la radio n'est pas nécessaire!"
 
-#: ../wxui/main.py:1848
+#: ../wxui/main.py:1837
 msgid "This is a radio-independent file and cannot be uploaded directly to a radio. Open a radio image (or download one from a radio) and then copy/paste items from this tab into that one in order to upload"
 msgstr "Ce fichier est indépendant d'une radio et ne peut pas être téléchargé directement vers une radio. Ouvrez une image radio (ou téléchargez-en une de la radio) et copiez/collez les entrées de cet onglet vers l'autre afin de pouvoir télécharger vers la radio"
 
@@ -4222,7 +4244,7 @@ msgstr "Modulation transmission/réception (FM, AM, SSB, etc)"
 msgid "Transmit/receive tone for TSQL mode, else receive tone"
 msgstr "Tonalité transmission/réception pour mode TSQL, ou bien tonalité réception"
 
-#: ../drivers/ft450d.py:1363
+#: ../drivers/ft450d.py:1364
 msgid "Transmits a short beep when PTT is released, before the radio returns to receive, to tell other stations that your transmission has ended."
 msgstr ""
 
@@ -4247,27 +4269,27 @@ msgstr ""
 msgid "Turns on Bluetooth so that the radio can be programmed wirelessly from a phone app."
 msgstr ""
 
-#: ../drivers/ft450d.py:1337
+#: ../drivers/ft450d.py:1338
 msgid "Turns on split frequency operation: the radio receives on VFO-A and transmits on VFO-B, or the other way round. The two VFOs may use different modes and even different bands."
 msgstr ""
 
-#: ../drivers/ft450d.py:976
+#: ../drivers/ft450d.py:977
 msgid "Turns on the DSP contour filter, which gently cuts or boosts one part of the receive passband. Cutting suppresses interference or excessive components of a signal, boosting brings out the components that make it easier to understand."
 msgstr ""
 
-#: ../drivers/ft450d.py:1045
+#: ../drivers/ft450d.py:1046
 msgid "Turns on the DSP digital noise reduction, which reduces random background noise on the HF and 50 MHz bands. It is especially effective on SSB."
 msgstr ""
 
-#: ../drivers/ft450d.py:1686
+#: ../drivers/ft450d.py:1687
 msgid "Turns on the IF noise blanker, which reduces short pulses of noise such as those from vehicle ignition systems."
 msgstr ""
 
-#: ../drivers/ft450d.py:1010
+#: ../drivers/ft450d.py:1011
 msgid "Turns on the IF notch filter, a narrow and deep filter that removes a single interfering carrier or whistle from inside the receive passband."
 msgstr ""
 
-#: ../drivers/ft450d.py:1716
+#: ../drivers/ft450d.py:1717
 msgid "Turns on the built-in electronic CW keyer, for a keyer paddle plugged into the KEY jack. Turn it off to use a straight key or an external keyer."
 msgstr ""
 
@@ -4275,7 +4297,7 @@ msgstr ""
 msgid "Turns on the privacy function the manual calls Encryption for this channel. Other radios can only understand the conversation if they have it turned on as well and use the same DCS code."
 msgstr ""
 
-#: ../drivers/ft450d.py:1261
+#: ../drivers/ft450d.py:1262
 msgid "Turns the radio off automatically once no button, knob or microphone key has been used and nothing has been transmitted for the selected number of hours. APO flashes on the display and a tone sounds in the last minute before the radio switches off. 0 disables automatic power off."
 msgstr ""
 
@@ -4288,8 +4310,8 @@ msgstr ""
 msgid "Type a simple search string or a formatted query and press enter"
 msgstr "Entrez un terme de recherche simple ou une recherche formattée et appuyez sur entrée"
 
-#: ../wxui/clone.py:496 ../wxui/clone.py:503 ../wxui/clone.py:514
-#: ../wxui/clone.py:522 ../wxui/clone.py:526
+#: ../wxui/clone.py:518 ../wxui/clone.py:525 ../wxui/clone.py:536
+#: ../wxui/clone.py:544 ../wxui/clone.py:548
 msgid "USB Port Finder"
 msgstr "Rechercher port USB"
 
@@ -4298,7 +4320,7 @@ msgstr "Rechercher port USB"
 msgid "Unable to correct rounded frequency %s"
 msgstr ""
 
-#: ../wxui/clone.py:512
+#: ../wxui/clone.py:534
 msgid "Unable to determine port for your cable. Check your drivers and connections."
 msgstr "Impossible de déterminer le port de votre câble. Vérifiez les pilotes et connexions."
 
@@ -4311,7 +4333,7 @@ msgstr "Impossible d'éditer une mémoire avant téléchargement de la radio"
 msgid "Unable to find a supported tuning step for %s"
 msgstr ""
 
-#: ../wxui/main.py:1516
+#: ../wxui/main.py:1518
 #, python-format
 msgid "Unable to find stock config %r"
 msgstr "Impossible de trouver la configuration de base %r"
@@ -4347,7 +4369,7 @@ msgstr "Impossible de montrer %s sur ce système"
 msgid "Unable to set %s on this memory"
 msgstr "Impossible de régler %s dans cette mémoire"
 
-#: ../wxui/main.py:1852
+#: ../wxui/main.py:1841
 msgid "Unable to upload this file"
 msgstr "Impossible de télécharger ce fichier"
 
@@ -4371,11 +4393,11 @@ msgstr ""
 msgid "Unknown file header"
 msgstr ""
 
-#: ../wxui/clone.py:495
+#: ../wxui/clone.py:517
 msgid "Unplug your cable (if needed) and then click OK"
 msgstr "Débranchez votre câble (si nécessaire) et cliquez sur OK"
 
-#: ../drivers/thd74.py:337
+#: ../drivers/thd74.py:350
 #, python-format
 msgid "Unsupported model %r"
 msgstr "Modèle non supporté %r"
@@ -4393,11 +4415,11 @@ msgstr "Mettre à jour un bogue existant"
 msgid "Updating bug %s"
 msgstr "Bogue %s en cours de mise à jour"
 
-#: ../wxui/main.py:1175
+#: ../wxui/main.py:1177
 msgid "Upload"
 msgstr ""
 
-#: ../wxui/clone.py:908
+#: ../wxui/clone.py:930
 msgid "Upload instructions"
 msgstr "Instruction de téléchargement"
 
@@ -4405,7 +4427,7 @@ msgstr "Instruction de téléchargement"
 msgid "Upload is disabled due to unsupported firmware version"
 msgstr "Les téléchargements vers la radio sont désactivés à cause d'une version de firmware non supportée"
 
-#: ../wxui/main.py:1176
+#: ../wxui/main.py:1178
 msgid "Upload to radio"
 msgstr "Télécharger vers la radio"
 
@@ -4442,8 +4464,8 @@ msgstr "Utiliser une plus grande police"
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../sources/repeaterbook.py:143 ../sources/repeaterbook.py:146
-#: ../sources/repeaterbook.py:156
+#: ../sources/repeaterbook.py:145 ../sources/repeaterbook.py:148
+#: ../sources/repeaterbook.py:158
 msgid "Using cached data"
 msgstr ""
 
@@ -4504,7 +4526,7 @@ msgstr "Valeur recherchée dans le champ mémoire"
 msgid "Values"
 msgstr "Valeurs"
 
-#: ../wxui/clone.py:363
+#: ../wxui/clone.py:385
 msgid "Vendor"
 msgstr "Fabricant"
 
@@ -4520,8 +4542,8 @@ msgstr ""
 msgid "WARNING!"
 msgstr "ATTENTION!"
 
-#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:2006
-#: ../wxui/main.py:2164
+#: ../wxui/bugreport.py:235 ../wxui/memedit.py:2055 ../wxui/main.py:1995
+#: ../wxui/main.py:2153
 msgid "Warning"
 msgstr "Attention"
 
@@ -4542,7 +4564,7 @@ msgstr "Bienvenue"
 msgid "When it is off, the keypad can still be locked by hand."
 msgstr ""
 
-#: ../drivers/ft450d.py:1838
+#: ../drivers/ft450d.py:1839
 msgid "When on, holding the microphone UP or DWN key for about a second starts a scan that continues after the key is released. When off, the radio only scans while the key is held down."
 msgstr ""
 
@@ -4558,7 +4580,7 @@ msgstr "Souhaitez-vous que CHIRP installe une icône pour vous sur le bureau?"
 msgid "You have opened multiple issues within the last week. CHIRP limits the number of issues you can open to avoid abuse. If you really need to open another, please do so via the website."
 msgstr "Vous avez soumis plusieurs bogues dans la dernière semaine. CHIRP limite le nombre de bogues que vous pouvez ouvrir pour éviter les abus. Si vous voulez véritablement en ouvrir un autre, faites-le depuis le site web."
 
-#: ../wxui/clone.py:533
+#: ../wxui/clone.py:555
 msgid "Your Prolific-based USB device will not work without reverting to an older version of the driver. Visit the CHIRP website to read more about how to resolve this?"
 msgstr "Votre appareil USB utilise une puce Prolific qui ne fonctionnera pas sans installer une version antérieure du pilote. Visiter le site web de CHIRP pour plus d'informations à ce sujet?"
 
@@ -4566,7 +4588,7 @@ msgstr "Votre appareil USB utilise une puce Prolific qui ne fonctionnera pas san
 msgid "Your QTH Locator"
 msgstr "Votre localisation QTH"
 
-#: ../wxui/clone.py:520
+#: ../wxui/clone.py:542
 msgid "Your cable appears to be on port:"
 msgstr "Votre câble apparaît sur le port:"
 
@@ -4602,7 +4624,7 @@ msgstr ""
 msgid "checked"
 msgstr ""
 
-#: ../wxui/main.py:2093
+#: ../wxui/main.py:2082
 msgid "disabled"
 msgstr "desactivé"
 
@@ -4610,7 +4632,7 @@ msgstr "desactivé"
 msgid "empty"
 msgstr ""
 
-#: ../wxui/main.py:2093
+#: ../wxui/main.py:2082
 msgid "enabled"
 msgstr "activé"
 
