@@ -1415,7 +1415,7 @@ class DM32UVZone(chirp_common.NamedBank):
         return name
 
     def set_name(self, name):
-        self._zone().name = str(name)[:16].ljust(16, '\x00')
+        self._zone().name.set_raw(_name_bytes(str(name), 16))
 
 
 class DM32UVZoneModel(chirp_common.MTOBankModel):
