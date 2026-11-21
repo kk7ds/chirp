@@ -183,8 +183,7 @@ class UnixPlatform(Platform):
         return ver
 
     def is_ble_serial(self, serial):
-        return (serial.port is not None and
-                serial.port.startswith('/tmp/ttyBLE'))
+        return serial.port.startswith('/tmp/ttyBLE')
 
 
 class Win32Platform(Platform):
