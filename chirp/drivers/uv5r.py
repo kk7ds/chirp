@@ -753,12 +753,10 @@ def _do_upload(radio):
                 _send_block(radio, i, mmap[addr:addr + 0x10])
 
     if radio._all_range_flag:
+        # The Range Override Parameter applies to a single upload
         radio._all_range_flag = False
+        radio._all_range_used = True
         LOG.warning('Sending all ranges to radio has completed')
-        raise errors.RadioError(
-            "This is NOT an error.\n"
-            "The upload has finished successfully.\n"
-            "Please restart CHIRP.")
 
 
 UV5R_POWER_LEVELS = [chirp_common.PowerLevel("High", watts=4.00),
@@ -896,6 +894,7 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT % self._mem_params, self._mmap)
         self._all_range_flag = False
+        self._all_range_used = False
 
     def sync_in(self):
         try:
@@ -1544,11 +1543,17 @@ class BaofengUV5R(chirp_common.CloneModeRadio):
         def set_range_flag(setting):
             val = [85, 115, 101, 65, 116, 79, 119, 110, 82, 105, 115, 107]
             if [ord(x) for x in str(setting.value).strip()] == val:
-                self._all_range_flag = True
+                # The settings editor sends this value back with every
+                # other settings change, so a value that has already been
+                # used for an upload must not enable it again.
+                self._all_range_flag = not self._all_range_used
             else:
                 self._all_range_flag = False
+                self._all_range_used = False
             LOG.debug('Set range flag to %s' % self._all_range_flag)
 
+        # This setting always starts at Default
+        self._all_range_used = False
         rs = RadioSetting("allrange", "Range Override Parameter",
                           RadioSettingValueString(0, 12, "Default"))
         rs.set_doc(
