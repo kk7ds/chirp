@@ -1064,16 +1064,11 @@ class ChirpDownloadDialog(ChirpCloneDialog):
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 return
-        message = None
-        if port == BLUETOOTH and prompts.pre_download_ble:
-            message = prompts.pre_download_ble
-        message = message or prompts.pre_download
-        if message:
+        if prompts.pre_download:
             d = ChirpRadioPromptDialog(self,
                                        title=_('Download instructions'),
                                        radio=rclass,
-                                       prompt='pre_download',
-                                       message=message)
+                                       prompt='pre_download')
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 return
@@ -1192,15 +1187,11 @@ class ChirpUploadDialog(ChirpCloneDialog):
                                                           prompts))
 
     def _upload_before_serial(self, s, port, prompts):
-        message = None
-        if port == BLUETOOTH and prompts.pre_upload_ble:
-            message = prompts.pre_upload_ble
-        if message or prompts.pre_upload:
+        if prompts.pre_upload:
             d = ChirpRadioPromptDialog(self,
                                        title=_('Upload instructions'),
                                        radio=self._radio,
-                                       prompt='pre_upload',
-                                       message=message)
+                                       prompt='pre_upload')
             if d.ShowModal() != wx.ID_OK:
                 self.cancel_action()
                 if s:
