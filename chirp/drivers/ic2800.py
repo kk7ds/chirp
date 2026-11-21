@@ -1,4 +1,4 @@
-# Copyright Michael Kent 2026
+# Copyright 2026 Michael Kent
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
