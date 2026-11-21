@@ -32,11 +32,12 @@ LIST_SCANMODE = ["Time", "Carrier", "Search"]
 
 # Radios seem to have different memory sizes
 def _get_memory_size(radio):
-    response = baofeng_uv17Pro._sendmagic(radio, radio._magic_memsize[0][0],
+    response = baofeng_uv17Pro._sendmagic(radio.pipe,
+                                          radio._magic_memsize[0][0],
                                           radio._magic_memsize[0][1])
     mem_size = struct.unpack("<I", response[7:])[0]
     for magic, resplen in radio._magics2:
-        baofeng_uv17Pro._sendmagic(radio, magic, resplen)
+        baofeng_uv17Pro._sendmagic(radio.pipe, magic, resplen)
     return mem_size
 
 
@@ -57,7 +58,7 @@ def _get_memory_map(radio):
         blocknr = ord(baofeng_common._rawrecv(radio, 6)[5:])
         blocknr = (blocknr >> 4 & 0xf) * 10 + (blocknr & 0xf)
         memory_map += [blocknr]
-        baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
+        baofeng_uv17Pro._sendmagic(radio.pipe, b"\x06", 1)
     return memory_map
 
 
@@ -65,7 +66,7 @@ def _download(radio):
     """Get the memory map"""
     if not radio._DETECTED_BY:
         # The GA510v2 (at least) is detected, and thus has already done ident
-        baofeng_uv17Pro._do_ident(radio)
+        baofeng_uv17Pro._do_ident(radio.__class__, radio.pipe)
     data = b""
     memory_map = _get_memory_map(radio)
 
@@ -99,13 +100,13 @@ def _download(radio):
             status.msg = "Cloning from radio..."
             radio.status_fn(status)
 
-            baofeng_uv17Pro._sendmagic(radio, b"\x06", 1)
+            baofeng_uv17Pro._sendmagic(radio.pipe, b"\x06", 1)
     return data
 
 
 def _upload(radio):
     """Upload procedure"""
-    baofeng_uv17Pro._do_ident(radio)
+    baofeng_uv17Pro._do_ident(radio.__class__, radio.pipe)
     memory_map = _get_memory_map(radio)
 
     status = chirp_common.Status()
