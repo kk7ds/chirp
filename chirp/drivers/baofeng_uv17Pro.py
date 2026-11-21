@@ -515,25 +515,13 @@ class UV17Pro(bfc.BaofengCommonHT):
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio\n"
-            "4 - Press OK to start downloading data from your radio\n")
+            "4 - Do the download of your radio data\n")
         rp.pre_upload = _(
-            "Follow these instructions to upload your info:\n"
+            "Follow this instructions to upload your info:\n"
             "1 - Turn off your radio\n"
             "2 - Connect your interface cable\n"
             "3 - Turn on your radio\n"
-            "4 - Press OK to start uploading data to your radio\n")
-        rp.pre_download_ble = _(
-            "Follow these instructions to download your info:\n"
-            "1 - Turn on your radio\n"
-            "2 - Enable 'Wireless Cps' on your radio\n"
-            "3 - Select your radio from the list\n"
-            "4 - Press OK to start downloading data from your radio\n")
-        rp.pre_upload_ble = _(
-            "Follow these instructions to upload your info:\n"
-            "1 - Turn on your radio\n"
-            "2 - Enable 'Wireless Cps' on your radio\n"
-            "3 - Select your radio from the list\n"
-            "4 - Press OK to start uploading data to your radio\n")
+            "4 - Do the upload of your radio data\n")
         return rp
 
     def process_mmap(self):
