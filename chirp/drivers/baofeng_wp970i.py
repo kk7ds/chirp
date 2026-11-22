@@ -97,6 +97,7 @@ class WP970I(bfc.BaofengCommonHT):
     _recv_block_size = 0x40
     _mem_size = 0x2000
     _ack_block = True
+    _squelch_threshold_max = 123
 
     _ranges = [(0x0000, 0x0DF0),
                (0x0E00, 0x1800),
@@ -877,7 +878,7 @@ class WP970I(bfc.BaofengCommonHT):
                     _obj = self._memobj.squelch.vhf
                 elif band == "uhf":
                     _obj = self._memobj.squelch.uhf
-                val = RadioSettingValueInteger(0, 255,
+                val = RadioSettingValueInteger(0, self._squelch_threshold_max,
                                                getattr(
                                                    _obj, "sql%i" % (index)))
                 if index == 0:
@@ -982,6 +983,10 @@ class UV9RPROV2(BFA58):
     VARIANT = "V2"
     ALIASES = []
     _fileid = []
+
+    # Factory calibration on this model includes squelch threshold
+    # values above the 123 limit used by earlier WP970I variants
+    _squelch_threshold_max = 255
 
     # Address ranges written by vendor CPS Form_Comm_Write handler:
     # 0x0000..0x0810: 128 channel records (16 bytes each) + boundary
