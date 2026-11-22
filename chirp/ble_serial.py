@@ -38,8 +38,10 @@ def scan_ble_devices():
 
 
 class BluetoothBridge(serialtrace.SerialTrace):
-    def __init__(self, address):
+    def __init__(self, address, mtu=None, verbosity=None, rclass=None):
         self._address = address
+        self._mtu, self._mtu_source = self._resolve_mtu(mtu, rclass)
+        self._verbosity = self._resolve_verbosity(verbosity)
         self._lock = threading.Lock()
         self._ready = threading.Event()
         self._endpoint_path = None
@@ -50,6 +52,35 @@ class BluetoothBridge(serialtrace.SerialTrace):
         self._task = None
         super().__init__()
 
+    @staticmethod
+    def _resolve_mtu(mtu, rclass):
+        # Use `BLE_MTU` key from a driver radio class. 
+        # Overridden by `ble_mtu` key in chirp.config [bluetooth] section.
+        mtu_source = 'chirp.config' if mtu not in (None, '') else 'radio driver'
+        if mtu is None or mtu == '':
+            mtu = getattr(rclass, 'BLE_MTU', None)
+        mtu = int(mtu) if mtu is not None else None
+        if mtu is not None and mtu <= 0:
+            raise ValueError('BLE serial MTU must be a positive integer')
+        return mtu, mtu_source
+
+    @staticmethod
+    def _resolve_verbosity(verbosity):
+        # Read `verbosity` level (1=INFO, 2=DEBUG) from chirp.config [bluetooth] section.
+        verbosity = int(verbosity) if verbosity else 0
+        if verbosity < 0:
+            raise ValueError('BLE serial verbosity must be non-negative')
+        return verbosity
+
+    def _configure_logging(self):
+        if self._verbosity:
+            root_logger = logging.getLogger()
+            root_logger.setLevel(logging.DEBUG)
+            for handler in root_logger.handlers:
+                if isinstance(handler, logging.StreamHandler):
+                    handler.setLevel(logging.DEBUG)
+            logging.getLogger('bleak').setLevel(
+                logging.DEBUG if self._verbosity > 1 else logging.INFO)
 
     async def _run_bridge(self):
         import tty
@@ -57,6 +88,12 @@ class BluetoothBridge(serialtrace.SerialTrace):
         from ble_serial import DEFAULT_PORT
         from ble_serial.bluetooth.ble_client import BLE_client
 
+        self._configure_logging()
+        if self._mtu is None:
+            LOG.info('No custom BLE MTU configured; will use BLE_client default = 20')
+        else:
+            LOG.info('Using custom BLE MTU %d from %s',
+                     self._mtu, self._mtu_source)
         loop = asyncio.get_running_loop()
         # Keep the slave open until shutdown, including while BLE connects.
         controller, endpoint = os.openpty()
@@ -81,7 +118,7 @@ class BluetoothBridge(serialtrace.SerialTrace):
 
             def receive_serial():
                 try:
-                    data = os.read(controller, 20)
+                    data = os.read(controller, self._mtu)
                     if not data:
                         raise RuntimeError('Bluetooth serial port closed')
                     client.queue_send(data)
@@ -123,6 +160,10 @@ class BluetoothBridge(serialtrace.SerialTrace):
             reader_added = True
             await client.connect(self._address, 'public', None, 5.0)
             await client.setup_chars(None, None, 'rw', False)
+            if self._mtu is None:
+                self._mtu = client.write_char.max_write_without_response_size
+                if self._mtu <= 0:
+                    raise ValueError('BLE client returned an invalid MTU')
             tasks = [asyncio.create_task(client.send_loop()),
                      asyncio.create_task(client.check_loop()),
                      asyncio.create_task(write_serial())]

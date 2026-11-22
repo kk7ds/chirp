@@ -80,7 +80,8 @@ def get_ble_device_label(address, name):
 
 
 class BluetoothConnection(threading.Thread):
-    def __init__(self, address, rclass, open_serial, on_complete):
+    def __init__(self, address, rclass, open_serial, on_complete,
+                 mtu=None, verbosity=None):
         super().__init__(name='BluetoothConnection', daemon=True)
         self._address = address
         self._rclass = rclass
@@ -89,7 +90,8 @@ class BluetoothConnection(threading.Thread):
         self._cancelled = threading.Event()
         self._lock = threading.Lock()
         self._pipe = None
-        self._serial = ble_serial.BluetoothBridge(address)
+        self._serial = ble_serial.BluetoothBridge(
+            address, mtu=mtu, verbosity=verbosity, rclass=rclass)
 
     def _open_port(self):
         if not self._address:
@@ -688,7 +690,11 @@ class ChirpCloneDialog(wx.Dialog):
         connection = BluetoothConnection(
             self._ble_device_address, rclass, open_serial,
             lambda pipe, error: self._ble_connection_complete(
-                continuation, pipe, error))
+                continuation, pipe, error),
+            # Custom BLE MTU overrides BLE_MTU from a radio's driver.
+            mtu=CONF.get('ble_mtu', 'bluetooth'),
+            # BLE_client verbosity level: 1=INFO, 2=DEBUG.
+            verbosity=CONF.get('verbosity', 'bluetooth'))
         self._ble_connection = connection
         self._start_ble_activity(_('Connecting to Bluetooth radio...'))
         try:

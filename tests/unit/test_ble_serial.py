@@ -1,5 +1,6 @@
 import asyncio
 import importlib.util
+import logging
 import os
 import sys
 import tempfile
@@ -205,6 +206,7 @@ class TestBleSerial(unittest.TestCase):
         client = mock.Mock()
         client.connect = mock.AsyncMock()
         client.setup_chars = mock.AsyncMock()
+        client.write_char = mock.Mock(max_write_without_response_size=3)
         client.disconnect = mock.AsyncMock()
 
         async def wait_for_stop():
@@ -213,7 +215,14 @@ class TestBleSerial(unittest.TestCase):
         client.send_loop = mock.AsyncMock(side_effect=wait_for_stop)
         client.check_loop = mock.AsyncMock(side_effect=wait_for_stop)
         received = threading.Event()
-        client.queue_send.side_effect = lambda data: received.set()
+        sent = []
+
+        def queue_send(data):
+            sent.append(data)
+            if sum(map(len, sent)) >= len(b'hello'):
+                received.set()
+
+        client.queue_send.side_effect = queue_send
         connection = clone.BluetoothConnection(
             '20:91:48:4C:4C:54', _Radio, clone.open_serial, mock.Mock())
         with tempfile.TemporaryDirectory() as trace_dir, \
@@ -224,13 +233,18 @@ class TestBleSerial(unittest.TestCase):
                 mock.patch('ble_serial.bluetooth.ble_client.BLE_client',
                            return_value=client) as factory:
             try:
-                pipe = connection._open_port()
+                with self.assertLogs(backend.LOG, level='INFO') as logs:
+                    pipe = connection._open_port()
+                self.assertTrue(any(
+                    'No custom BLE MTU configured' in message
+                    for message in logs.output))
                 try:
                     self.assertEqual(pipe.port, self.ble_port)
                     self.assertTrue(os.path.islink(self.ble_port))
                     pipe.write(b'hello')
                     self.assertTrue(received.wait(2))
-                    client.queue_send.assert_called_once_with(b'hello')
+                    self.assertEqual(b''.join(sent), b'hello')
+                    self.assertTrue(all(len(data) <= 3 for data in sent))
                     receive = client.set_receiver.call_args.args[0]
                     connection._serial._loop.call_soon_threadsafe(
                         receive, b'world')
@@ -328,6 +342,59 @@ class TestBleSerial(unittest.TestCase):
         self.assertEqual(pipe.write_timeout, 2)
         self.assertEqual(pipe.port, '/tmp/ttyBLE')
         serial_open.assert_called_once_with()
+
+    def test_bridge_uses_driver_mtu_unless_configured(self):
+        class DriverWithMtu:
+            BLE_MTU = 48
+
+        cases = (
+            (None, None, None, 0),
+            (DriverWithMtu, None, 48, 0),
+            (DriverWithMtu, '64', 64, 3),
+        )
+        for rclass, configured_mtu, expected_mtu, verbosity in cases:
+            with self.subTest(configured_mtu=configured_mtu):
+                bridge = backend.BluetoothBridge(
+                    'address', mtu=configured_mtu,
+                    verbosity=str(verbosity), rclass=rclass)
+                self.assertEqual(bridge._mtu, expected_mtu)
+                self.assertEqual(bridge._verbosity, verbosity)
+
+    def test_selected_ble_options_use_driver_and_config_values(self):
+        class DriverWithMtu:
+            BLE_MTU = 48
+
+        dialog = mock.Mock()
+        dialog._ble_device_address = 'address'
+        continuation = mock.Mock()
+        cases = (
+            (_Radio, {}, None, None),
+            (DriverWithMtu, {}, None, None),
+            (DriverWithMtu,
+             {'ble_mtu': '64', 'verbosity': '3'},
+             '64', '3'),
+        )
+
+        for rclass, settings, expected_mtu, expected_verbosity in cases:
+            with self.subTest(settings=settings), \
+                    mock.patch.object(
+                        clone.CONF, 'get',
+                        side_effect=lambda key, section=None:
+                            settings.get(key)) as config_get, \
+                    mock.patch.object(clone, 'BluetoothConnection') as \
+                    connection:
+                clone.ChirpCloneDialog._open_selected_port(
+                    dialog, clone.BLUETOOTH, rclass, continuation)
+
+            self.assertEqual(config_get.call_args_list, [
+                mock.call('ble_mtu', 'bluetooth'),
+                mock.call('verbosity', 'bluetooth'),
+            ])
+            self.assertEqual(
+                connection.call_args.kwargs['mtu'], expected_mtu)
+            self.assertEqual(
+                connection.call_args.kwargs['verbosity'],
+                expected_verbosity)
 
     def test_non_bluetooth_selection_opens_serial_port(self):
         dialog = mock.Mock()
@@ -648,6 +715,35 @@ class TestBleSerial(unittest.TestCase):
         pipe.port = '/dev/ttyUSB0'
         self.assertFalse(platform.UnixPlatform.is_ble_serial(None, pipe))
 
+    def test_ble_serial_verbosity_configures_logging(self):
+        root_logger = logging.getLogger()
+        bleak_logger = logging.getLogger('bleak')
+        cases = (
+            (0, None),
+            (1, logging.INFO),
+            (2, logging.DEBUG)
+        )
+        for verbosity, bleak_level in cases:
+            with self.subTest(verbosity=verbosity):
+                bridge = backend.BluetoothBridge(
+                    'address', verbosity=verbosity)
+                handler = logging.StreamHandler()
+                with mock.patch.object(root_logger, 'handlers', [handler]), \
+                        mock.patch.object(root_logger, 'setLevel') as \
+                        set_root_level, \
+                        mock.patch.object(bleak_logger, 'setLevel') as \
+                        set_bleak_level:
+                    bridge._configure_logging()
+
+                if verbosity:
+                    set_root_level.assert_called_once_with(logging.DEBUG)
+                    set_bleak_level.assert_called_once_with(bleak_level)
+                    self.assertEqual(handler.level, logging.DEBUG)
+                else:
+                    set_root_level.assert_not_called()
+                    set_bleak_level.assert_not_called()
+                    self.assertEqual(handler.level, logging.NOTSET)
+
     def test_select_ble_device_updates_selection_and_closes_dialog(self):
         parent = mock.Mock()
         parent._ble_device_address = 'old-address'
@@ -826,6 +922,7 @@ class TestBleSerial(unittest.TestCase):
         client = mock.Mock()
         client.connect = mock.AsyncMock()
         client.setup_chars = mock.AsyncMock()
+        client.write_char = mock.Mock(max_write_without_response_size=20)
         client.disconnect = mock.AsyncMock()
 
         async def wait_for_stop():
@@ -861,6 +958,7 @@ class TestBleSerial(unittest.TestCase):
         client = mock.Mock()
         client.connect = mock.AsyncMock()
         client.setup_chars = mock.AsyncMock()
+        client.write_char = mock.Mock(max_write_without_response_size=20)
 
         async def wait_for_stop():
             await asyncio.Event().wait()
