@@ -978,7 +978,8 @@ def _upload_uv9rprov2(radio):
 class UV9RPROV2(BFA58):
     """Baofeng UV-9R Pro V2"""
     VENDOR = "Baofeng"
-    MODEL = "UV-9R Pro V2"
+    MODEL = "UV-9R Pro"
+    VARIANT = "V2"
     ALIASES = []
     _fileid = []
 
