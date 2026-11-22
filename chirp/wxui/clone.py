@@ -79,6 +79,14 @@ def get_ble_device_label(address, name):
     return _('BLE: %s') % name
 
 
+def _is_ble_address(address):
+    return bool(address and (
+        re.fullmatch(r'(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}', address) or
+        re.fullmatch(
+            r'[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}',
+            address)))
+
+
 class BluetoothConnection(threading.Thread):
     def __init__(self, address, rclass, open_serial, on_complete,
                  mtu=None, verbosity=None):
@@ -626,16 +634,23 @@ class ChirpCloneDialog(wx.Dialog):
             if port not in [x[0] for x in self.ports]:
                 self.ports.insert(0, (port, port))
 
+        if not select:
+            select = CONF.get('last_port', 'state')
+        if self._ble_supported and _is_ble_address(select):
+            self.ports = [(device, name) for device, name in self.ports
+                          if device != select]
+            if self._ble_device_address != select:
+                self._ble_device_name = None
+            self._ble_device_address = select
+
         if self._ble_supported:
             self.ports.append((BLUETOOTH, BLUETOOTH))
             if self._ble_device_address:
                 self.ports.append((
-                    BLUETOOTH,
+                    self._ble_device_address,
                     get_ble_device_label(self._ble_device_address,
                                      self._ble_device_name)))
 
-        if not select:
-            select = CONF.get('last_port', 'state')
         if not self.ports:
             LOG.warning('No ports available; action will be disabled')
         okay_btn = self.FindWindowById(self.GetAffirmativeId())
@@ -661,6 +676,8 @@ class ChirpCloneDialog(wx.Dialog):
         selected = self._port.GetStringSelection()
         for device, name in self.ports:
             if name == selected:
+                if device == BLUETOOTH and self._ble_device_address:
+                    return self._ble_device_address
                 return device
         LOG.warning('Did not find device for selected port %s' % selected)
         return selected
@@ -680,15 +697,17 @@ class ChirpCloneDialog(wx.Dialog):
             return False
         self._clear_ble_error()
         self._ble_device_address, self._ble_device_name = device
-        self.set_ports(select=get_ble_device_label(*device))
+        self.set_ports(select=self._ble_device_address)
         return True
 
     def _open_selected_port(self, port, rclass, continuation):
-        if port != BLUETOOTH:
+        if port == BLUETOOTH:
+            port = self._ble_device_address
+        elif not self._ble_device_address or port != self._ble_device_address:
             continuation(open_serial(port, rclass))
             return
         connection = BluetoothConnection(
-            self._ble_device_address, rclass, open_serial,
+            port, rclass, open_serial,
             lambda pipe, error: self._ble_connection_complete(
                 continuation, pipe, error),
             # Custom BLE MTU overrides BLE_MTU from a radio's driver.
@@ -716,6 +735,9 @@ class ChirpCloneDialog(wx.Dialog):
             self.fail(error)
             return
         try:
+            self._persist_choices()
+            self._remember_port_for_selected()
+            config._CONFIG.save()
             continuation(pipe)
         except Exception as e:
             LOG.exception('Failed after connecting to Bluetooth radio')
@@ -724,10 +746,10 @@ class ChirpCloneDialog(wx.Dialog):
 
     def set_selected_port(self, devname):
         if devname == BLUETOOTH and self._ble_device_address:
-            name = get_ble_device_label(self._ble_device_address,
-                                    self._ble_device_name)
-            self._port.SetStringSelection(name)
-            self._current_port_selection = name
+            devname = self._ble_device_address
+        if self._ble_supported and _is_ble_address(devname):
+            self._ble_device_address = devname
+            self.set_ports(select=devname)
             return True
         for device, name in self.ports:
             if device == devname:
@@ -935,6 +957,8 @@ class ChirpCloneDialog(wx.Dialog):
         rclass = self.get_selected_rclass()
         rconfig = config.get_for_radio(rclass)
         last_port = rconfig.get('last_port')
+        if _is_ble_address(last_port):
+            self._ble_device_name = rconfig.get('last_ble_device_name')
         if last_port and self.set_selected_port(last_port):
             LOG.debug('Automatically chose last-used port %s for %s %s',
                       last_port, vendor, model)
@@ -946,6 +970,8 @@ class ChirpCloneDialog(wx.Dialog):
         rconfig = config.get_for_radio(rclass)
         port = self.get_selected_port()
         rconfig.set('last_port', port)
+        if _is_ble_address(port):
+            rconfig.set('last_ble_device_name', self._ble_device_name or '')
         LOG.debug('Recorded last-used port %s for %s %s',
                   port, rclass.VENDOR, rclass.MODEL)
 
@@ -963,7 +989,10 @@ class ChirpCloneDialog(wx.Dialog):
 
     def fail(self, error):
         def safe_fail():
-            if self.get_selected_port() == BLUETOOTH:
+            port = self.get_selected_port()
+            if (port == BLUETOOTH or
+                    (self._ble_device_address and
+                     port == self._ble_device_address)):
                 details = str(error)
                 self._ble_error = error
                 self.status_msg.Hide()

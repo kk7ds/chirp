@@ -301,7 +301,8 @@ class TestBleSerial(unittest.TestCase):
 
         with mock.patch.object(clone.BluetoothConnection, '_open_port',
                                side_effect=open_ble), \
-                mock.patch.object(wx, 'CallAfter', side_effect=call_after):
+                mock.patch.object(wx, 'CallAfter', side_effect=call_after), \
+                mock.patch.object(clone.config._CONFIG, 'save') as save:
             try:
                 clone.ChirpCloneDialog._open_selected_port(
                     dialog, clone.BLUETOOTH, _Radio, continuation)
@@ -317,6 +318,9 @@ class TestBleSerial(unittest.TestCase):
         continuation.assert_called_once_with(pipe)
         dialog._start_ble_activity.assert_called_once()
         dialog._stop_ble_activity.assert_called_once()
+        dialog._persist_choices.assert_called_once_with()
+        dialog._remember_port_for_selected.assert_called_once_with()
+        save.assert_called_once_with()
 
     def test_bluetooth_selection_requires_device(self):
         connection = clone.BluetoothConnection(
@@ -759,7 +763,7 @@ class TestBleSerial(unittest.TestCase):
         self.assertEqual(parent._ble_device_address, 'address')
         self.assertEqual(parent._ble_device_name, 'Radio')
         parent._clear_ble_error.assert_called_once_with()
-        parent.set_ports.assert_called_once_with(select='BLE: Radio')
+        parent.set_ports.assert_called_once_with(select='address')
         self.assertFalse(chooser._alive)
         chooser.Destroy.assert_called_once_with()
 
@@ -799,26 +803,122 @@ class TestBleSerial(unittest.TestCase):
         dialog._select_ble_device.assert_called_once_with()
         self.assertEqual(dialog._current_port_selection, 'BLE: UV Radio')
         dialog._persist_choices.assert_called_once_with()
+        dialog._remember_port_for_selected.assert_not_called()
+        dialog.FindWindowById.return_value.Enable.assert_called_once_with(
+            True)
 
-    def test_selected_ble_device_maps_back_to_bluetooth(self):
+    def test_selected_ble_device_maps_back_to_address(self):
         dialog = mock.Mock()
         dialog._ble_supported = True
         dialog._ble_device_address = '20:91:48:4C:4C:54'
         dialog._ble_device_name = 'UV Radio'
         dialog._port.GetStringSelection.return_value = 'BLE: UV Radio'
 
-        with mock.patch.object(clone.CONF, 'get', return_value=''), \
+        with mock.patch.object(
+                clone.CONF, 'get', return_value='20:91:48:4C:4C:54'), \
                 mock.patch.object(clone.list_ports, 'comports',
                                   return_value=[]), \
                 mock.patch.object(clone, 'CUSTOM_PORTS', []):
-            clone.ChirpCloneDialog.set_ports(dialog, select='BLE: UV Radio')
+            clone.ChirpCloneDialog.set_ports(
+                dialog, select='20:91:48:4C:4C:54')
 
-        self.assertIn((clone.BLUETOOTH, 'BLE: UV Radio'), dialog.ports)
+        self.assertIn(
+            ('20:91:48:4C:4C:54', 'BLE: UV Radio'), dialog.ports)
+        self.assertNotIn(('20:91:48:4C:4C:54', '20:91:48:4C:4C:54'),
+                         dialog.ports)
         dialog._port.SetStringSelection.assert_called_once_with(
             'BLE: UV Radio')
         self.assertEqual(
             clone.ChirpCloneDialog.get_selected_port(dialog),
-            clone.BLUETOOTH)
+            '20:91:48:4C:4C:54')
+
+    def test_last_ble_address_restores_without_scanning(self):
+        addresses = (
+            '20:91:48:4C:4C:54',
+            '55AEB150-5AF1-4318-A02E-19A46223F572',
+        )
+        for address in addresses:
+            with self.subTest(address=address):
+                dialog = mock.Mock()
+                dialog._ble_supported = True
+                dialog._ble_device_address = None
+                dialog._ble_device_name = None
+                label = 'BLE: {}'.format(address)
+                dialog._port.GetStringSelection.return_value = label
+
+                with mock.patch.object(
+                        clone.CONF, 'get',
+                        side_effect=lambda key, section=None:
+                            address if key == 'last_port' else ''), \
+                        mock.patch.object(clone.list_ports, 'comports',
+                                          return_value=[]), \
+                        mock.patch.object(clone, 'CUSTOM_PORTS', []):
+                    clone.ChirpCloneDialog.set_ports(dialog)
+
+                self.assertEqual(dialog._ble_device_address, address)
+                self.assertIsNone(dialog._ble_device_name)
+                dialog._port.SetStringSelection.assert_called_once_with(
+                    label)
+                self.assertEqual(
+                    clone.ChirpCloneDialog.get_selected_port(dialog),
+                    address)
+
+    def test_radio_ble_address_is_restored_without_saving(self):
+        address = '9C60DFB9-00B4-1F95-FEC5-73F8483B1618'
+        dialog = mock.Mock()
+        dialog._vendor.GetStringSelection.return_value = 'Vendor'
+        dialog._model.GetStringSelection.return_value = 'Model'
+        dialog.get_selected_rclass.return_value = _Radio
+        dialog._ble_supported = True
+        dialog._ble_device_address = None
+        dialog._ble_device_name = None
+        dialog.get_selected_port.return_value = address
+        dialog.ports = [(clone.BLUETOOTH, clone.BLUETOOTH)]
+        dialog.set_ports = mock.Mock()
+        dialog.set_selected_port = lambda port: (
+            clone.ChirpCloneDialog.set_selected_port(dialog, port))
+
+        rconfig = mock.Mock()
+        rconfig.get.side_effect = lambda key: {
+            'last_port': address,
+            'last_ble_device_name': 'walkie-talkie',
+        }.get(key)
+
+        with mock.patch.object(
+                clone.config, 'get_for_radio', return_value=rconfig), \
+                mock.patch.object(clone.CONF, 'set') as config_set, \
+                mock.patch.object(clone.config._CONFIG, 'save') as save:
+            clone.ChirpCloneDialog._select_port_for_model(dialog)
+
+        self.assertEqual(dialog._ble_device_name, 'walkie-talkie')
+        dialog.set_ports.assert_called_once_with(
+            select=address)
+        config_set.assert_not_called()
+        rconfig.set.assert_not_called()
+        save.assert_not_called()
+
+    def test_selected_bluetooth_port_uses_saved_ble_address(self):
+        dialog = mock.Mock()
+        dialog._ble_device_address = '20:91:48:4C:4C:54'
+        dialog._port.GetStringSelection.return_value = clone.BLUETOOTH
+        dialog.ports = [(clone.BLUETOOTH, clone.BLUETOOTH)]
+
+        self.assertEqual(
+            clone.ChirpCloneDialog.get_selected_port(dialog),
+            '20:91:48:4C:4C:54')
+
+    def test_last_ble_address_opens_as_bluetooth(self):
+        address = '20:91:48:4C:4C:54'
+        dialog = mock.Mock()
+        dialog._ble_device_address = address
+        continuation = mock.Mock()
+
+        with mock.patch.object(clone, 'BluetoothConnection') as connection:
+            clone.ChirpCloneDialog._open_selected_port(
+                dialog, address, _Radio, continuation)
+
+        self.assertEqual(connection.call_args.args[0], address)
+        connection.return_value.start.assert_called_once_with()
 
     def test_translated_bluetooth_choice_maps_to_bluetooth(self):
         dialog = mock.Mock()
