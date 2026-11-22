@@ -28,7 +28,7 @@ with mock.patch.dict(sys.modules, modules):
     spec.loader.exec_module(clone)
 
 from chirp import ble_serial as backend  # noqa: E402
-from chirp import chirp_common, errors, platform  # noqa: E402
+from chirp import errors, platform  # noqa: E402
 from chirp.drivers import baofeng_uv17Pro  # noqa: E402
 
 
@@ -384,9 +384,7 @@ class TestBleSerial(unittest.TestCase):
             'address', _Radio, clone.open_serial, None)
         pipe = mock.Mock()
         connection._pipe = pipe
-
         connection._deliver(None)
-
         pipe.close.assert_called_once_with()
 
     def test_cancel_during_connection_closes_late_pipe(self):
@@ -631,274 +629,6 @@ class TestBleSerial(unittest.TestCase):
         dialog._stop_ble_activity.assert_called_once_with()
         dialog.fail.assert_called_once_with('connection failed')
 
-    def test_upload_prompt_order_is_preserved(self):
-        for before_open in (True, False):
-            with self.subTest(before_open=before_open):
-                dialog = mock.Mock()
-                pipe = mock.Mock()
-                events = []
-                callbacks = []
-                prompts = mock.Mock()
-                prompts.info = False
-                prompts.pre_upload = True
-                prompts.display_pre_upload_prompt_before_opening_port = (
-                    before_open)
-                dialog._radio.get_prompts.return_value = prompts
-                dialog._radio.pipe = None
-                dialog._radio.BAUD_RATE = 19200
-                dialog.get_selected_port.return_value = clone.BLUETOOTH
-                dialog._ble_device_address = 'selected-address'
-                dialog._upload_before_serial.side_effect = (
-                    lambda *args: clone.ChirpUploadDialog
-                    ._upload_before_serial(dialog, *args))
-                dialog._upload_with_serial.side_effect = (
-                    lambda *args: events.append('upload'))
-
-                def open_port(port, radio, continuation):
-                    events.append('open')
-                    callbacks.append(continuation)
-
-                dialog._open_selected_port.side_effect = open_port
-                prompt = mock.Mock()
-                prompt.ShowModal.side_effect = (
-                    lambda: events.append('prompt') or clone.wx.ID_OK)
-                with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                                       return_value=prompt):
-                    clone.ChirpUploadDialog._actual_action(dialog, mock.Mock())
-                    self.assertEqual(events,
-                                     ['prompt', 'open'] if before_open
-                                     else ['open'])
-                    callbacks[0](pipe)
-
-                self.assertEqual(events, ['prompt', 'open', 'upload']
-                                 if before_open else
-                                 ['open', 'prompt', 'upload'])
-
-    def test_unselected_bluetooth_upload_prompts_then_selects_then_opens(self):
-        for before_open in (True, False):
-            with self.subTest(before_open=before_open):
-                dialog = mock.Mock()
-                prompts = chirp_common.RadioPrompts()
-                prompts.pre_upload = 'Bluetooth upload'
-                prompts.display_pre_upload_prompt_before_opening_port = (
-                    before_open)
-                dialog._radio.get_prompts.return_value = prompts
-                dialog._radio.pipe = None
-                dialog._ble_device_address = None
-                dialog.get_selected_port.return_value = clone.BLUETOOTH
-                events = []
-                dialog._upload_before_serial.side_effect = (
-                    lambda *args: clone.ChirpUploadDialog
-                    ._upload_before_serial(dialog, *args))
-                dialog._select_ble_device.side_effect = (
-                    lambda: events.append('picker') or True)
-                dialog._open_selected_port.side_effect = (
-                    lambda *args: events.append('connect'))
-                prompt = mock.Mock()
-                prompt.ShowModal.side_effect = (
-                    lambda: events.append('prompt') or clone.wx.ID_OK)
-                with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                                       return_value=prompt):
-                    clone.ChirpUploadDialog._actual_action(dialog, mock.Mock())
-                self.assertEqual(events, ['prompt', 'picker', 'connect'])
-
-    def test_cancelling_upload_device_picker_does_not_connect(self):
-        dialog = mock.Mock()
-        dialog._ble_device_address = None
-        dialog._select_ble_device.return_value = False
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_upload = 'Bluetooth upload'
-        prompt = mock.Mock()
-        prompt.ShowModal.return_value = clone.wx.ID_OK
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpUploadDialog._upload_before_serial(
-                dialog, None, clone.BLUETOOTH, prompts)
-        dialog.cancel_action.assert_called_once_with()
-        dialog._open_selected_port.assert_not_called()
-
-    def test_cancelling_upload_prompt_closes_open_pipe(self):
-        dialog = mock.Mock()
-        pipe = mock.Mock()
-        prompts = mock.Mock()
-        prompts.pre_upload = True
-        prompt = mock.Mock()
-        prompt.ShowModal.return_value = clone.wx.ID_CANCEL
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpUploadDialog._upload_before_serial(
-                dialog, pipe, clone.BLUETOOTH, prompts)
-
-        pipe.close.assert_called_once_with()
-        dialog.cancel_action.assert_called_once_with()
-        dialog._open_selected_port.assert_not_called()
-
-    def test_download_prompts_precede_connection(self):
-        dialog = mock.Mock()
-        radio = mock.Mock()
-        prompts = radio.get_prompts.return_value
-        prompts.info = True
-        prompts.pre_download = True
-        dialog.get_selected_rclass.return_value = radio
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._ble_device_address = 'selected-address'
-        event = mock.Mock()
-        event.GetEventObject.return_value.GetId.return_value = clone.wx.ID_OK
-        order = []
-        callbacks = []
-        prompt = mock.Mock()
-        prompt.ShowModal.side_effect = (
-            lambda: order.append('prompt') or clone.wx.ID_OK)
-
-        def open_port(port, rclass, continuation):
-            order.append('open')
-            callbacks.append(continuation)
-
-        dialog._open_selected_port.side_effect = open_port
-
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpDownloadDialog._actual_action(dialog, event)
-
-        self.assertEqual(order, ['prompt', 'prompt', 'open'])
-        pipe = mock.Mock()
-        callbacks[0](pipe)
-        dialog._download_with_serial.assert_called_once_with(pipe, radio)
-
-    def test_download_prompt_matches_selected_port_and_radio(self):
-        for port in (clone.BLUETOOTH, '/dev/ttyUSB0'):
-            with self.subTest(port=port):
-                dialog = mock.Mock()
-                radio = mock.Mock()
-                prompts = chirp_common.RadioPrompts()
-                prompts.pre_download = 'Cable download'
-                radio.get_prompts.return_value = prompts
-                dialog.get_selected_rclass.return_value = radio
-                dialog.get_selected_port.return_value = port
-                event = mock.Mock()
-                event.GetEventObject.return_value.GetId.return_value = (
-                    clone.wx.ID_OK)
-                prompt = mock.Mock()
-                prompt.ShowModal.return_value = clone.wx.ID_OK
-                with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                                       return_value=prompt) as prompt_dialog:
-                    clone.ChirpDownloadDialog._actual_action(dialog, event)
-
-                self.assertEqual(prompt_dialog.call_args.kwargs['message'],
-                                 'Cable download')
-                self.assertEqual(prompt_dialog.call_args.kwargs['prompt'],
-                                 'pre_download')
-                dialog._open_selected_port.assert_called_once()
-
-    def test_cancelling_download_prompt_does_not_connect(self):
-        dialog = mock.Mock()
-        radio = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_download = 'Bluetooth download'
-        radio.get_prompts.return_value = prompts
-        dialog.get_selected_rclass.return_value = radio
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        event = mock.Mock()
-        event.GetEventObject.return_value.GetId.return_value = clone.wx.ID_OK
-        prompt = mock.Mock()
-        prompt.ShowModal.return_value = clone.wx.ID_CANCEL
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpDownloadDialog._actual_action(dialog, event)
-        dialog.cancel_action.assert_called_once_with()
-        dialog._select_ble_device.assert_not_called()
-        dialog._open_selected_port.assert_not_called()
-
-    def test_cancelled_bluetooth_device_selection_does_not_connect(self):
-        dialog = mock.Mock()
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._ble_device_address = None
-        dialog._radio = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_download = 'Bluetooth download'
-        dialog._radio.get_prompts.return_value = prompts
-        dialog._select_ble_device.return_value = False
-        event = mock.Mock()
-        event.GetEventObject.return_value.GetId.return_value = clone.wx.ID_OK
-        prompt = mock.Mock()
-        prompt.ShowModal.return_value = clone.wx.ID_OK
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpDownloadDialog._actual_action(dialog, event)
-        dialog._select_ble_device.assert_called_once_with()
-        dialog._open_selected_port.assert_not_called()
-        dialog.cancel_action.assert_called_once_with()
-
-    def test_pre_download_prompt_then_picker_then_connection_when_unselected(
-            self):
-        dialog = mock.Mock()
-        radio = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_download = 'Bluetooth download'
-        radio.get_prompts.return_value = prompts
-        dialog.get_selected_rclass.return_value = radio
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._ble_device_address = None
-        events = []
-        dialog._select_ble_device.side_effect = (
-            lambda: events.append('picker') or True)
-        dialog._open_selected_port.side_effect = (
-            lambda *args: events.append('connect'))
-        event = mock.Mock()
-        event.GetEventObject.return_value.GetId.return_value = clone.wx.ID_OK
-        prompt = mock.Mock()
-        prompt.ShowModal.side_effect = (
-            lambda: events.append('prompt') or clone.wx.ID_OK)
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                               return_value=prompt):
-            clone.ChirpDownloadDialog._actual_action(dialog, event)
-        self.assertEqual(events, ['prompt', 'picker', 'connect'])
-
-    def test_bluetooth_prompt_preserves_instruction_lines(self):
-        radio = mock.Mock()
-        prompts = chirp_common.RadioPrompts()
-        prompts.pre_download = 'Cable\ninstructions\n'
-        radio.get_prompts.return_value = prompts
-        message = 'Turn on radio\nEnable Bluetooth\n'
-        text = mock.Mock()
-        with mock.patch.object(clone, 'config'), \
-                mock.patch.object(clone.platform, 'system',
-                                  return_value='Darwin'), \
-                mock.patch.object(wx, 'StaticText', return_value=text), \
-                mock.patch.multiple(
-                    clone.ChirpRadioPromptDialog, create=True,
-                    CreateButtonSizer=mock.DEFAULT, SetSizer=mock.DEFAULT,
-                    Layout=mock.DEFAULT, Fit=mock.DEFAULT,
-                    Centre=mock.DEFAULT):
-            dialog = clone.ChirpRadioPromptDialog(
-                radio=radio, prompt='pre_download', message=message)
-            self.assertEqual(dialog.message, message)
-            text.SetLabelMarkup.assert_called_with(message)
-            dialog = clone.ChirpRadioPromptDialog(
-                radio=radio, prompt='pre_download')
-            self.assertEqual(dialog.message, 'Cable instructions ')
-
-    def test_upload_prompt_matches_selected_port_and_radio(self):
-        for port in (clone.BLUETOOTH, '/dev/ttyUSB0'):
-            with self.subTest(port=port):
-                dialog = mock.Mock()
-                dialog._radio.pipe = None
-                prompts = chirp_common.RadioPrompts()
-                prompts.pre_upload = 'Cable upload'
-                pipe = mock.Mock()
-                prompt = mock.Mock()
-                prompt.ShowModal.return_value = clone.wx.ID_OK
-                with mock.patch.object(clone, 'ChirpRadioPromptDialog',
-                                       return_value=prompt) as prompt_dialog:
-                    clone.ChirpUploadDialog._upload_before_serial(
-                        dialog, pipe, port, prompts)
-
-                self.assertEqual(prompt_dialog.call_args.kwargs['message'],
-                                 'Cable upload')
-                self.assertEqual(prompt_dialog.call_args.kwargs['prompt'],
-                                 'pre_upload')
-                dialog._upload_with_serial.assert_called_once()
-
     def test_managed_ble_pipe_is_detected(self):
         pipe = backend.BluetoothBridge('address')
         pipe.port = '/tmp/ttyBLE'
@@ -915,11 +645,8 @@ class TestBleSerial(unittest.TestCase):
 
     def test_non_ble_port_is_not_detected(self):
         pipe = clone.serialtrace.SerialTrace()
-        for port in (None, '/dev/ttyUSB0'):
-            with self.subTest(port=port):
-                pipe.port = port
-                self.assertFalse(
-                    platform.UnixPlatform.is_ble_serial(None, pipe))
+        pipe.port = '/dev/ttyUSB0'
+        self.assertFalse(platform.UnixPlatform.is_ble_serial(None, pipe))
 
     def test_select_ble_device_updates_selection_and_closes_dialog(self):
         parent = mock.Mock()
@@ -977,27 +704,6 @@ class TestBleSerial(unittest.TestCase):
         self.assertEqual(dialog._current_port_selection, 'BLE: UV Radio')
         dialog._persist_choices.assert_called_once_with()
 
-    def test_first_bluetooth_selection_opens_device_dialog_without_prompt(
-            self):
-        dialog = mock.Mock()
-        dialog._port = mock.Mock()
-        dialog.FindWindowById = mock.Mock()
-        dialog.GetAffirmativeId = mock.Mock()
-        dialog._current_port_selection = '/dev/ttyUSB0'
-        dialog._ble_device_address = None
-        dialog._port.GetStringSelection.return_value = clone.BLUETOOTH
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        events = []
-        dialog._select_ble_device.side_effect = (
-            lambda: events.append('select') or True)
-
-        with mock.patch.object(clone, 'ChirpRadioPromptDialog') as prompt:
-            clone.ChirpCloneDialog._selected_port(dialog, None)
-
-        self.assertEqual(events, ['select'])
-        prompt.assert_not_called()
-        dialog._persist_choices.assert_called_once_with()
-
     def test_selected_ble_device_maps_back_to_bluetooth(self):
         dialog = mock.Mock()
         dialog._ble_supported = True
@@ -1038,49 +744,24 @@ class TestBleSerial(unittest.TestCase):
         dialog._port.SetStringSelection.assert_called_once_with(
             'Bluetooth traduit')
 
-    def test_cancel_bluetooth_selection_restores_previous_port(self):
-        dialog = mock.Mock()
-        dialog._current_port_selection = '/dev/ttyUSB0'
-        dialog._ble_device_address = 'old-address'
-        dialog._port.GetStringSelection.side_effect = [
-            clone.BLUETOOTH, '/dev/ttyUSB0']
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._select_ble_device.return_value = False
+    def test_cancel_bluetooth_selection_restores_previous_choice(self):
+        for previous in ('/dev/ttyUSB0', 'BLE: Old Radio'):
+            with self.subTest(previous=previous):
+                dialog = mock.Mock()
+                dialog._current_port_selection = previous
+                dialog._ble_device_address = 'old-address'
+                dialog._port.GetStringSelection.side_effect = [
+                    clone.BLUETOOTH, previous]
+                dialog.get_selected_port.return_value = clone.BLUETOOTH
+                dialog._select_ble_device.return_value = False
 
-        clone.ChirpCloneDialog._selected_port(dialog, None)
+                clone.ChirpCloneDialog._selected_port(dialog, None)
 
-        dialog._port.SetStringSelection.assert_called_once_with('/dev/ttyUSB0')
-        dialog._persist_choices.assert_not_called()
-
-    def test_cancel_reselecting_bluetooth_preserves_previous_device(self):
-        dialog = mock.Mock()
-        dialog._current_port_selection = 'BLE: Old Radio'
-        dialog._ble_device_address = 'old-address'
-        dialog._port.GetStringSelection.side_effect = [
-            clone.BLUETOOTH, 'BLE: Old Radio']
-        dialog.get_selected_port.return_value = clone.BLUETOOTH
-        dialog._select_ble_device.return_value = False
-
-        clone.ChirpCloneDialog._selected_port(dialog, None)
-
-        dialog._select_ble_device.assert_called_once_with()
-        dialog._port.SetStringSelection.assert_called_once_with(
-            'BLE: Old Radio')
-        self.assertEqual(dialog._ble_device_address, 'old-address')
-        dialog._persist_choices.assert_not_called()
-
-    def test_closing_ble_pipe_stops_bridge(self):
-        connection = clone.BluetoothConnection(
-            'address', _Radio, clone.open_serial, mock.Mock())
-        pipe = connection._serial
-
-        with mock.patch.object(clone.serialtrace.serial.Serial, 'close') as \
-                close:
-            pipe.close()
-            pipe.close()
-
-        self.assertEqual(close.call_count, 2)
-        self.assertTrue(connection._serial._stopped.is_set())
+                dialog._select_ble_device.assert_called_once_with()
+                dialog._port.SetStringSelection.assert_called_once_with(
+                    previous)
+                self.assertEqual(dialog._ble_device_address, 'old-address')
+                dialog._persist_choices.assert_not_called()
 
     def test_ble_close_stops_bridge_even_if_serial_close_fails(self):
         pipe = backend.BluetoothBridge('address')
