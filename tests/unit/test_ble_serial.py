@@ -846,10 +846,11 @@ class TestBleSerial(unittest.TestCase):
                 label = 'BLE: {}'.format(address)
                 dialog._port.GetStringSelection.return_value = label
 
+                def get_config(key, section=None):
+                    return address if key == 'last_port' else ''
+
                 with mock.patch.object(
-                        clone.CONF, 'get',
-                        side_effect=lambda key, section=None:
-                            address if key == 'last_port' else ''), \
+                        clone.CONF, 'get', side_effect=get_config), \
                         mock.patch.object(clone.list_ports, 'comports',
                                           return_value=[]), \
                         mock.patch.object(clone, 'CUSTOM_PORTS', []):

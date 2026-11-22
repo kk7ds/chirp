@@ -648,8 +648,8 @@ class ChirpCloneDialog(wx.Dialog):
             if self._ble_device_address:
                 self.ports.append((
                     self._ble_device_address,
-                    get_ble_device_label(self._ble_device_address,
-                                     self._ble_device_name)))
+                    get_ble_device_label(
+                        self._ble_device_address, self._ble_device_name)))
 
         if not self.ports:
             LOG.warning('No ports available; action will be disabled')

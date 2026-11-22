@@ -54,9 +54,10 @@ class BluetoothBridge(serialtrace.SerialTrace):
 
     @staticmethod
     def _resolve_mtu(mtu, rclass):
-        # Use `BLE_MTU` key from a driver radio class. 
+        # Use `BLE_MTU` key from a driver radio class.
         # Overridden by `ble_mtu` key in chirp.config [bluetooth] section.
-        mtu_source = 'chirp.config' if mtu not in (None, '') else 'radio driver'
+        mtu_source = (
+            'chirp.config' if mtu not in (None, '') else 'radio driver')
         if mtu is None or mtu == '':
             mtu = getattr(rclass, 'BLE_MTU', None)
         mtu = int(mtu) if mtu is not None else None
@@ -66,7 +67,8 @@ class BluetoothBridge(serialtrace.SerialTrace):
 
     @staticmethod
     def _resolve_verbosity(verbosity):
-        # Read `verbosity` level (1=INFO, 2=DEBUG) from chirp.config [bluetooth] section.
+        # Read `verbosity` level (1=INFO, 2=DEBUG) from
+        # chirp.config [bluetooth] section.
         verbosity = int(verbosity) if verbosity else 0
         if verbosity < 0:
             raise ValueError('BLE serial verbosity must be non-negative')
@@ -90,7 +92,8 @@ class BluetoothBridge(serialtrace.SerialTrace):
 
         self._configure_logging()
         if self._mtu is None:
-            LOG.info('No custom BLE MTU configured; will use BLE_client default = 20')
+            LOG.info('No custom BLE MTU configured; '
+                     'will use BLE_client default = 20')
         else:
             LOG.info('Using custom BLE MTU %d from %s',
                      self._mtu, self._mtu_source)
