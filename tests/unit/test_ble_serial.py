@@ -60,13 +60,16 @@ class TestBleSerial(unittest.TestCase):
         }
         with mock.patch('ble_serial.scan.main.BleakScanner.discover',
                         new_callable=mock.AsyncMock,
-                        return_value=devices) as discover:
-            self.assertEqual(backend.scan_ble_devices(), [
+                        return_value=devices) as discover, \
+                mock.patch.object(backend.BluetoothBridge,
+                                  '_configure_logging') as configure:
+            self.assertEqual(backend.scan_ble_devices(verbosity='1'), [
                 ('20:91:48:4C:4C:54', 'UV Radio'),
                 ('55AEB150-5AF1-4318-A02E-19A46223F572', 'None'),
             ])
         discover.assert_awaited_once_with(
             adapter='hci0', timeout=5.0, return_adv=True)
+        configure.assert_called_once_with(1)
 
     def test_scan_runs_on_worker_thread(self):
         dialog = mock.Mock()
@@ -79,7 +82,7 @@ class TestBleSerial(unittest.TestCase):
         worker_threads = []
         devices = [('address', 'Radio')]
 
-        def scan():
+        def scan(verbosity=None):
             worker_threads.append(threading.current_thread())
             started.set()
             if not release.wait(2):
@@ -90,7 +93,8 @@ class TestBleSerial(unittest.TestCase):
             scheduled.set()
 
         with mock.patch.object(backend, 'scan_ble_devices',
-                               side_effect=scan), \
+                               side_effect=scan) as scan_devices, \
+                mock.patch.object(clone.CONF, 'get', return_value='1'), \
                 mock.patch.object(wx, 'CallAfter',
                                   side_effect=call_after) as call_after_mock:
             try:
@@ -104,6 +108,7 @@ class TestBleSerial(unittest.TestCase):
                 release.set()
         call_after_mock.assert_called_once_with(
             dialog._scan_complete, devices, None)
+        scan_devices.assert_called_once_with(verbosity='1')
 
     def test_scan_stays_active_until_callback_is_processed(self):
         dialog = mock.Mock()
@@ -723,30 +728,19 @@ class TestBleSerial(unittest.TestCase):
         root_logger = logging.getLogger()
         bleak_logger = logging.getLogger('bleak')
         cases = (
-            (0, None),
+            (0, logging.WARNING),
             (1, logging.INFO),
             (2, logging.DEBUG)
         )
-        for verbosity, bleak_level in cases:
-            with self.subTest(verbosity=verbosity):
-                bridge = backend.BluetoothBridge(
-                    'address', verbosity=verbosity)
-                handler = logging.StreamHandler()
-                with mock.patch.object(root_logger, 'handlers', [handler]), \
-                        mock.patch.object(root_logger, 'setLevel') as \
-                        set_root_level, \
-                        mock.patch.object(bleak_logger, 'setLevel') as \
-                        set_bleak_level:
-                    bridge._configure_logging()
-
-                if verbosity:
-                    set_root_level.assert_called_once_with(logging.DEBUG)
-                    set_bleak_level.assert_called_once_with(bleak_level)
-                    self.assertEqual(handler.level, logging.DEBUG)
-                else:
-                    set_root_level.assert_not_called()
-                    set_bleak_level.assert_not_called()
-                    self.assertEqual(handler.level, logging.NOTSET)
+        handler = logging.StreamHandler()
+        with mock.patch.object(root_logger, 'handlers', [handler]), \
+                mock.patch.object(root_logger, 'level', logging.DEBUG), \
+                mock.patch.object(bleak_logger, 'level', logging.NOTSET):
+            for verbosity, bleak_level in cases:
+                with self.subTest(verbosity=verbosity):
+                    backend.BluetoothBridge._configure_logging(verbosity)
+                    self.assertEqual(bleak_logger.getEffectiveLevel(),
+                                     bleak_level)
 
     def test_select_ble_device_updates_selection_and_closes_dialog(self):
         parent = mock.Mock()

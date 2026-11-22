@@ -1352,7 +1352,8 @@ class BluetoothDeviceDialog(wx.Dialog):
 
     def _scan_devices_async(self):
         try:
-            devices = ble_serial.scan_ble_devices()
+            devices = ble_serial.scan_ble_devices(
+                verbosity=CONF.get('verbosity', 'bluetooth'))
         except TimeoutError:
             LOG.exception('Bluetooth device scan failed')
             wx.CallAfter(self._scan_complete, None,

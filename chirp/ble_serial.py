@@ -23,8 +23,11 @@ from chirp import serialtrace
 LOG = logging.getLogger(__name__)
 
 
-def scan_ble_devices():
+def scan_ble_devices(verbosity=None):
     from ble_serial.scan.main import scan
+
+    BluetoothBridge._configure_logging(
+        BluetoothBridge._resolve_verbosity(verbosity))
 
     async def run_scan():
         return await asyncio.wait_for(scan('hci0', 5.0, None), timeout=30)
@@ -52,10 +55,10 @@ class BluetoothBridge(serialtrace.SerialTrace):
         self._task = None
         super().__init__()
 
+    # Use `BLE_MTU` key from a driver radio class.
+    # Overridden by `ble_mtu` key in chirp.config [bluetooth] section.
     @staticmethod
     def _resolve_mtu(mtu, rclass):
-        # Use `BLE_MTU` key from a driver radio class.
-        # Overridden by `ble_mtu` key in chirp.config [bluetooth] section.
         mtu_source = (
             'chirp.config' if mtu not in (None, '') else 'radio driver')
         if mtu is None or mtu == '':
@@ -65,24 +68,26 @@ class BluetoothBridge(serialtrace.SerialTrace):
             raise ValueError('BLE serial MTU must be a positive integer')
         return mtu, mtu_source
 
+    # Read `verbosity` level (1=INFO, 2=DEBUG) from
+    # chirp.config [bluetooth] section.
     @staticmethod
     def _resolve_verbosity(verbosity):
-        # Read `verbosity` level (1=INFO, 2=DEBUG) from
-        # chirp.config [bluetooth] section.
         verbosity = int(verbosity) if verbosity else 0
         if verbosity < 0:
             raise ValueError('BLE serial verbosity must be non-negative')
         return verbosity
 
-    def _configure_logging(self):
-        if self._verbosity:
+    @staticmethod
+    def _configure_logging(verbosity):
+        if verbosity:
             root_logger = logging.getLogger()
             root_logger.setLevel(logging.DEBUG)
             for handler in root_logger.handlers:
                 if isinstance(handler, logging.StreamHandler):
                     handler.setLevel(logging.DEBUG)
-            logging.getLogger('bleak').setLevel(
-                logging.DEBUG if self._verbosity > 1 else logging.INFO)
+        logging.getLogger('bleak').setLevel(
+            logging.DEBUG if verbosity > 1 else
+            logging.INFO if verbosity == 1 else logging.WARNING)
 
     async def _run_bridge(self):
         import tty
@@ -90,7 +95,7 @@ class BluetoothBridge(serialtrace.SerialTrace):
         from ble_serial import DEFAULT_PORT
         from ble_serial.bluetooth.ble_client import BLE_client
 
-        self._configure_logging()
+        self._configure_logging(self._verbosity)
         if self._mtu is None:
             LOG.info('No custom BLE MTU configured; '
                      'will use BLE_client default = 20')
