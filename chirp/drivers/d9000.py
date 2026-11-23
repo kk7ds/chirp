@@ -428,8 +428,12 @@ class D9000Radio(chirp_common.CloneModeRadio):
         _mem.freq_unit = freq_flag
         _mem.unknown3 = 0x00
         _mem.unknown6 = 0x06
-        _mem.unknown13 = 0x00
-        _mem.unknown17 = 0x00
+        # [13] and [17] are deliberately left alone.  [17] is the scan
+        # list membership flag: the vendor codeplug has 0x01 there (with
+        # [25] = 0x03) on the eight channels it puts in a scan list, and
+        # writing 0x00 takes them out of it - the radio then clears [25]
+        # as well, so the membership is lost for good.  [13] is 0x10 on
+        # two factory channels and 0x00 on the rest.
         _mem.valid = 0x01
         _mem.band = 0x04 if mem.mode == "FM" else 0x00
 
