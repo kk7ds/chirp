@@ -174,3 +174,31 @@ class TestKGWV50(unittest.TestCase):
         self.radio.pipe = BrokenPipe()
         with self.assertRaises(Exception):
             self.radio._identify()
+
+    def test_full_image_round_trips_unchanged(self):
+        # Reading a whole codeplug and writing it back unedited has to be a
+        # no-op.  This pins the encoding to the vendor's: the image is the
+        # radio's own and it has 0xff in the 922 channels that are not in use,
+        # so an encoder that invents a default (a tone flag, a different fill
+        # for the empty slots) shows up here as a diff instead of hiding
+        # behind our own decoder.
+        before = bytes(self.radio.get_mmap().get_packed())
+        for number in range(1, kgwv50.CHANNEL_COUNT + 1):
+            self.radio.set_memory(self.radio.get_memory(number))
+        self.assertEqual(before, bytes(self.radio.get_mmap().get_packed()))
+
+    def test_clear_channel_matches_vendor_fill(self):
+        # The vendor codeplug leaves unused channel records as 0xff and the
+        # unused names as 0x00, so a cleared channel should look the same.
+        mem = chirp_common.Memory()
+        mem.number = 5
+        mem.empty = True
+        self.radio.set_memory(mem)
+
+        # CH-001 is slot 1 on this radio, so channel 5 lives in memory[5]
+        self.assertEqual(b'\xff' * 16, bytes(
+            self.radio._memobj.memory[5].get_raw(asbytes=True)))
+        self.assertEqual(0, int(self.radio._memobj.valid[5]))
+        self.assertEqual(b'\x00' * 12, bytes(
+            self.radio._memobj.names[5].get_raw(asbytes=True)))
+        self.assertTrue(self.radio.get_memory(5).empty)
