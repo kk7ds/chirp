@@ -158,6 +158,35 @@ def test_write_preserves_unknown_bits(radio):
     assert raw[13] == 0xFF
 
 
+def test_ctcss_tone_word(radio):
+    # A CTCSS tone is stored as the plain frequency times ten and nothing
+    # else: the stock codeplug keeps 88.5 Hz as 0x0375 and not one of its 108
+    # CTCSS words has bit 15 set. A stray 0x8000 there makes the radio ignore
+    # the tone entirely, so pin the exact word.
+    mem = chirp_common.Memory()
+    mem.number = 120
+    mem.freq = 43558750
+    mem.duplex = ""
+    mem.tmode = "TSQL"
+    mem.ctone = 118.8
+    mem.mode = "FM"
+    radio.set_memory(mem)
+
+    raw = bytes(radio._memobj.memory[119].get_raw(asbytes=True))
+    assert int.from_bytes(raw[8:10], "little") == 0x04A4   # 1188
+    assert int.from_bytes(raw[10:12], "little") == 0x04A4
+
+
+def test_factory_image_round_trips_unchanged(radio):
+    # Reading a whole codeplug and writing it back unedited has to be a no-op.
+    # This pins every tone word in the image to the vendor encoding, which
+    # the tone model's flag bits get wrong if they are left at a default.
+    before = bytes(radio.get_mmap().get_packed())
+    for number in range(1, 129):
+        radio.set_memory(radio.get_memory(number))
+    assert bytes(radio.get_mmap().get_packed()) == before
+
+
 def test_upload_ranges(radio):
     for start, end in radio._ranges:
         assert start % 0x10 == 0
