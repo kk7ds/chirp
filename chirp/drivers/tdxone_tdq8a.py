@@ -440,9 +440,15 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
     # Value of the first flag byte for a programmed and an empty channel
     DEFAULT_FLAGS = 0x9f
     EMPTY_FLAGS = 0xbf
+    # A CTCSS tone is stored as the plain frequency times ten with no flag
+    # bit (the stock codeplugs of the radios using this map have e.g. 0x0375
+    # for 88.5 Hz), so tone_flag must be 0 here - the model's 0x8000 default
+    # is not what these radios use, even though that bit does mean "reverse"
+    # for DCS words.
     TONE_MODEL = kenwood_tone.KenwoodToneModel(dcs_base=0x2800,
                                                pol_mask=0x8000,
-                                               tone_init=0x0000)
+                                               tone_init=0x0000,
+                                               tone_flag=0x0000)
 
     @classmethod
     def get_prompts(cls):
