@@ -15,7 +15,8 @@
 
 import sys
 from tests import icom_clone_simulator
-from chirp import memmap
+from chirp import chirp_common, memmap
+from chirp.drivers import icomciv
 from chirp.drivers import icw32
 from builtins import bytes
 
@@ -92,6 +93,22 @@ class TestRawRadioData(unittest.TestCase):
         radio = directory.get_radio('Icom_IC-2730A')(None)
         data = radio.process_frame_payload(bytes(b'\x00\x10\xFF\x0E\x00'))
         self.assertEqual(b'\x00\x10\xFE\x00', data)
+
+
+class TestIcomCIV(unittest.TestCase):
+    def test_ic7200_memory_frame_format(self):
+        frame = icomciv.MemFrame()
+        frame.initialize()
+        self.assertTrue(frame.get_data())
+
+    def test_ic7200_accepts_unstepped_hf_frequencies(self):
+        radio = icomciv.Icom7200Radio(None)
+        for freq in (7243000, 3982500):
+            mem = chirp_common.Memory()
+            mem.number = 1
+            mem.freq = freq
+            mem.mode = 'USB'
+            self.assertEqual([], radio.get_features().validate_memory(mem))
 
 
 class TestAdapterMeta(type):

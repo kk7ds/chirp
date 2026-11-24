@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 
 MEM_FORMAT = """
 bbcd number[2];
-u8   unknown:3
+u8   unknown:3,
      split:1,
      unknown_0:4;
 lbcd freq[5];
@@ -958,6 +958,7 @@ class Icom7200Radio(IcomCIVRadio):
         self._rf.has_offset = False
         self._rf.has_name = False
         self._rf.has_tuning_step = False
+        self._rf.has_nostep_tuning = True
         self._rf.valid_modes = ["LSB", "USB", "AM", "CW", "RTTY",
                                 "CWR", "RTTYR"]
         self._rf.valid_tmodes = []
