@@ -218,6 +218,21 @@ class TMD750Radio(thd74.THD75Radio):
         rf.valid_bands = [(108000000, 524000000)]
         return rf
 
+    def _get_used_flag(self, mem):
+        if mem.empty:
+            return 0xFF
+        if mem.duplex == 'split':
+            freq = mem.offset
+        else:
+            freq = mem.freq
+
+        if freq < chirp_common.to_MHz(150):
+            return 0x01
+        elif freq < chirp_common.to_MHz(400):
+            return 0x02
+        else:
+            return 0x03
+
     def sync_in(self):
         try:
             self._sync_in()
