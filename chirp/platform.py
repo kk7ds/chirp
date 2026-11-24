@@ -235,46 +235,52 @@ class Win32Platform(Platform):
         return "Windows %s (%i.%i:%i)" % (version, pform, sub, build)
 
     def is_ble_serial(self, serial):
+        import re
         import winreg
 
         max_ports = 255
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                              r'HARDWARE\DEVICEMAP\SERIALCOMM')
         devices = {}
-        for i in range(max_ports):
-            try:
-                # device is something like \Device\com0com24
-                # name is something like COM12
-                device, name, _ = winreg.EnumValue(key, i)
-                devices[name] = device
-            except EnvironmentError:
-                break
+        try:
+            for i in range(max_ports):
+                try:
+                    # device is like \Device\com0com24
+                    # name is like COM12
+                    device, name, _ = winreg.EnumValue(key, i)
+                    devices[name.upper()] = device
+                except EnvironmentError:
+                    break
+        finally:
+            winreg.CloseKey(key)
 
         LOG.debug('All device/name pairs: %s' % devices)
 
-        try:
-            # ble-serial names its device BLE, so find it
-            ble_device = devices['BLE']
-        except KeyError:
+        ble_device = devices.get('BLE')
+        if not ble_device:
             LOG.debug('No BLE device found')
             return False
 
-        # The pair device appears to always be \Device\com0com14 if
-        # the BLE device is \Device\com0com24
-        pair_device = list(ble_device)
-        # Change 2 to 1 to get the first device of the pair
-        pair_device[-2] = '1'
-        pair_device = ''.join(pair_device)
-        LOG.debug('Found BLE device %s, guessing pair is %s' % (
-            device, pair_device))
-        try:
-            pair_name = dict(((v, k) for k, v in devices.items()))[pair_device]
-        except KeyError:
-            LOG.debug('Pair device not found!')
-        else:
-            LOG.info('BLE pair device is %s' % pair_name)
+        match = re.search(r'(\d+)$', ble_device)
+        if not match:
+            LOG.debug('BLE com0com device has no numeric port number')
+            return False
+        paired_number = int(match.group(1)) - 10
+        if paired_number <= 0:
+            LOG.debug('BLE com0com device has no valid pair number')
+            return False
+        pair_device = (ble_device[:match.start()] + str(paired_number))
+        LOG.debug('Found BLE device %s, pair is %s' % (
+            ble_device, pair_device))
 
-        return serial.port == pair_name
+        pair_name = next((name for name, device in devices.items()
+                          if device.upper() == pair_device.upper()), None)
+        if pair_name is None:
+            LOG.debug('Pair device not found!')
+            return False
+
+        LOG.info('BLE pair device is %s' % pair_name)
+        return serial.port.upper() == pair_name
 
 
 def _get_platform(basepath):

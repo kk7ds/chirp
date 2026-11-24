@@ -68,7 +68,8 @@ class TestBleSerial(unittest.TestCase):
                 ('55AEB150-5AF1-4318-A02E-19A46223F572', 'None'),
             ])
         discover.assert_awaited_once_with(
-            adapter='hci0', timeout=5.0, return_adv=True)
+            adapter=None if os.name == 'nt' else 'hci0',
+            timeout=5.0, return_adv=True)
         configure.assert_called_once_with(1)
 
     def test_scan_runs_on_worker_thread(self):

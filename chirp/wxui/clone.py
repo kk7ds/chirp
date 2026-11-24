@@ -448,7 +448,8 @@ class ChirpCloneDialog(wx.Dialog):
         super(ChirpCloneDialog, self).__init__(
             *a, title=_('Communicate with radio'), **k)
         self._clone_thread = None
-        self._ble_supported = platform.system() in ('Linux', 'Darwin')
+        self._ble_supported = platform.system() in ('Linux', 'Darwin',
+                                                    'Windows')
         self._ble_device_address = None
         self._ble_device_name = None
         self._ble_connection = None

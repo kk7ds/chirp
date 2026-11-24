@@ -30,7 +30,8 @@ def scan_ble_devices(verbosity=None):
         BluetoothBridge._resolve_verbosity(verbosity))
 
     async def run_scan():
-        return await asyncio.wait_for(scan('hci0', 5.0, None), timeout=30)
+        adapter = None if os.name == 'nt' else 'hci0'
+        return await asyncio.wait_for(scan(adapter, 5.0, None), timeout=30)
 
     try:
         devices = asyncio.run(run_scan())
@@ -78,6 +79,50 @@ class BluetoothBridge(serialtrace.SerialTrace):
         return verbosity
 
     @staticmethod
+    def _find_windows_pair_port():
+        """Find the application-facing COM port paired with BLE."""
+        import re
+        import winreg
+
+        devices = {}
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                             r'HARDWARE\DEVICEMAP\SERIALCOMM')
+        try:
+            index = 0
+            while True:
+                try:
+                    device, name, _ = winreg.EnumValue(key, index)
+                except OSError:
+                    break
+                devices[name.upper()] = (device, name)
+                index += 1
+        finally:
+            winreg.CloseKey(key)
+
+        ble_entry = devices.get('BLE')
+        if ble_entry is None:
+            raise RuntimeError(
+                'com0com BLE port not found; configure BLE and COM ports')
+
+        ble_device = ble_entry[0]
+        match = re.search(r'(\d+)$', ble_device)
+        if match:
+            paired_number = int(match.group(1)) - 10
+            if paired_number > 0:
+                pair_device = ble_device[:match.start()] + str(paired_number)
+            else:
+                pair_device = ble_device
+        else:
+            pair_device = ble_device
+
+        pair = next((entry for entry in devices.values()
+                     if entry[0].upper() == pair_device.upper()), None)
+        if pair is None:
+            raise RuntimeError(
+                'com0com port paired with BLE was not found')
+        return pair[1]
+
+    @staticmethod
     def _configure_logging(verbosity):
         if verbosity:
             root_logger = logging.getLogger()
@@ -90,6 +135,79 @@ class BluetoothBridge(serialtrace.SerialTrace):
             logging.INFO if verbosity == 1 else logging.WARNING)
 
     async def _run_bridge(self):
+        if os.name == 'nt':
+            await self._run_windows_bridge()
+        else:
+            await self._run_unix_bridge()
+
+    async def _run_windows_bridge(self):
+        from ble_serial import DEFAULT_PORT, platform_uart
+        from ble_serial.bluetooth.ble_client import BLE_client
+
+        self._configure_logging(self._verbosity)
+        loop = asyncio.get_running_loop()
+        uart = None
+        client = None
+        tasks = []
+        failure = loop.create_future()
+        try:
+            with self._lock:
+                if self._stopped.is_set():
+                    raise InterruptedError('Bluetooth connection cancelled')
+                self._loop = loop
+                self._task = asyncio.current_task()
+
+            mtu = self._mtu or 20
+            uart = platform_uart(DEFAULT_PORT, loop, mtu)
+            client = BLE_client(None, None)
+            uart.set_receiver(client.queue_send)
+            client.set_receiver(uart.queue_write)
+            uart.start()
+
+            await client.connect(self._address, 'public', None, 5.0)
+            await client.setup_chars(None, None, 'rw', False)
+            if self._mtu is None:
+                self._mtu = client.write_char.max_write_without_response_size
+                if self._mtu <= 0:
+                    raise ValueError('BLE client returned an invalid MTU')
+            uart.mtu = self._mtu
+
+            tasks = [asyncio.create_task(client.send_loop()),
+                     asyncio.create_task(client.check_loop()),
+                     asyncio.create_task(uart.run_loop())]
+            self._endpoint_path = self._find_windows_pair_port()
+            self._ready.set()
+            done, _ = await asyncio.wait(
+                [*tasks, failure], return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                task.result()
+            if not self._stopped.is_set():
+                raise RuntimeError('Bluetooth connection closed')
+        finally:
+            with self._lock:
+                self._loop = None
+                self._task = None
+            for task in tasks:
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+            if uart is not None:
+                try:
+                    uart.stop_loop()
+                    uart.remove()
+                except Exception:
+                    LOG.exception('Failed to close Windows BLE COM port')
+            if client is not None:
+                try:
+                    await client.disconnect()
+                except Exception:
+                    LOG.exception('Failed to disconnect Bluetooth')
+            if not failure.done():
+                failure.cancel()
+            elif not failure.cancelled():
+                failure.exception()
+
+    async def _run_unix_bridge(self):
         import tty
 
         from ble_serial import DEFAULT_PORT
