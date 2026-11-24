@@ -580,9 +580,13 @@ class KGUV8DPlusRadio(chirp_common.CloneModeRadio,
         _nam = self._memobj.names[number]
 
         if mem.empty:
-            _mem.set_raw("\x00" * (_mem.size() // 8))
+            # The vendor codeplug of this radio leaves unused records as
+            # 0xff too (and unused names as 0x00), so clearing to 0x00
+            # would make the result differ from the radio's own image.
+            _mem.set_raw(b"\xff" * (_mem.size() // 8))
             self._memobj.valid[number] = 0
-            self._memobj.names[number].set_raw("\x00" * (_nam.size() // 8))
+            self._memobj.names[number].set_raw(
+                b"\x00" * (_nam.size() // 8))
             return
 
         _mem.rxfreq = int(mem.freq / 10)

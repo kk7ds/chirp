@@ -523,7 +523,13 @@ class KGUV8Radio(chirp_common.CloneModeRadio):
         _nam = self._memobj.names[idx]
 
         if mem.empty:
-            _mem.set_raw(b"\x00" * (_mem.size() // 8))
+            # Every vendor codeplug of these radios has 0xff in the slots
+            # it does not use (and 0x00 in the unused names), so clear to
+            # the same thing.  Filling with 0x00 instead makes a read and
+            # write-back differ from the radio's own image across the whole
+            # unused area, which hides real encoding bugs when comparing the
+            # two.
+            _mem.set_raw(b"\xff" * (_mem.size() // 8))
             self._memobj.valid[idx] = 0
             _nam.set_raw(b"\x00" * (_nam.size() // 8))
             return

@@ -210,7 +210,7 @@ class ChirpRadioPromptDialog(wx.Dialog):
         except AttributeError:
             # Older Linux distros will use wxWidgets 3.0 and thus do not
             # have built-in wrapping
-            prompt_style = None
+            prompt_style = 0
             manual_wrap = True
 
         if '\n' not in self.message and manual_wrap:

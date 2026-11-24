@@ -105,10 +105,16 @@ class BoristoneBR3(tdxone_tdq8a.TDXoneTDQ8A):
     DEFAULT_FLAGS = 0xff
     EMPTY_FLAGS = 0xff
     # The vendor CPS writes 0xFFFF for "no tone" (0x0000 would be shown as
-    # "0.0" instead of "None"), so start from there.
+    # "0.0" instead of "None"), so start from there.  A CTCSS tone is stored
+    # as the plain frequency times ten, with no flag bit: every one of the 108
+    # CTCSS words in the stock codeplug is e.g. 0x0375 for 88.5 Hz.  Setting
+    # tone_flag to 0x8000 (the model's default) makes the radio ignore the
+    # tone, so it has to be off here even though that same bit means "reverse"
+    # for DCS.
     TONE_MODEL = kenwood_tone.KenwoodToneModel(dcs_base=0x2800,
                                                pol_mask=0x8000,
-                                               tone_init=0xffff)
+                                               tone_init=0xffff,
+                                               tone_flag=0x0000)
 
     @classmethod
     def get_prompts(cls):
