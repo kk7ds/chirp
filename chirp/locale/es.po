@@ -54,7 +54,7 @@ msgstr "%s %s, fila %d"
 #: ../wxui/printing.py:251
 #, python-format
 msgid "%s Preview"
-msgstr ""
+msgstr "Vista previa de %s"
 
 #: ../wxui/main.py:1634
 #, python-format
@@ -3218,7 +3218,7 @@ msgstr "Previene transmitir en un canal que ya está en uso. Presionando PTT en 
 
 #: ../wxui/printing.py:65
 msgid "Print Columns"
-msgstr ""
+msgstr "Imprimir Columnas"
 
 #: ../wxui/main.py:853 ../wxui/printing.py:245
 msgid "Print Preview"
@@ -3557,7 +3557,7 @@ msgstr "Selecciona una pestaña y memoria a diferenciar"
 
 #: ../wxui/printing.py:64
 msgid "Select columns to include in print output"
-msgstr ""
+msgstr "Selecciona las columnas a incluir en la salida impresa"
 
 #: ../wxui/query_sources.py:877
 msgid "Select prefixes"
@@ -4099,11 +4099,11 @@ msgstr "El procedimiento recomendado para importar memorias es para abrir el arc
 
 #: ../wxui/printing.py:244
 msgid "There was a problem preparing the preview."
-msgstr ""
+msgstr "Hubo un problema al preparar la vista previa."
 
 #: ../wxui/printing.py:227
 msgid "There was a problem printing."
-msgstr ""
+msgstr "Hubo un problema imprimiendo."
 
 #: ../wxui/memedit.py:2252
 msgid "This Memory"
@@ -4506,7 +4506,7 @@ msgstr "Usar como máximo 3 dígitos."
 
 #: ../drivers/kguv980p.py:1727
 msgid "Use at your own risk - may cause hardware damage and/or violate your license parameters"
-msgstr ""
+msgstr "Usa bajo tu propio riesgo - puede casar daños en el hardware y/o violar los parámetros de tu licencia"
 
 #: ../wxui/main.py:928
 msgid "Use fixed-width font"
