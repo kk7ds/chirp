@@ -366,6 +366,10 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
     def _get_settings_format(self, optfeat1, optfeat2, scaninf):
         return
 
+    @property
+    def unsupported_key_funcs(self):
+        return ['Reverse']
+
 
 class TKx80System:
     def __init__(self, parent, system):
