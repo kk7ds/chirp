@@ -220,7 +220,6 @@ class VEVV6Radio(chirp_common.CloneModeRadio):
     VENDOR = "Weierwei"
     MODEL = "VEV-V6"
     BAUD_RATE = BAUD_RATE
-    NEEDS_COMPAT_SERIAL = False
     WANTS_DTR = True
     WANTS_RTS = True
 
