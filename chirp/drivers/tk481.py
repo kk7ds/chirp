@@ -174,6 +174,7 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
         if system is None:
             self._mmap[system_start + 1] = amount
             self._memobj.trunk_systems[my_index] = 0
+            self._memobj.system_lockout[my_index] = 1
             self._memobj.trunk.systems += 1
 
         # Rebuild the internal memory object
@@ -227,6 +228,32 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
                   '(start 0x%04x new end %04x)',
                   system_number, my_index,
                   system.sys.channels, system_start, new_end)
+
+    def _delete_system(self, system_number):
+        """Remove a system and its channels from the memory map"""
+
+        my_index = system_number - 1
+        system_start, system_end, _system = self._get_system_info(my_index)
+        system_start = int(system_start)
+        system_end = int(system_end)
+        system_size = system_end - system_start
+
+        # Move the remaining systems down to fill the gap and update their
+        # start addresses.
+        self._mmap[system_start] = self._mmap[system_end:]
+        self._mmap[-system_size] = b'\xFF' * system_size
+        for index in range(my_index + 1, 32):
+            if self._memobj.trunk.sys_start[index] != 0xFFFF:
+                self._memobj.trunk.sys_start[index] -= system_size
+
+        self._memobj.trunk.sys_start[my_index] = 0xFFFF
+        self._memobj.trunk.systems -= 1
+        self._memobj.trunk_systems[my_index] = 0
+        self._memobj.system_lockout[my_index] = 0
+
+        self.process_mmap()
+        LOG.debug('Deleted system %i index %i (%i bytes at 0x%04x)',
+                  system_number, my_index, system_size, system_start)
 
     def get_features(self):
         rf = super().get_features()
@@ -319,9 +346,13 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
             except IndexError:
                 if enabled:
                     new_system = self._expand_system(i + 1)
-                    new_system.sys.name = ('System %i' % (i + 1)).ljust(10)
+                    if name is None or not name.strip():
+                        name = 'System %i' % (i + 1)
+                    new_system.sys.name = name.ljust(10)
             else:
-                if name is not None:
+                if not enabled:
+                    self._delete_system(i + 1)
+                elif name is not None:
                     system.sys.name = name
 
     def _get_settings_groups(self, groups):
@@ -332,10 +363,8 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
                                RadioSettingValueBoolean(
                                    self._memobj.trunk.sys_start[i] != 0xFFFF))
             rse.set_volatile(True)
-            rse.set_doc('Requires reload of file after changing!')
-            if rse.value:
-                # FIXME: Don't allow deleting systems yet
-                rse.value.set_mutable(False)
+            rse.set_doc('Unchecking deletes this system and its channels. '
+                        'Requires reloading the file after changing.')
             rsg.append(rse)
             if rse.value:
                 _, _, system = self._get_system_info(i)
