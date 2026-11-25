@@ -15,14 +15,14 @@
 
 """Wouxun KG-UV96G radio management module.
 
-Protocol and memory layout taken from the OEM "KG-R96 Commander" software
-(v1.0.1) and confirmed against a radio running firmware VB1.02.
+The protocol and memory layout were worked out by observing the serial
+traffic between the radio and the OEM "KG-R96 Commander" software (v1.0.1),
+using the KG-935G driver as the starting point, and confirmed on a radio
+running firmware VB1.02.
 
-Frames are 0x7C, cmd, 0xFF, len, payload, checksum. The checksum is the
-8-bit sum of cmd..payload. Payload and checksum are scrambled with a chained
-XOR seeded with 0x57 (the same scheme as the KG-935G family). The radio has
-no identify command; the OEM software reads the factory block at 0x0340
-and checks the model string "T3".
+The transport is the KG-935G one (0x7C frames, 0x57 chained XOR). This radio
+does not answer the KG-935G identify command; instead the model string "T3"
+is read from the factory block at 0x0340.
 """
 
 import logging
@@ -32,29 +32,23 @@ from chirp import bitwise
 from chirp import chirp_common
 from chirp import directory
 from chirp import errors
-from chirp import kenwood_tone
 from chirp import memmap
+from chirp.drivers import kg935g
 from chirp.settings import (
-    RadioSetting, RadioSettingGroup, RadioSettings,
-    RadioSettingValueBoolean, RadioSettingValueFloat,
-    RadioSettingValueInteger, RadioSettingValueList,
-    RadioSettingValueString)
+    MemSetting, RadioSetting, RadioSettingGroup, RadioSettings,
+    RadioSettingSubGroup, RadioSettingValueBoolean, RadioSettingValueFloat,
+    RadioSettingValueInteger, RadioSettingValueMap, RadioSettingValueString)
 
 LOG = logging.getLogger(__name__)
 
-CMD_END = 0x81
-CMD_RD = 0x82
-CMD_WR = 0x83
-RECORD_START = 0x7C
-XOR_KEY = 0x57
 BLOCK_SIZE = 64
 MEM_SIZE = 0x3800
 MEM_VALID = 0x9E
 MODEL_ID = b"T3"
 
 FACTORY_BLOCK = (0x0340, 224)
-# Regions the OEM software transfers, in the order it writes them.
-# The factory block is read but never written.
+# The whole memory is downloaded, but uploads only write the regions the
+# OEM software writes, in the same order. The factory block is never written.
 WRITE_REGIONS = [
     (0x0420, 192),   # settings
     (0x0540, 32),    # VFO A/B
@@ -225,22 +219,16 @@ WX_FREQS = ["162.400", "162.425", "162.450", "162.475", "162.500",
             "162.525", "162.550"]
 
 
-def _scramble(data):
-    out = bytearray()
-    prev = XOR_KEY
-    for b in data:
-        prev = b ^ prev
-        out.append(prev)
-    return bytes(out)
+def _map(options, raw, offset=0):
+    """A list value whose memory value is index + offset.
 
-
-def _unscramble(data):
-    data = bytearray(data)
-    for i in range(len(data) - 1, 0, -1):
-        data[i] ^= data[i - 1]
-    if data:
-        data[0] ^= XOR_KEY
-    return bytes(data)
+    Out-of-range values in memory show as the first option.
+    """
+    entries = [(opt, i + offset) for i, opt in enumerate(options)]
+    if not offset <= raw < offset + len(options):
+        LOG.debug("Out-of-range value %d for %s", raw, options)
+        raw = offset
+    return RadioSettingValueMap(entries, mem_val=raw)
 
 
 def _encode(text, length):
@@ -255,23 +243,16 @@ def _cstr(value):
 
 
 @directory.register
-class KGUV96GRadio(chirp_common.CloneModeRadio,
-                   chirp_common.ExperimentalRadio):
+class KGUV96GRadio(kg935g.KG935GRadio):
     """Wouxun KG-UV96G"""
     VENDOR = "Wouxun"
     MODEL = "KG-UV96G"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = False
 
     # Wattage is not printed in the OEM software. 5 W matches Wouxun's
     # marketing for this GMRS handheld; the low setting is an estimate.
     POWER_LEVELS = [chirp_common.PowerLevel("Low", watts=1.0),
                     chirp_common.PowerLevel("High", watts=5.0)]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.tone_model = kenwood_tone.KenwoodToneModel(
-            dcs_base=0x4000, pol_mask=0x2000, tone_init=0x0000)
 
     @classmethod
     def get_prompts(cls):
@@ -290,67 +271,39 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
         return rp
 
     # ------------------------------------------------------------------
-    # Serial protocol
-
-    def _send(self, cmd, payload=b""):
-        body = bytes([cmd, 0xFF, len(payload)]) + payload
-        cksum = sum(body) & 0xFF
-        frame = (bytes([RECORD_START]) + body[:3] +
-                 _scramble(payload + bytes([cksum])))
-        self.pipe.write(frame)
-
-    def _recv(self):
-        """Read one frame. Returns (cmd, payload) or None on timeout."""
-        for _ in range(32):
-            b = self.pipe.read(1)
-            if not b:
-                return None
-            if b[0] == RECORD_START:
-                break
-        else:
-            return None
-        hdr = self.pipe.read(3)
-        if len(hdr) != 3:
-            return None
-        rest = self.pipe.read(hdr[2] + 1)
-        if len(rest) != hdr[2] + 1:
-            return None
-        plain = _unscramble(rest)
-        payload, cksum = plain[:-1], plain[-1]
-        if (sum(hdr) + sum(payload)) & 0xFF != cksum:
-            LOG.debug("Checksum error in reply %s", (hdr + rest).hex())
-            return None
-        return hdr[0], payload
+    # Serial protocol (framing and scrambling come from KG935GRadio)
 
     def _transact(self, cmd, payload, addr, expect=None, tries=8):
-        # The radio ignores or garbles requests for a moment after an
-        # upload, so retry anything that isn't the exact reply we want.
+        # Right after an upload the radio ignores or garbles requests for a
+        # moment, so retry anything that isn't the exact reply we want.
         for attempt in range(tries):
-            self._send(cmd, payload)
-            reply = self._recv()
-            if reply is None:
-                LOG.debug("No/bad reply for %02X @%04X (try %d)",
+            self._write_record(cmd, payload)
+            try:
+                cs_error, reply = self._read_record()
+            except (errors.RadioError, IndexError) as e:
+                LOG.debug("No/bad reply for %02X @%04X (try %d): %s",
+                          cmd, addr, attempt + 1, e)
+                self.pipe.reset_input_buffer()
+                continue
+            if (cs_error or len(reply) < 2 or
+                    struct.unpack(">H", reply[:2])[0] != addr):
+                LOG.debug("Bad reply for %02X @%04X (try %d)",
                           cmd, addr, attempt + 1)
                 self.pipe.reset_input_buffer()
                 continue
-            rcmd, rpayload = reply
-            if rcmd != cmd or len(rpayload) < 2:
-                continue
-            if struct.unpack(">H", rpayload[:2])[0] != addr:
-                continue
-            if expect is not None and len(rpayload) - 2 != expect:
+            if expect is not None and len(reply) - 2 != expect:
                 LOG.debug("Short reply at %04X (%d of %d bytes)",
-                          addr, len(rpayload) - 2, expect)
+                          addr, len(reply) - 2, expect)
                 continue
-            return rpayload[2:]
+            return reply[2:]
         raise errors.RadioError("Radio did not respond at 0x%04X" % addr)
 
     def _read_block(self, addr, count):
-        return self._transact(CMD_RD, struct.pack(">HB", addr, count), addr,
-                              expect=count)
+        return self._transact(kg935g.CMD_RD, struct.pack(">HB", addr, count),
+                              addr, expect=count)
 
     def _write_block(self, addr, data):
-        self._transact(CMD_WR, struct.pack(">H", addr) + data, addr)
+        self._transact(kg935g.CMD_WR, struct.pack(">H", addr) + data, addr)
 
     def _status(self, cur, total, msg):
         if self.status_fn:
@@ -374,27 +327,18 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
 
     def _finish(self):
         try:
-            self._send(CMD_END)
+            super()._finish()
         except Exception:
             LOG.exception("Failed to send end command")
 
     def sync_in(self):
-        self.pipe.timeout = 0.3
-        image = bytearray(MEM_SIZE)
-        regions = [FACTORY_BLOCK] + WRITE_REGIONS
-        total = sum(n for _, n in regions)
-        done = 0
+        image = b""
         try:
-            factory = self._identify()
-            image[FACTORY_BLOCK[0]:FACTORY_BLOCK[0] + len(factory)] = factory
-            done += len(factory)
-            for addr, length in WRITE_REGIONS:
-                for off in range(0, length, BLOCK_SIZE):
-                    n = min(BLOCK_SIZE, length - off)
-                    image[addr + off:addr + off + n] = self._read_block(
-                        addr + off, n)
-                    done += n
-                    self._status(done, total, "Cloning from radio")
+            self._identify()
+            for addr in range(0, MEM_SIZE, BLOCK_SIZE):
+                image += self._read_block(addr, BLOCK_SIZE)
+                self._status(addr + BLOCK_SIZE, MEM_SIZE,
+                             "Cloning from radio")
         except errors.RadioError:
             raise
         except Exception as e:
@@ -402,11 +346,10 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
         finally:
             self._finish()
-        self._mmap = memmap.MemoryMapBytes(bytes(image))
+        self._mmap = memmap.MemoryMapBytes(image)
         self.process_mmap()
 
     def sync_out(self):
-        self.pipe.timeout = 0.3
         total = sum(n for _, n in WRITE_REGIONS)
         done = 0
         data = self._mmap.get_packed()
@@ -429,12 +372,6 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
-
-    @classmethod
-    def match_model(cls, filedata, filename):
-        model_at = FACTORY_BLOCK[0] + 54
-        return (len(filedata) >= MEM_SIZE and
-                filedata[model_at:model_at + 3] == MODEL_ID + b"\x00")
 
     # ------------------------------------------------------------------
     # Memories
@@ -480,18 +417,11 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
 
         rx = int(_mem.rxfreq)
         tx = int(_mem.txfreq)
-        mem.freq = rx * 10
         if tx in (0, 0xFFFFFFFF):
+            mem.freq = rx * 10
             mem.duplex = "off"
-            mem.offset = 0
-        elif tx == rx:
-            mem.duplex = ""
-        elif abs(tx - rx) * 10 > 70000000:
-            mem.duplex = "split"
-            mem.offset = tx * 10
         else:
-            mem.duplex = "+" if tx > rx else "-"
-            mem.offset = abs(tx - rx) * 10
+            chirp_common.split_to_offset(mem, rx * 10, tx * 10)
 
         mem.name = _cstr(self._memobj.names[number].name)
         self.tone_model.get_tone(_mem, mem)
@@ -503,33 +433,33 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
             mem.mode = "FM" if _mem.wide else "NFM"
 
         mem.extra = RadioSettingGroup("extra", "Extra")
-        rs = RadioSetting("bcl", "Busy lockout",
-                          RadioSettingValueBoolean(bool(_mem.bcl)))
+        rs = RadioSetting("am_tx", "AM transmit",
+                          RadioSettingValueBoolean(int(_mem.am) == 2))
+        rs.set_doc("In AM mode, transmit in AM as well as receive. When off, "
+                   "an AM channel receives in AM and transmits in FM.")
+        mem.extra.append(rs)
+        rs = MemSetting("bcl", "Busy lockout",
+                        RadioSettingValueBoolean(bool(_mem.bcl)))
         rs.set_doc("Prevent transmitting while the channel is busy")
         mem.extra.append(rs)
-        rs = RadioSetting("compander", "Compander",
-                          RadioSettingValueBoolean(bool(_mem.compander)))
+        rs = MemSetting("compander", "Compander",
+                        RadioSettingValueBoolean(bool(_mem.compander)))
         rs.set_doc("Audio compander")
         mem.extra.append(rs)
-        rs = RadioSetting("scramble", "Scramble",
-                          RadioSettingValueList(
-                              SCRAMBLE,
-                              current_index=min(int(_mem.scramble), 8)))
+        rs = MemSetting("scramble", "Scramble",
+                        _map(SCRAMBLE, int(_mem.scramble)))
         rs.set_doc("Voice scrambler (Off or level 1-8)")
         mem.extra.append(rs)
-        rs = RadioSetting("mute_mode", "Mute mode",
-                          RadioSettingValueList(
-                              MUTE_MODES,
-                              current_index=min(int(_mem.mute_mode), 2)))
+        rs = MemSetting("mute_mode", "Mute mode",
+                        _map(MUTE_MODES, int(_mem.mute_mode)))
         rs.set_doc("What opens the squelch: tone only, tone and DTMF, "
                    "or tone or DTMF")
         mem.extra.append(rs)
         group = int(_mem.call_group)
+        # Channels the OEM software never touched store 0, which the radio
+        # treats as group 1, so this one is applied by hand in set_memory.
         rs = RadioSetting("call_group", "Call group",
-                          RadioSettingValueList(
-                              CALL_GROUPS,
-                              current_index=group - 1
-                              if 1 <= group <= 20 else 0))
+                          _map(CALL_GROUPS, group, offset=1))
         rs.set_doc("Call code group (1-20) used by this channel")
         mem.extra.append(rs)
         return mem
@@ -574,72 +504,60 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
             _mem.power = self.POWER_LEVELS.index(mem.power)
         else:
             _mem.power = 1
+        am_tx = False
+        for setting in RadioSettings(*mem.extra).apply_to(_mem):
+            name = setting.get_name()
+            if name == "am_tx":
+                am_tx = bool(setting.value)
+            elif name == "call_group":
+                # Keep 0 (untouched, acts as group 1) unless it changed
+                if not (_mem.call_group == 0 and int(setting.value) == 1):
+                    _mem.call_group = int(setting.value)
+
+        # AM field: 0 off, 1 AM receive (FM transmit), 2 AM receive+transmit
         if mem.mode == "AM":
-            if not _mem.am:
-                _mem.am = 1  # AM receive; keep 2 (AM RX+TX) if already set
+            _mem.am = 2 if am_tx else 1
         else:
             _mem.am = 0
             _mem.wide = int(mem.mode == "FM")
 
-        for setting in mem.extra:
-            name = setting.get_name()
-            if name in ("bcl", "compander"):
-                setattr(_mem, name, int(bool(setting.value)))
-            elif name in ("scramble", "mute_mode"):
-                setattr(_mem, name, int(setting.value))
-            elif name == "call_group":
-                # Channels the OEM software never touched store 0, which
-                # the radio treats as group 1. Leave that alone.
-                if not (_mem.call_group == 0 and int(setting.value) == 0):
-                    _mem.call_group = int(setting.value) + 1
-
     # ------------------------------------------------------------------
     # Settings
 
-    def _list(self, group, obj, field, label, options, doc, offset=0):
-        """Add a list setting stored as index + offset."""
-        raw = int(getattr(obj, field))
-        idx = raw - offset
-        if not 0 <= idx < len(options):
-            LOG.debug("%s has out-of-range value %d", field, raw)
-            idx = 0
-        rs = RadioSetting(field, label,
-                          RadioSettingValueList(options, current_index=idx))
-        rs.set_doc(doc)
-
-        def apply(setting, obj=obj, field=field, offset=offset):
-            setattr(obj, field, int(setting.value) + offset)
-        rs.set_apply_callback(apply)
-        group.append(rs)
-
-    def _bool(self, group, obj, field, label, doc):
-        rs = RadioSetting(field, label,
-                          RadioSettingValueBoolean(bool(getattr(obj, field))))
-        rs.set_doc(doc)
-
-        def apply(setting, obj=obj, field=field):
-            setattr(obj, field, int(bool(setting.value)))
-        rs.set_apply_callback(apply)
-        group.append(rs)
-
-    def _int(self, group, obj, field, label, lo, hi, doc, index=None):
-        cur = getattr(obj, field)
-        cur = int(cur if index is None else cur[index])
-        name = field if index is None else "%s%d" % (field, index)
-        rs = RadioSetting(name, label,
-                          RadioSettingValueInteger(
-                              lo, hi, cur if lo <= cur <= hi else lo))
-        rs.set_doc(doc)
-
-        def apply(setting):
-            if index is None:
-                setattr(obj, field, int(setting.value))
+    def _get(self, path):
+        """Look up a memory object value by MemSetting-style path."""
+        obj = self._memobj
+        for element in path.split("."):
+            if "[" in element:
+                name, index = element.rstrip("]").split("[")
+                obj = getattr(obj, name)[int(index)]
             else:
-                getattr(obj, field)[index] = int(setting.value)
-        rs.set_apply_callback(apply)
+                obj = getattr(obj, element)
+        return int(obj)
+
+    def _list(self, group, path, label, options, doc, offset=0):
+        """Add a list setting stored as index + offset."""
+        rs = MemSetting(path, label, _map(options, self._get(path), offset))
+        rs.set_doc(doc)
+        group.append(rs)
+
+    def _bool(self, group, path, label, doc):
+        rs = MemSetting(path, label,
+                        RadioSettingValueBoolean(bool(self._get(path))))
+        rs.set_doc(doc)
+        group.append(rs)
+
+    def _int(self, group, path, label, lo, hi, doc):
+        cur = self._get(path)
+        rs = MemSetting(path, label,
+                        RadioSettingValueInteger(
+                            lo, hi, cur if lo <= cur <= hi else lo))
+        rs.set_doc(doc)
         group.append(rs)
 
     def _string(self, group, obj, field, label, length, doc):
+        # Not a MemSetting: only rewrite the field if the text changed, so
+        # leftover bytes after the NUL stay as the radio wrote them.
         rs = RadioSetting(field, label,
                           RadioSettingValueString(
                               0, length, _cstr(getattr(obj, field)),
@@ -659,77 +577,77 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
         _fac = self._memobj.factory
 
         basic = RadioSettingGroup("basic", "Basic")
-        self._bool(basic, _set, "menu_avail", "Menu in channel mode",
+        self._bool(basic, "settings.menu_avail", "Menu in channel mode",
                    "Allow the menu to be used while in channel mode")
-        self._bool(basic, _set, "battery_save", "Battery save",
+        self._bool(basic, "settings.battery_save", "Battery save",
                    "Battery saver")
-        self._list(basic, _set, "tot", "Time-out timer",
+        self._list(basic, "settings.tot", "Time-out timer",
                    ["Off"] + ["%ds" % (i * 15) for i in range(1, 61)],
                    "Maximum transmit time")
-        self._list(basic, _set, "toa", "TOT pre-alert",
+        self._list(basic, "settings.toa", "TOT pre-alert",
                    ["Off"] + ["%ds" % i for i in range(1, 11)],
                    "Warning before the time-out timer expires")
-        self._list(basic, _set, "vox", "VOX",
+        self._list(basic, "settings.vox", "VOX",
                    ["Off"] + ["%d" % i for i in range(1, 11)],
                    "Voice-operated transmit sensitivity")
-        self._list(basic, _set, "vox_delay", "VOX delay",
+        self._list(basic, "settings.vox_delay", "VOX delay",
                    ["Off"] + ["%ds" % i for i in range(1, 6)],
                    "How long VOX keeps transmitting after you stop talking")
-        self._list(basic, _set, "scan_mode", "Scan mode",
+        self._list(basic, "settings.scan_mode", "Scan mode",
                    ["Time operated", "Carrier operated", "Search"],
                    "How scanning resumes after stopping on a signal")
-        self._list(basic, _set, "pri_scan", "Priority scan",
+        self._list(basic, "settings.pri_scan", "Priority scan",
                    ["Off", "RX off", "Always on"],
                    "Priority channel scanning")
-        self._int(basic, _set, "pri_ch", "Priority channel", 1, 400,
+        self._int(basic, "settings.pri_ch", "Priority channel", 1, 400,
                   "Channel checked during priority scan")
-        self._bool(basic, _set, "scan_det", "Scan tone detect",
+        self._bool(basic, "settings.scan_det", "Scan tone detect",
                    "Detect CTCSS/DCS while scanning (SCAN-DET)")
-        self._list(basic, _set, "sc_qt", "Saved scan tone",
+        self._list(basic, "settings.sc_qt", "Saved scan tone",
                    ["Decoder", "Encoder", "Both"],
                    "Where a tone found by tone scan is saved (SC-QT)")
-        self._list(basic, _set, "auto_lock", "Auto lock",
+        self._list(basic, "settings.auto_lock", "Auto lock",
                    ["Off"] + ["%ds" % (i * 10) for i in range(1, 7)],
                    "Lock the keypad after this much idle time")
-        self._list(basic, _set, "lock_mode", "Lock mode",
+        self._list(basic, "settings.lock_mode", "Lock mode",
                    ["Keys", "Keys+PTT", "Keys+knob", "All"],
                    "What the keypad lock disables")
-        self._bool(basic, _set, "bluetooth", "Bluetooth",
+        self._bool(basic, "settings.bluetooth", "Bluetooth",
                    "Bluetooth on or off")
-        self._bool(basic, _set, "second", "Second",
+        self._bool(basic, "settings.second", "Second",
                    "The setting labelled 'Second' in the Wouxun software")
 
         audio = RadioSettingGroup("audio", "Audio")
-        self._bool(audio, _set, "voice", "Voice guide", "Spoken prompts")
-        self._bool(audio, _set, "beep", "Beep", "Key beep")
-        self._list(audio, _set, "roger", "Roger beep", BOT_EOT,
+        self._bool(audio, "settings.voice", "Voice guide", "Spoken prompts")
+        self._bool(audio, "settings.beep", "Beep", "Key beep")
+        self._list(audio, "settings.roger", "Roger beep", BOT_EOT,
                    "Tone at the start and/or end of each transmission")
-        self._list(audio, _set, "alert", "Alert tone",
+        self._list(audio, "settings.alert", "Alert tone",
                    ["1750Hz", "2100Hz", "1000Hz", "1450Hz"],
                    "Tone burst used for repeater access")
-        self._bool(audio, _set, "rpt_tone", "Repeater tone",
+        self._bool(audio, "settings.rpt_tone", "Repeater tone",
                    "Repeater tail tone")
-        self._list(audio, _set, "ring_time", "Ring time",
+        self._list(audio, "settings.ring_time", "Ring time",
                    ["Off"] + ["%ds" % i for i in range(1, 11)],
                    "How long the radio rings on an incoming call")
 
         display = RadioSettingGroup("display", "Display")
-        self._list(display, _set, "backlight", "Backlight timer",
+        self._list(display, "settings.backlight", "Backlight timer",
                    ["Always on"] + ["%ds" % i for i in range(1, 21)] +
                    ["Always off"],
                    "How long the display stays lit")
-        self._list(display, _set, "brightness", "Brightness (active)",
+        self._list(display, "settings.brightness", "Brightness (active)",
                    ["%d" % i for i in range(1, 11)],
                    "Display brightness while in use", offset=1)
-        self._list(display, _set, "brightness_stby", "Brightness (standby)",
+        self._list(display, "settings.brightness_stby", "Brightness (standby)",
                    ["Off"] + ["%d" % i for i in range(1, 11)],
                    "Display brightness while idle")
-        self._bool(display, _set, "led_stby", "LED in standby",
+        self._bool(display, "settings.led_stby", "LED in standby",
                    "Status LED while idle")
-        self._list(display, _set, "ponmsg", "Startup display",
+        self._list(display, "settings.ponmsg", "Startup display",
                    ["Message", "Battery voltage"],
                    "What the radio shows when switched on")
-        self._list(display, _set, "theme", "Theme",
+        self._list(display, "settings.theme", "Theme",
                    ["White 1", "White 2", "Black 1", "Black 2",
                     "Custom 1", "Custom 2", "Custom 3", "Custom 4"],
                    "Display colour theme")
@@ -740,6 +658,7 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
 
         work = RadioSettingGroup("work", "Work mode")
         for i, ab in enumerate("AB"):
+            side = RadioSettingSubGroup("work_%s" % ab.lower(), "Side %s" % ab)
             for field, label, options, doc in (
                     ("work_mode", "Work mode", WORK_MODES,
                      "Show VFO or channels, and how channels are shown"),
@@ -747,58 +666,48 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
                      "VFO tuning step"),
                     ("squelch", "Squelch", ["%d" % n for n in range(10)],
                      "Squelch level")):
-                arr = getattr(_set, field)
-                raw = int(arr[i])
-                rs = RadioSetting(
-                    "%s%d" % (field, i), "%s %s" % (label, ab),
-                    RadioSettingValueList(
-                        options,
-                        current_index=raw if raw < len(options) else 0))
-                rs.set_doc("%s for side %s" % (doc, ab))
-
-                def apply(setting, arr=arr, i=i):
-                    arr[i] = int(setting.value)
-                rs.set_apply_callback(apply)
-                work.append(rs)
-            self._int(work, _set, "work_ch", "Channel %s" % ab, 1, 400,
-                      "Current channel for side %s" % ab, index=i)
+                self._list(side, "settings.%s[%d]" % (field, i), label,
+                           options, "%s for side %s" % (doc, ab))
+            self._int(side, "settings.work_ch[%d]" % i, "Channel", 1, 400,
+                      "Current channel for side %s" % ab)
+            work.append(side)
 
         keys = RadioSettingGroup("keys", "Keys")
-        self._list(keys, _set, "ptt2", "PTT2",
+        self._list(keys, "settings.ptt2", "PTT2",
                    ["Call", "Transmit on sub band"],
                    "Function of the second PTT key")
         for key in ("pf1", "pf2", "pf3"):
             for press in ("short", "long"):
-                self._list(keys, _set, "%s_%s" % (key, press),
+                self._list(keys, "settings.%s_%s" % (key, press),
                            "%s %s press" % (key.upper(), press),
                            KEY_FUNCS,
                            "Function of a %s press of %s" % (
                                press, key.upper()))
 
         dtmf = RadioSettingGroup("dtmf", "DTMF")
-        self._list(dtmf, _set, "ptt_id", "PTT-ID", BOT_EOT,
+        self._list(dtmf, "settings.ptt_id", "PTT-ID", BOT_EOT,
                    "When to send the ANI code")
-        self._list(dtmf, _set, "ptt_id_delay", "PTT-ID delay",
+        self._list(dtmf, "settings.ptt_id_delay", "PTT-ID delay",
                    ["%dms" % (i * 100) for i in range(1, 31)],
                    "Delay before the ANI code is sent", offset=1)
-        self._list(dtmf, _set, "sidetone", "DTMF sidetone",
+        self._list(dtmf, "settings.sidetone", "DTMF sidetone",
                    ["Off", "DTMF", "ANI", "DTMF+ANI"],
                    "Which DTMF tones are heard in the speaker")
-        self._list(dtmf, _set, "dtmf_tx_time", "DTMF tone length",
+        self._list(dtmf, "settings.dtmf_tx_time", "DTMF tone length",
                    ["%dms" % (i * 10) for i in range(5, 51)],
                    "Length of each DTMF digit", offset=5)
-        self._list(dtmf, _set, "dtmf_interval", "DTMF gap",
+        self._list(dtmf, "settings.dtmf_interval", "DTMF gap",
                    ["%dms" % (i * 10) for i in range(5, 51)],
                    "Gap between DTMF digits", offset=5)
 
         wx = RadioSettingGroup("weather", "Weather")
-        self._bool(wx, _set, "wx_mode", "Weather mode",
+        self._bool(wx, "settings.wx_mode", "Weather mode",
                    "NOAA weather radio mode")
-        self._list(wx, _set, "wx_ch", "Weather channel", WX_FREQS,
+        self._list(wx, "settings.wx_ch", "Weather channel", WX_FREQS,
                    "NOAA weather frequency (MHz)", offset=1)
-        self._bool(wx, _set, "wx_alert", "Weather alert",
+        self._bool(wx, "settings.wx_alert", "Weather alert",
                    "Watch for NOAA alert tones")
-        self._list(wx, _set, "wx_alert_type", "Weather alert notification",
+        self._list(wx, "settings.wx_alert_type", "Weather alert notification",
                    ["Off", "Icon", "Tone", "Flash", "Tone+Flash"],
                    "How a weather alert is shown")
 
@@ -845,10 +754,8 @@ class KGUV96GRadio(chirp_common.CloneModeRadio,
                              fm, info)
 
     def set_settings(self, settings):
-        for element in settings:
-            if not isinstance(element, RadioSetting):
-                self.set_settings(element)
-                continue
+        # Most settings are MemSettings; the strings and FM frequencies
+        # need conversion and carry their own apply callbacks.
+        for element in settings.apply_to(self._memobj):
             if element.has_apply_callback():
-                LOG.debug("Applying %s", element.get_name())
                 element.run_apply_callback()
