@@ -1319,7 +1319,7 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
             model_keys = MOBILE_KEYS
         key_map = sorted([(v, k) for k, v in itertools.chain(
             KEYS.items(),
-            model_keys.items())])
+            model_keys.items()) if v not in self.unsupported_key_funcs])
 
         mobile_keys = {
             'VOL_UP': 'Volume Up (Left Arrow Up)',
@@ -1382,6 +1382,10 @@ class KenwoodTKx80(chirp_common.CloneModeRadio):
                            RadioSettingValueInvertedBoolean(
                                not fsync.data_tx_qt))
         optfeat2.append(dtxqt)
+
+    @property
+    def unsupported_key_funcs(self):
+        return []
 
     def get_settings(self):
         """Translate the bit in the mem_struct into settings in the UI"""
