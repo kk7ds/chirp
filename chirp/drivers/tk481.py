@@ -57,7 +57,7 @@ struct misc misc;
 struct system {
   u8 system;
   u8 channels;
-  u8 unknown1;
+  u8 pri_sys;
   char name[10];
   u8 unknown2;
   u8 unknown3;
@@ -150,6 +150,8 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
             # An empty system has only the 32-byte header
             system_end = system_start + 32
 
+        new_system = system is None
+
         # Add space to all the system starts after this one
         for index in reversed(range(32)):
             if index > my_index:
@@ -171,7 +173,9 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
 
         # If we allocated a new system, bootstrap the channel count, mark as
         # non-trunked, increase the total system count
-        if system is None:
+        if new_system:
+            # The inserted header may contain stale data from an old system.
+            self._mmap[system_start] = b'\xFF' * 32
             self._mmap[system_start + 1] = amount
             self._memobj.trunk_systems[my_index] = 0
             self._memobj.system_lockout[my_index] = 1
@@ -179,13 +183,17 @@ class TKx80_Trunked(tk280.KenwoodTKx80):
 
         # Rebuild the internal memory object
         self.process_mmap()
+        system = getattr(self._memobj, 'system%i' % my_index)
+        if new_system:
+            system.sys.pri_sys = 0xFF
+            system.sys.unknown2 = 0xFC
         LOG.debug('Expanded system %i index %i to %i channels '
                   '(start 0x%04x new end %04x)',
                   system_number, my_index,
-                  system and system.sys.channels or amount,
+                  system.sys.channels,
                   system_start, new_end)
 
-        return getattr(self._memobj, 'system%i' % my_index)
+        return system
 
     def _reduce_system(self, system_number, channel):
         """Remove a memory slot from a system"""
