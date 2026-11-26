@@ -769,7 +769,9 @@ class KenwoodD7Family(chirp_common.LiveRadio):
 
     def _kenwood_get_bool(self, cmd):
         _cmd, result = self._kenwood_get(cmd)
-        return result == "1"
+        # Some bool settings can return multiple values (D700 APO)
+        # so ignore and take the first.
+        return result.split(',')[0] == "1"
 
     def _kenwood_get_int(self, cmd):
         _cmd, result = self._kenwood_get(cmd)
@@ -2148,6 +2150,7 @@ class TMD700Radio(KenwoodD7Family):
     _SETTINGS = {
         "ABLG": {'type': 'string', 'max_len': 29},
         "AD": _BOOL,
+        "APO": _BOOL,
         "BEP": {'type': 'list',
                 'values': ("Off", "Key")},
         "BVOL": _VOLUME,
