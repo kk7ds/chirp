@@ -27,7 +27,31 @@ from chirp.settings import RadioSetting, RadioSettingGroup, \
 LOG = logging.getLogger(__name__)
 
 
-class KenwoodD7Position(RadioSettingGroup):
+class D7Group(RadioSettingGroup):
+    """A RadioSettingGroup that can be deepcopied with a radio reference.
+
+    This file uses a probably not very good pattern of maintaining a reference
+    to the radio, which has a reference to the open serial port. Since the
+    UI needs to deepcopy these, it will fail when it hits this (not sure how
+    this ever worked). This should probably be changed, but this shim at least
+    avoids the problem for now.
+    """
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+        # Prevents infinite loops on circular references
+        memo[id(self)] = new_obj
+        import copy
+        # Deep-copy all instance attributes (both Parent and Child)
+        for key, value in self.__dict__.items():
+            if key == '_radio':
+                continue
+            setattr(new_obj, key, copy.deepcopy(value, memo))
+        return new_obj
+
+
+class KenwoodD7Position(D7Group):
     def __init__(self, name, shortname, radio, *args, **kwargs):
         super().__init__(name, shortname, *args, **kwargs)
         self._radio = radio
@@ -132,7 +156,7 @@ class KenwoodD7Position(RadioSettingGroup):
         self['west%s' % index].value._has_changed = False
 
 
-class KenwoodD7DTMFMemory(RadioSettingGroup):
+class KenwoodD7DTMFMemory(D7Group):
     DTMF_CHARSET = "ABCD#*0123456789 "
 
     def __init__(self, name, shortname, radio, *args, **kwargs):
@@ -178,7 +202,7 @@ class KenwoodD7DTMFMemory(RadioSettingGroup):
             element.value._has_changed = False
 
 
-class KenwoodD7ProgrammableVFOs(RadioSettingGroup):
+class KenwoodD7ProgrammableVFOs(D7Group):
     def __init__(self, name, shortname, radio, *args, **kwargs):
         self._radio = radio
         super().__init__(name, shortname, *args, **kwargs)
