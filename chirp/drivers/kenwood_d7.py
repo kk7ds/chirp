@@ -598,14 +598,6 @@ class KenwoodD7Family(chirp_common.LiveRadio):
             sdata = self._get_setting_data(prereq)
             self._set_setting(prereq, sdata, entry)
 
-    def _drain_input(self):
-        oldto = self.pipe.timeout
-        self.pipe.timeout = 0
-        # Read until a timeout
-        while len(self.pipe.read(1)):
-            pass
-        self.pipe.timeout = oldto
-
     def _empty_memory(self, memid):
         mem = chirp_common.Memory()
         if self._is_special(memid):
@@ -626,7 +618,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
             self.pipe.write(self._CMD_DELIMITER.encode('cp1252'))
             # Wait for it to be sent
             self.pipe.flush()
-            self._drain_input()
+            self.pipe.reset_input_buffer()
             try:
                 resp = self._command("ID")
             except UnicodeDecodeError:
@@ -647,6 +639,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
             # we have been hurling at it. Retry the ID at this
             # baud rate, which will almost definitely work.
             if "?" in resp:
+                self.pipe.reset_input_buffer()
                 resp = self._command("ID")
                 ret = self._parse_id_response(resp)
                 if ret is not None:
@@ -996,7 +989,7 @@ class KenwoodD7Family(chirp_common.LiveRadio):
             if args:
                 cmd += self._ARG_DELIMITER + self._ARG_DELIMITER.join(args)
             cmd += self._CMD_DELIMITER
-            self._drain_input()
+            self.pipe.reset_input_buffer()
 
             LOG.debug("PC->RADIO: %s" % cmd.strip())
             self.pipe.write(cmd.encode('cp1252'))
