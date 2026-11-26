@@ -983,7 +983,11 @@ class BaofengUV5RHPlus(Baofeng5RHPro):
     MODEL = "UV-5RH Plus"
 
 
-@directory.register
+# @directory.register
+# @directory.detected_by(baofeng_uv17Pro.BaofengUV5RMPlus)
+# NOTE: This is not yet working properly as in at least one situation
+# this newer 5RM Plus rejects uploads. It also needs to be detected by
+# the v1 driver in final form.
 class BaofengUV5RMPlusV2(Baofeng5RHPro):
     # baofeng_uv17Pro.py already registers "UV-5RM Plus" for the older
     # firmware, so the generation goes in VARIANT to keep the two apart.
