@@ -574,7 +574,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         if self.MODEL != "RB18" and self.MODEL != "RB618" and \
                 self.MODEL != "FRS-B1" and self.MODEL != "BF-V8A" and \
                 self.MODEL != "RB29" and self.MODEL != "RB629" and \
-                self.MODEL != "BF-T20FRS":
+                not isinstance(self, BFT20FRSRadio):
             if self.MODEL not in ["RB87",
                                   "RT47V"]:
                 rs = RadioSetting("scramble", "Scramble",
@@ -689,7 +689,7 @@ class T18Radio(chirp_common.CloneModeRadio):
 
         if self._reserved:
             _mem.set_raw(b"\x00" * 13 + _rsvd)
-        elif self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
+        elif self.MODEL == "BF-V8A" or isinstance(self, BFT20FRSRadio):
             _mem.set_raw(b"\x00" * 12 + b"\x09\xFF\xFF\xFF")
         elif self.MODEL == "RB29" or self.MODEL == "RB629":
             _mem.set_raw(b"\x00" * 12 + b"\xF7\xFF\xFF\xFF")
@@ -729,7 +729,7 @@ class T18Radio(chirp_common.CloneModeRadio):
     def get_settings(self):
         _settings = self._memobj.settings
         if self.MODEL == "FRS-B1" or self.MODEL == "BF-V8A" or \
-                self.MODEL == "BF-T20FRS":
+                isinstance(self, BFT20FRSRadio):
             _settings2 = self._memobj.settings2
         basic = RadioSettingGroup("basic", "Basic Settings")
         top = RadioSettings(basic)
@@ -761,7 +761,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.scan))
             basic.append(rs)
         elif self.MODEL == "FRS-B1" or self.MODEL == "BF-V8A" or \
-                self.MODEL == "BF-T20FRS":
+                isinstance(self, BFT20FRSRadio):
             rs = RadioSetting("settings2.scan", "Scan",
                               RadioSettingValueBoolean(_settings2.scan))
             rs.set_doc(
@@ -794,7 +794,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                               RadioSettingValueBoolean(_settings.voice))
             basic.append(rs)
         elif self.MODEL == "FRS-B1" or self.MODEL == "BF-V8A" or \
-                self.MODEL == "BF-T20FRS":
+                isinstance(self, BFT20FRSRadio):
             rs = RadioSetting("settings2.voicesw", "Voice prompts",
                               RadioSettingValueBoolean(_settings2.voicesw))
             rs.set_doc(
@@ -853,7 +853,7 @@ class T18Radio(chirp_common.CloneModeRadio):
         if self.MODEL != "RB18" and self.MODEL != "RB618" \
                 and self.MODEL != "FRS-B1" \
                 and self.MODEL != "BF-V8A" \
-                and self.MODEL != "BF-T20FRS":
+                and not isinstance(self, BFT20FRSRadio):
             rs = RadioSetting("voxlevel", "Vox level",
                               RadioSettingValueList(
                                   VOXLEVEL_LIST,
@@ -1024,7 +1024,7 @@ class T18Radio(chirp_common.CloneModeRadio):
                                   current_index=_settings.sidekey2S))
             basic.append(rs)
 
-        if self.MODEL == "BF-V8A" or self.MODEL == "BF-T20FRS":
+        if self.MODEL == "BF-V8A" or isinstance(self, BFT20FRSRadio):
             rs = RadioSetting("sidekey2", "Side key",
                               RadioSettingValueList(
                                   SIDEKEYV8A_LIST,
@@ -1615,6 +1615,16 @@ class BFT20FRSRadio(T18Radio):
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT_T20FRS %
                                      self._mem_params, self._mmap)
+
+
+@directory.register
+class T22FRSRadio(BFT20FRSRadio):
+    """Baofeng T22 FRS"""
+    VENDOR = "Baofeng"
+    MODEL = "T22 FRS"
+    CMD_EXIT = b"E"
+
+    _fingerprint = [b"P32073" + b"\xF8\xFF"]
 
 
 @directory.register
