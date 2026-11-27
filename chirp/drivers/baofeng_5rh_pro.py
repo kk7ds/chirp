@@ -369,7 +369,7 @@ struct {
   u16 txtone;      // 10-11 (encode / transmit sub-audio)
   u8 unknown1[4];  // 12-15
   u8 power:2,      // 16  2 == High, 0 == Low
-     wideth:1,     //     set == 25K == FM
+     wide:1,       //     set == 25K == FM
      unknown_f1:1,
      offsetdir:2,  //     0 == simplex, 1 == TX above RX, 2 == TX below
      freqinvert:1,
@@ -692,7 +692,7 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         if int(_mem.modulation) == MODULATION_AM:
             mem.mode = "AM"
         else:
-            mem.mode = "FM" if _mem.wideth else "NFM"
+            mem.mode = "FM" if _mem.wide else "NFM"
 
         # "Scan Add" in the CPS; chirp inverts the sense via skip
         mem.skip = "S" if self._memobj.chn_unscanned[number - 1] else ""
@@ -739,11 +739,11 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         # that the squelch actually opens on it.
         _mem.sqtype = 1 if int(_mem.rxtone) else 0
 
-        # AM lives in its own byte; the radio leaves wideth set for it.
+        # AM lives in its own byte; the radio leaves wide set for it.
         _mem.modulation = MODULATION_AM if mem.mode == "AM" else 0
 
         _mem.power = 2 if mem.power == POWER_LEVELS[1] else 0
-        _mem.wideth = mem.mode != "NFM"
+        _mem.wide = mem.mode != "NFM"
         if tx_freq > mem.freq:
             _mem.offsetdir = 1
         elif tx_freq < mem.freq:
