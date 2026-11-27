@@ -38,12 +38,9 @@ LOG = logging.getLogger(__name__)
 XOR_KEY = 0x00
 
 HEADER_SYNC = b"PROGRAM" + bytes([XOR_KEY])
-HEADER_SYNC_PIC = b"Picture\xff"  # boot-image handshake (no seed, no XOR)
 HEADER_INFO = b"INFORMATION"
 END_INFO = b"END\x00"
 
-# Accepted boot-image dimensions (width, height)
-BOOT_IMAGE_SIZES = [(160, 128), (240, 240), (240, 320)]
 T_INFO = bytearray(16)
 for _i in range(12, 16):
     T_INFO[_i] = 0xFF
@@ -341,101 +338,6 @@ def _write_blocks(radio, data):
 
     port.write(bytes([XOR_KEY ^ b for b in END_INFO]))
     port.read(1)
-
-
-# The boot-picture protocol is a simplified, unencrypted variant of the clone
-# protocol: a 3-stage handshake (H2 sends "Picture\xFF") followed by raw
-# 4096-byte blocks that the radio ACKs with 0x41. No seed, no XOR. Mirrors the
-# CPS writePicInfo path; the radio has no read-back for the boot image.
-
-def _handshake_boot(radio):
-    """Unencrypted handshake for the boot-image upload."""
-    port = radio.pipe
-
-    _announce(radio)
-
-    port.write(HEADER_SYNC_PIC)
-    if port.read(1) != b'A':
-        raise errors.RadioError('Radio did not agree to boot-image mode')
-
-
-def _load_boot_image(path):
-    """Load a boot image, converting a 24-bit BMP to big-endian RGB565.
-
-    A non-.bmp file is treated as pre-converted raw RGB565 data. Mirrors CPS
-    The radio expects big-endian RGB565.
-    """
-    if not str(path).lower().endswith(".bmp"):
-        with open(path, "rb") as f:
-            return f.read()
-
-    try:
-        from PIL import Image
-    except ImportError:
-        raise errors.RadioError(
-            "Pillow is required for BMP conversion (pip install Pillow)")
-
-    img = Image.open(path)
-    w, h = img.size
-    if (w, h) not in BOOT_IMAGE_SIZES:
-        raise errors.RadioError(
-            "Unsupported image size %dx%d (accepted: %s)" %
-            (w, h, ", ".join("%dx%d" % s for s in BOOT_IMAGE_SIZES)))
-
-    img = img.convert("RGB")
-    data = bytearray()
-    for y in range(h):
-        for x in range(w):
-            r, g, b = img.getpixel((x, y))
-            px = (r >> 3) << 11 | (g >> 2) << 5 | (b >> 3)
-            data.append(px >> 8)     # big-endian high byte
-            data.append(px & 0xFF)   # big-endian low byte
-    return bytes(data)
-
-
-def _write_boot_image(radio, data):
-    """Send the boot image as raw, zero-padded 4096-byte blocks."""
-    port = radio.pipe
-    num_blocks = (len(data) + BLOCK_SIZE - 1) // BLOCK_SIZE
-
-    status = chirp_common.Status()
-    status.cur = 0
-    status.max = num_blocks
-    status.msg = "Uploading boot image..."
-    radio.status_fn(status)
-
-    for block_num in range(num_blocks):
-        chunk = data[block_num * BLOCK_SIZE:(block_num + 1) * BLOCK_SIZE]
-        port.write(bytes(chunk).ljust(BLOCK_SIZE, b'\x00'))
-
-        if port.read(1) != b'A':
-            raise errors.RadioError(
-                'Boot block %i: radio did not ACK the write' % block_num)
-
-        status.cur = block_num + 1
-        radio.status_fn(status)
-
-    port.write(END_INFO)
-    port.read(1)
-
-
-def upload_boot_image(radio, path):
-    """Convert and upload a boot image to the radio.
-
-    @path is a 24-bit BMP (160x128, 240x240 or 240x320) or pre-converted
-    raw RGB565 data.
-    """
-    LOG.info("Uploading boot image from %s", path)
-    radio.pipe.timeout = 6
-
-    data = _load_boot_image(path)
-    LOG.info("Boot image: %d bytes RGB565", len(data))
-    try:
-        _handshake_boot(radio)
-        _write_boot_image(radio, data)
-        LOG.info("Boot image upload complete")
-    except Exception as e:
-        raise errors.RadioError("Boot image upload failed: %s" % e)
 
 
 MEM_FORMAT = """
@@ -758,9 +660,6 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         return [type('%sZone%i' % (self.__class__.__name__, z + 1),
                      (Baofeng5RHProZone, self.__class__), {})(self, z)
                 for z in range(ZONE_MAX)]
-
-    def upload_boot_image(self, path):
-        upload_boot_image(self, path)
 
     def process_mmap(self):
         self._memobj = bitwise.parse(MEM_FORMAT, self._mmap)
