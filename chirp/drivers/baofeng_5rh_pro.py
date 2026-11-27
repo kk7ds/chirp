@@ -53,8 +53,8 @@ CHN_MAX = 640
 # Zone layout. The radio navigates channels through zones: each zone holds a
 # fixed array of channel IDs, with FFFF marking an unused slot (the CPS
 # leaves such gaps in place rather than packing the list). A channel only
-# appears on the radio if its ID is in a zone, so the zone table must be
-# rebuilt on upload to reflect newly-added channels.
+# appears on the radio if its ID is in a zone, so the zone table is rebuilt
+# whenever a channel is added or removed.
 ZONE_MAX = 10
 # A zone record holds 128 bytes of channel IDs at 2 bytes each, and 10 zones
 # of 64 is exactly the 640 channels the radio has. The 6 bytes that follow
@@ -614,9 +614,6 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
         self.process_mmap()
 
     def sync_out(self):
-        if self._memobj is None:
-            self.process_mmap()
-        self._rebuild_zones()
         try:
             _upload(self, self._mmap.get_packed())
         except errors.RadioError:
@@ -708,13 +705,16 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
             _mem.fill_raw(b'\xff')
             self._memobj.chn_unused[mem.number - 1] = 1
             self._memobj.chn_unscanned[mem.number - 1] = 1
+            self._rebuild_zones()
             return
 
         # Only a previously unused slot is cleared. An existing channel keeps
         # the bytes this driver does not decode (optional signaling, the DTMF
         # / 2-Tone / 5-Tone / MDC indexes, emergency system, ...), so editing
         # a channel in chirp does not silently reset its CPS settings.
-        if self._memobj.chn_unused[mem.number - 1]:
+        # bool() takes a snapshot; the bitwise element itself is a live view
+        was_unused = bool(self._memobj.chn_unused[mem.number - 1])
+        if was_unused:
             _mem.fill_raw(b'\x00')
 
         self._memobj.chn_unused[mem.number - 1] = 0
@@ -752,6 +752,11 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
             _mem.offsetdir = 0
 
         _mem.name = _encode_name(mem.name or "")
+
+        # The zone table only depends on which channels exist, so it stays
+        # consistent as long as it follows every allocation and deletion.
+        if was_unused:
+            self._rebuild_zones()
 
     def get_settings(self):
         _s = self._memobj.settings
@@ -793,10 +798,11 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                 self._memobj.zones[z].name.get_raw(asbytes=True))
             rs = RadioSetting("zone_name_%i" % z, "Zone %i" % (z + 1),
                               RadioSettingValueString(0, 16, zone_name))
-            rs.set_doc("Name the radio shows for this zone. The zone tabs "
-                       "pick up a new name the next time the file is opened. "
-                       "A populated zone left unnamed gets \"Zone %i\" on "
-                       "upload." % (z + 1))
+            # The zone tabs are labelled with these names, so reload to
+            # pick up a change.
+            rs.set_volatile(True)
+            rs.set_doc("Name the radio shows for this zone. A populated zone "
+                       "left unnamed gets \"Zone %i\"." % (z + 1))
             zones.append(rs)
 
         return RadioSettings(basic, zones)
@@ -817,6 +823,8 @@ class Baofeng5RHPro(chirp_common.CloneModeRadio):
                 zone = int(element.get_name().rsplit("_", 1)[1])
                 self._memobj.zones[zone].name = _encode_name(
                     str(element.value).rstrip())
+                # Restores the default name if a populated zone was blanked
+                self._rebuild_zones()
 
 
 class Baofeng5RHProZone:
