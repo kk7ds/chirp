@@ -207,7 +207,7 @@ def _download(radio):
 
 def _upload(radio):
     cur = 0
-    mmap = radio.get_mmap().get_byte_compatible()
+    mmap = radio.get_mmap()
     first_exchange = True
     for block in radio._block_lengths:
         for _i in range(0, block, radio._block_size):

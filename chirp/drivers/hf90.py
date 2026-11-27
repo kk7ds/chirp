@@ -171,7 +171,7 @@ class HF90StyleRadio(chirp_common.CloneModeRadio,
         if addr % 16:
             raise Exception("Addr 0x%04x not on 16-byte boundary" % addr)
 
-        data = self._mmap.get_byte_compatible()[addr:addr + 16]
+        data = self._mmap[addr:addr + 16]
         ihex_rec = to_ihex(addr, 0, list(data[0:16]))
         cmd = b':' + b''.join(b'%02X' % b for b in ihex_rec)
         LOG.debug(cmd)

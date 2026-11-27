@@ -5,22 +5,13 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
-import unittest
-
 from chirp import chirp_common, directory
 from chirp.drivers import kguv8d, kgwv50
+from tests.unit import base
 
 
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "Wouxun_KG-WV50.img")
-
-
-class TestKGWV50(unittest.TestCase):
-    def setUp(self):
-        klass = directory.get_radio("Wouxun_KG-WV50")
-        self.radio = klass(IMAGE)
-        self.radio.load(IMAGE)
+class TestKGWV50(base.RadioTest):
+    VENDOR_MODEL = "Wouxun_KG-WV50"
 
     def test_driver_identity(self):
         self.assertEqual(0x78, kgwv50.KGWV50Radio._record_start)

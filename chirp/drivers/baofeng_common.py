@@ -108,7 +108,7 @@ def _read_from_data(data, data_start, data_stop):
 
 def _get_data_from_image(radio, _data_start, _data_stop):
     image_data = _read_from_data(
-        radio.get_mmap().get_byte_compatible(),
+        radio.get_mmap(),
         _data_start,
         _data_stop)
     return image_data

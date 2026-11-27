@@ -116,7 +116,7 @@ struct {
 } settings_radio_3;
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 WRITE_BLOCK_SIZE = 0x10
 READ_BLOCK_SIZE = 0x40
 
@@ -164,7 +164,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
     VENDOR = "KYD"
     MODEL = "IP-620"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
 
     _ranges = [
                (0x0000, 0x2000),
@@ -180,7 +180,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
     def _ip620_exit_programming_mode(self):
         try:
-            self.pipe.write("\x06")
+            self.pipe.write(b"\x06")
         except errors.RadioError:
             raise
         except Exception as e:
@@ -188,8 +188,8 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
     def _ip620_enter_programming_mode(self):
         try:
-            self.pipe.write("iUHOUXUN")
-            self.pipe.write("\x02")
+            self.pipe.write(b"iUHOUXUN")
+            self.pipe.write(b"\x02")
             time.sleep(0.2)
             _ack = self.pipe.read(1)
         except errors.RadioError:
@@ -201,13 +201,13 @@ class IP620Radio(chirp_common.CloneModeRadio,
         elif _ack != CMD_ACK:
             raise errors.RadioError("Radio refused to enter programming mode")
         try:
-            self.pipe.write("\x02")
+            self.pipe.write(b"\x02")
             _ident = self.pipe.read(8)
         except errors.RadioError:
             raise
         except Exception as e:
             raise errors.RadioError("Error communicating with radio: %s" % e)
-        if not _ident.startswith("\x06\x4B\x47\x36\x37\x01\x56\xF8"):
+        if not _ident.startswith(b"\x06\x4B\x47\x36\x37\x01\x56\xF8"):
             print(util.hexprint(_ident))
             raise errors.RadioError("Radio returned unknown identification string")
         try:
@@ -221,7 +221,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
             raise errors.RadioError("Radio refused to enter programming mode")
 
     def _ip620_write_block(self, block_addr):
-        _cmd = struct.pack(">cHb", 'W', block_addr, WRITE_BLOCK_SIZE)
+        _cmd = struct.pack(">cHb", b'W', block_addr, WRITE_BLOCK_SIZE)
         _data = self.get_mmap()[block_addr:block_addr + WRITE_BLOCK_SIZE]
         LOG.debug("Writing Data:")
         LOG.debug(util.hexprint(_cmd + _data))
@@ -234,8 +234,8 @@ class IP620Radio(chirp_common.CloneModeRadio,
                                     "to radio at %04x" % block_addr)
 
     def _ip620_read_block(self, block_addr):
-        _cmd = struct.pack(">cHb", 'R', block_addr, READ_BLOCK_SIZE)
-        _expectedresponse = "W" + _cmd[1:]
+        _cmd = struct.pack(">cHb", b'R', block_addr, READ_BLOCK_SIZE)
+        _expectedresponse = b"W" + _cmd[1:]
         LOG.debug("Reading block %04x..." % (block_addr))
         try:
             self.pipe.write(_cmd)
@@ -253,7 +253,7 @@ class IP620Radio(chirp_common.CloneModeRadio,
 
     def _do_download(self):
         self._ip620_enter_programming_mode()
-        _data = ""
+        _data = bytearray()
         _status = chirp_common.Status()
         _status.msg = "Cloning from radio"
         _status.cur = 0
@@ -262,11 +262,11 @@ class IP620Radio(chirp_common.CloneModeRadio,
             _status.cur = _addr + READ_BLOCK_SIZE
             self.status_fn(_status)
             _block = self._ip620_read_block(_addr)
-            _data += _block
+            _data.extend(_block)
             LOG.debug("Address: %04x" % _addr)
             LOG.debug(util.hexprint(_block))
         self._ip620_exit_programming_mode()
-        return memmap.MemoryMap(_data)
+        return memmap.MemoryMapBytes(bytes(_data))
 
     def _do_upload(self):
         _status = chirp_common.Status()

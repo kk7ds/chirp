@@ -234,7 +234,7 @@ def do_download(radio):
 
 def do_upload(radio):
     do_ident(radio)
-    data = radio._mmap.get_byte_compatible()[0x0030:]
+    data = radio._mmap[0x0030:]
 
     for i in range(0, 0x1000, 16):
         frame = struct.pack(">cHB", b"W", i, 16)

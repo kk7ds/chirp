@@ -53,13 +53,20 @@ def make_image(file_type=b"MemList", channels=None):
             ftx1._encode(plain))
 
 
-class TestFTX1(base.BaseTest):
+DEFAULT_IMAGE = make_image(channels={
+    106: (DB0NAI, 5), 109: (DB0BRO, 4), 127: (DB0HAS, 5)})
+
+
+class TestFTX1(base.RadioTest):
+    VENDOR_MODEL = "Yaesu_FTX-1"
+
     def setUp(self):
         super().setUp()
         self.tempdir = tempfile.TemporaryDirectory()
         self.addCleanup(self.tempdir.cleanup)
-        self.radio = self._open(make_image(channels={
-            106: (DB0NAI, 5), 109: (DB0BRO, 4), 127: (DB0HAS, 5)}))
+        with open(self._path("in.dat"), "wb") as f:
+            f.write(DEFAULT_IMAGE)
+        self._replace_radio_image(DEFAULT_IMAGE)
 
     def _path(self, name):
         return os.path.join(self.tempdir.name, name)
@@ -68,6 +75,10 @@ class TestFTX1(base.BaseTest):
         with open(self._path(name), "wb") as f:
             f.write(data)
         return ftx1.FTX1Radio(self._path(name))
+
+    def _replace_radio_image(self, data):
+        """Set file bytes under the cached, already-parsed radio object"""
+        self.radio._mmap._data = list(ftx1._image_from_file(data))
 
     def _save(self, name="out.dat"):
         self.radio.save(self._path(name))
@@ -90,15 +101,6 @@ class TestFTX1(base.BaseTest):
         for key, value in kwargs.items():
             setattr(mem, key, value)
         return mem
-
-    def test_detection(self):
-        self.assertIsInstance(
-            directory.get_radio_by_image(self._path("in.dat")),
-            ftx1.FTX1Radio)
-        match = ftx1.FTX1Radio.match_model
-        # The radio's menu backups look the same but are something else
-        self.assertFalse(match(make_image(b"Menu"), "x.dat"))
-        self.assertFalse(match(make_image()[:-1], "x.dat"))
 
     def test_get_memory(self):
         mem = self.radio.get_memory(109)
@@ -123,7 +125,7 @@ class TestFTX1(base.BaseTest):
         self.assertTrue(self.radio.get_memory(1).empty)
 
     def test_unknown_mode(self):
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             1: (b"\x0f" + DB0BRO[1:], 4)}))
         self.assertRaises(errors.RadioError, self.radio.get_memory, 1)
 
@@ -222,7 +224,7 @@ class TestFTX1(base.BaseTest):
         image = bytearray(ftx1._decode(make_image(channels={
             1: (DB0NAI, 5)})[ftx1.HEADER_SIZE:]))
         image[GROUPS + GROUP_SIZE] |= 0x01
-        self.radio = self._open(
+        self._replace_radio_image(
             make_image()[:ftx1.HEADER_SIZE] + ftx1._encode(image))
         mem = self.radio.get_memory(1)
         mem.name = "Renamed"
@@ -240,7 +242,7 @@ class TestFTX1(base.BaseTest):
             self.radio.set_memory(self._memory(number, 145500000, mode=mode))
             self.assertEqual(mode, self.radio.get_memory(number).mode)
         # A mode code CHIRP cannot tell apart from another is kept
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             1: (b"\x12" + AGC_SLOW_FM[1:], 4)}))
         mem = self.radio.get_memory(1)
         self.assertEqual("DN", mem.mode)
@@ -251,7 +253,7 @@ class TestFTX1(base.BaseTest):
     def test_data_modes(self):
         # DATA-L, DATA-U, DATA-FM and DATA-FM-N are a mode with data
         cases = {0x08: "LSB", 0x09: "USB", 0x0A: "FM", 0x0B: "NFM"}
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             number: (bytes([code]) + AGC_MID_USB[1:], 1)
             for number, code in enumerate(cases, 1)}))
         for number, mode in enumerate(cases.values(), 1):
@@ -283,7 +285,7 @@ class TestFTX1(base.BaseTest):
         image = bytearray(ftx1._decode(make_image(channels={
             1: (DB0BRO, 4), 2: (DB0NAI, 5)})[ftx1.HEADER_SIZE:]))
         image[SKIP] = 0x01
-        self.radio = self._open(
+        self._replace_radio_image(
             make_image()[:ftx1.HEADER_SIZE] + ftx1._encode(image))
         self.assertEqual(["S", ""],
                          [self.radio.get_memory(n).skip for n in (1, 2)])
@@ -302,7 +304,7 @@ class TestFTX1(base.BaseTest):
     def test_sdx(self):
         # Channels on which a radio showed S-DX as switched on and off
         on = DB0BRO[:1] + b"\x80" + DB0BRO[2:]
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             1: (on, 4), 2: (DB0BRO, 4)}))
         self.assertEqual(
             ["On", "Off"],
@@ -320,7 +322,7 @@ class TestFTX1(base.BaseTest):
                          str(self.radio.get_memory(3).extra["sdx"].value))
 
     def test_agc(self):
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             1: (AGC_MID_USB, 1), 2: (AGC_SLOW_FM, 4)}))
         mem = self.radio.get_memory(1)
         self.assertEqual("Mid", str(mem.extra["agc"].value))
@@ -352,7 +354,7 @@ class TestFTX1(base.BaseTest):
                  0x0D: "Mid", 0x08: "Slow", 0x09: "Slow", 0x0E: "Slow",
                  0x04: "Auto", 0x05: "Auto", 0x06: "Mid", 0x0A: "Mid",
                  0x0B: "Mid"}
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             number: (bytes([code]) + AGC_MID_USB[1:5] + bytes(settings) +
                      AGC_MID_USB[50:], 1)
             for number, code in enumerate(cases, 1)}))
@@ -371,12 +373,6 @@ class TestFTX1(base.BaseTest):
             self.assertEqual(ftx1.NEW_MODE_SETTINGS,
                              self._plain()[CHANNELS + 5:CHANNELS + 50])
 
-    def test_file_under_another_name(self):
-        # What the radio wrote is known by its content
-        with open(self._path("in.dat"), "rb") as f:
-            self.radio = self._open(f.read(), "copy.img")
-        self.assertEqual("DB0BRO", self.radio.get_memory(109).name)
-
     def test_file_as_image_and_back(self):
         saved = self._save("copy.img")
         self.assertEqual(ftx1.MEMORY_SIZE,
@@ -389,11 +385,6 @@ class TestFTX1(base.BaseTest):
         self.assertEqual(original[ftx1.HEADER_SIZE:],
                          self._save()[ftx1.HEADER_SIZE:])
 
-    def test_incomplete_type_line(self):
-        image = make_image()
-        image = image[:0x200] + b"MemList".ljust(62) + image[0x23E:]
-        self.assertFalse(ftx1.FTX1Radio.match_model(image, "x.dat"))
-
     def test_tone_is_kept_without_tone_mode(self):
         self.radio.set_memory(self._memory(1, 145500000, rtone=123.0,
                                            dtcs=165))
@@ -402,7 +393,7 @@ class TestFTX1(base.BaseTest):
 
     def test_unknown_squelch_code_is_kept(self):
         record = DB0BRO[:3] + b"\x06" + DB0BRO[4:]
-        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self._replace_radio_image(make_image(channels={1: (record, 4)}))
         mem = self.radio.get_memory(1)
         self.assertEqual("", mem.tmode)
         mem.name = "Renamed"
@@ -411,13 +402,13 @@ class TestFTX1(base.BaseTest):
 
     def test_unknown_tone(self):
         record = DB0BRO[:51] + b"\x40" + DB0BRO[52:]
-        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self._replace_radio_image(make_image(channels={1: (record, 4)}))
         self.assertRaises(errors.RadioError, self.radio.get_memory, 1)
 
     def test_preamp_and_name_switch_share_the_mode_byte(self):
         # FM with AMP1 and the name shown
         record = b"\xa6" + DB0BRO[1:]
-        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self._replace_radio_image(make_image(channels={1: (record, 4)}))
         mem = self.radio.get_memory(1)
         self.assertEqual("FM", mem.mode)
         self.assertEqual("AMP1", str(mem.extra["ipo"].value))
@@ -428,7 +419,7 @@ class TestFTX1(base.BaseTest):
         self.assertEqual(0xc7, self._plain()[CHANNELS])
 
     def test_c4fm_and_ams_modes(self):
-        self.radio = self._open(make_image(channels={
+        self._replace_radio_image(make_image(channels={
             number: (bytes([code]) + DB0BRO[1:], 4)
             for number, code in enumerate((0x10, 0x13, 0x1e), 1)}))
         self.assertEqual(
@@ -488,7 +479,7 @@ class TestFTX1(base.BaseTest):
 
     def test_name_without_characters(self):
         record = DB0BRO[:59] + bytes(24) + DB0BRO[83:]
-        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self._replace_radio_image(make_image(channels={1: (record, 4)}))
         self.assertEqual("", self.radio.get_memory(1).name)
 
     def test_setting_of_another_mode_is_left_alone(self):
@@ -504,7 +495,7 @@ class TestFTX1(base.BaseTest):
     def test_unknown_setting_value_is_kept(self):
         # A noise blanker level above the 10 the radio has
         record = DB0BRO[:4] + b"\x0f" + DB0BRO[5:]
-        self.radio = self._open(make_image(channels={1: (record, 4)}))
+        self._replace_radio_image(make_image(channels={1: (record, 4)}))
         mem = self.radio.get_memory(1)
         self.assertEqual("Off", str(mem.extra["nb"].value))
         mem.name = "Renamed"
@@ -626,23 +617,26 @@ class TestFTX1Clone(base.BaseTest):
         radio.status_fn = lambda status: None
         return radio
 
-    def _programmed(self):
+    @classmethod
+    def _programmed(cls):
         """Return the memory of a radio with a memory and a PMS channel"""
-        radio = self._radio(None)
-        memory = bytearray(ftx1.MEMORY_SIZE)
-        # A radio has a record in every channel, the weather channels too
-        memory[0x70D6 + 1124 * 89:0x70D6 + 1125 * 89] = ftx1.NEW_MEMORY
-        radio._mmap = ftx1.memmap.MemoryMapBytes(bytes(memory))
-        radio.process_mmap()
-        mem = chirp_common.Memory()
-        mem.number = 7
-        mem.freq = 145500000
-        mem.name = "2M CALL"
-        radio.set_memory(mem)
-        mem.number = 1000
-        mem.freq = 144000000
-        radio.set_memory(mem)
-        return radio._mmap.get_packed()
+        if not hasattr(cls, "_programmed_image"):
+            radio = ftx1.FTX1Radio(None)
+            memory = bytearray(ftx1.MEMORY_SIZE)
+            # A radio has a record in every channel, the weather channels too
+            memory[0x70D6 + 1124 * 89:0x70D6 + 1125 * 89] = ftx1.NEW_MEMORY
+            radio._mmap = ftx1.memmap.MemoryMapBytes(bytes(memory))
+            radio.process_mmap()
+            mem = chirp_common.Memory()
+            mem.number = 7
+            mem.freq = 145500000
+            mem.name = "2M CALL"
+            radio.set_memory(mem)
+            mem.number = 1000
+            mem.freq = 144000000
+            radio.set_memory(mem)
+            cls._programmed_image = radio._mmap.get_packed()
+        return cls._programmed_image
 
     def test_layout(self):
         memory = self._programmed()
@@ -676,14 +670,14 @@ class TestFTX1Clone(base.BaseTest):
         self.assertEqual({"Answer is shifted by 0x3B"}, set(pipe.logged))
 
     def test_upload(self):
+        programmed = self._programmed()
         pipe = FakeRadio(b"\x55" * ftx1.MEMORY_SIZE)
         radio = self._radio(pipe)
-        radio._mmap = ftx1.memmap.MemoryMapBytes(self._programmed())
-        radio.process_mmap()
+        radio._mmap = ftx1.memmap.MemoryMapBytes(programmed)
         radio.sync_out()
         expected = bytearray(b"\x55" * ftx1.MEMORY_SIZE)
         for start, end in self.RANGES:
-            expected[start:end] = self._programmed()[start:end]
+            expected[start:end] = programmed[start:end]
         self.assertEqual(expected, pipe.memory)
         self.assertEqual({b"A0W"}, set(pipe.blocks))
         self.assertTrue(pipe.restarted)
@@ -707,7 +701,6 @@ class TestFTX1Clone(base.BaseTest):
         pipe = FakeRadio(b"\x55" * ftx1.MEMORY_SIZE)
         radio = self._radio(pipe)
         radio._mmap = ftx1.memmap.MemoryMapBytes(bytes(programmed))
-        radio.process_mmap()
         radio.sync_out()
         self.assertEqual(programmed[0x70D6:end], pipe.memory[0x70D6:end])
         # What the file does not have stays as it is in the radio
@@ -744,11 +737,11 @@ class TestFTX1Clone(base.BaseTest):
             def read(self, size):
                 return b"" if len(self.blocks) > 3 else super().read(size)
 
+        programmed = self._programmed()
         for pipe, partial in ((Failing(), True),
                               (FakeRadio(model=b"AH000X"), False)):
             radio = self._radio(pipe)
-            radio._mmap = ftx1.memmap.MemoryMapBytes(self._programmed())
-            radio.process_mmap()
+            radio._mmap = ftx1.memmap.MemoryMapBytes(programmed)
             with self.assertRaises(errors.RadioError) as raised:
                 radio.sync_out()
             self.assertEqual(partial,

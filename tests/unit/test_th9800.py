@@ -1,7 +1,5 @@
-import os
-import unittest
-
 from chirp.drivers import th9800
+from tests.unit import base
 
 
 class Fake9800:
@@ -33,7 +31,9 @@ class Fake9800:
         return buf
 
 
-class TestTH9800(unittest.TestCase):
+class TestTH9800(base.RadioTest):
+    VENDOR_MODEL = 'TYT_TH-9800'
+
     def test_identify(self):
         f = Fake9800()
         r = th9800.TYTTH9800Radio(f)
@@ -48,8 +48,5 @@ class TestTH9800(unittest.TestCase):
 
     def test_upload(self):
         f = Fake9800()
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'TYT_TH-9800.img')
-        r = th9800.TYTTH9800Radio(img)
-        r.set_pipe(f)
-        r.sync_out()
+        self.radio.set_pipe(f)
+        self.radio.sync_out()

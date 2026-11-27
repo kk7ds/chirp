@@ -142,7 +142,7 @@ struct {
 # #### MAGICS #########################################################
 
 # TDXone TD-Q8A magic string
-MSTRING_TDQ8A = "\x02PYNCRAM"
+MSTRING_TDQ8A = b"\x02PYNCRAM"
 
 LIST_DTMF = ["QT", "QT+DTMF"]
 LIST_VOICE = ["Off", "Chinese", "English"]
@@ -187,7 +187,7 @@ VALID_BANDS = [(136000000, 174000000),
 
 def _rawrecv(radio, amount):
     """Raw read from the radio device"""
-    data = ""
+    data = b""
     try:
         data = radio.pipe.read(amount)
     except:
@@ -211,9 +211,9 @@ def _rawsend(radio, data):
         raise errors.RadioError("Error sending data to radio")
 
 
-def _make_frame(cmd, addr, length, data=""):
+def _make_frame(cmd, addr, length, data=b""):
     """Pack the info in the header format"""
-    frame = struct.pack(">BHB", ord(cmd), addr, length)
+    frame = struct.pack(">cHB", cmd, addr, length)
     # add the data if set
     if len(data) != 0:
         frame += data
@@ -253,17 +253,17 @@ def _do_ident(radio, magic):
     ack = _rawrecv(radio, 1)
     if not ack:
         raise errors.RadioNoResponse()
-    if ack != "\x06":
+    if ack != b"\x06":
         LOG.debug(repr(ack))
         raise errors.RadioError("Unexpected response from radio")
 
-    _rawsend(radio, "\x02")
+    _rawsend(radio, b"\x02")
 
     # Ok, get the response
     ident = _rawrecv(radio, radio._magic_response_length)
 
     # check if response is OK
-    if not ident.startswith("P3107"):
+    if not ident.startswith(b"P3107"):
         # bad response
         msg = "Unexpected response, got this:"
         msg += util.hexprint(ident)
@@ -274,9 +274,9 @@ def _do_ident(radio, magic):
     LOG.info("Valid response, got this:")
     LOG.debug(util.hexprint(ident))
 
-    _rawsend(radio, "\x06")
+    _rawsend(radio, b"\x06")
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         if ack:
             LOG.debug(repr(ack))
         raise errors.RadioError("Radio refused clone")
@@ -311,9 +311,9 @@ def _download(radio):
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
 
-    data = ""
+    data = bytearray()
     for addr in range(0, radio._mem_size, radio._recv_block_size):
-        frame = _make_frame("R", addr, radio._recv_block_size)
+        frame = _make_frame(b"R", addr, radio._recv_block_size)
         # DEBUG
         LOG.info("Request sent:")
         LOG.debug(util.hexprint(frame))
@@ -326,24 +326,24 @@ def _download(radio):
 
         time.sleep(0.05)
 
-        _rawsend(radio, "\x06")
+        _rawsend(radio, b"\x06")
 
         ack = _rawrecv(radio, 1)
-        if ack != "\x06":
+        if ack != b"\x06":
             raise errors.RadioError(
                 "Radio refused to send block 0x%04x" % addr)
 
         # aggregate the data
-        data += d
+        data.extend(d)
 
         # UI Update
         status.cur = addr / radio._recv_block_size
         status.msg = "Cloning from radio..."
         radio.status_fn(status)
 
-    data += radio.MODEL.ljust(8)
+    data.extend(radio.MODEL.encode("ascii").ljust(8, b" "))
 
-    return data
+    return bytes(data)
 
 
 def _upload(radio):
@@ -352,7 +352,7 @@ def _upload(radio):
     _ident_radio(radio)
 
     addr = 0x0f80
-    frame = _make_frame("R", addr, radio._recv_block_size)
+    frame = _make_frame(b"R", addr, radio._recv_block_size)
     # DEBUG
     LOG.info("Request sent:")
     LOG.debug(util.hexprint(frame))
@@ -365,10 +365,10 @@ def _upload(radio):
 
     time.sleep(0.05)
 
-    _rawsend(radio, "\x06")
+    _rawsend(radio, b"\x06")
 
     ack = _rawrecv(radio, 1)
-    if ack != "\x06":
+    if ack != b"\x06":
         raise errors.RadioError(
             "Radio refused to send block 0x%04x" % addr)
 
@@ -387,13 +387,13 @@ def _upload(radio):
             # sending the data
             data = radio.get_mmap()[addr:addr + radio._send_block_size]
 
-            frame = _make_frame("W", addr, radio._send_block_size, data)
+            frame = _make_frame(b"W", addr, radio._send_block_size, data)
 
             _rawsend(radio, frame)
 
             # receiving the response
             ack = _rawrecv(radio, 1)
-            if ack != "\x06":
+            if ack != b"\x06":
                 msg = "Bad ack writing block 0x%04x" % addr
                 raise errors.RadioError(msg)
 
@@ -419,7 +419,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
     """TDXone TD-Q8A Radio"""
     VENDOR = "TDXone"
     MODEL = "TD-Q8A"
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
 
     _model = b'TD-Q8A'
     _magic = [MSTRING_TDQ8A, MSTRING_TDQ8A, ]
@@ -522,7 +522,7 @@ class TDXoneTDQ8A(chirp_common.CloneModeRadio,
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):

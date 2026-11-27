@@ -17,10 +17,7 @@ from chirp import util
 
 
 class MemoryMapBytes(object):
-    """
-    This is the proper way for MemoryMap to work, which is
-    in terms of bytes always.
-    """
+    """Mutable memory map that reads and writes bytes."""
 
     def __init__(self, data):
         assert isinstance(data, bytes)
@@ -102,44 +99,3 @@ class MemoryMapBytes(object):
     def truncate(self, size):
         """Truncate the memory map to @size"""
         self._data = self._data[:size]
-
-    def get_byte_compatible(self):
-        return self
-
-
-class MemoryMap(MemoryMapBytes):
-    """Compatibility version of MemoryMapBytes
-
-    This deals in strings for compatibility with drivers that do.
-    """
-    def __init__(self, data):
-        # Fix circular dependency
-        from chirp import bitwise
-        self._bitwise = bitwise
-
-        if isinstance(data, bytes):
-            encode = bytes
-        else:
-            encode = self._bitwise.string_straight_encode
-        super(MemoryMap, self).__init__(encode(data))
-
-    def get(self, pos, length=1):
-        return self._bitwise.string_straight_decode(
-            super(MemoryMap, self).get(pos, length=length))
-
-    def set(self, pos, value):
-        if isinstance(value, int):
-            # Apparently this is a thing that drivers do, so
-            # be compatible here
-            value = chr(value)
-        super(MemoryMap, self).set(
-            pos, self._bitwise.string_straight_encode(value))
-
-    def get_packed(self):
-        return self._bitwise.string_straight_decode(
-            super(MemoryMap, self).get_packed())
-
-    def get_byte_compatible(self):
-        mmb = MemoryMapBytes(bytes(self._data))
-        self._data = mmb._data
-        return mmb

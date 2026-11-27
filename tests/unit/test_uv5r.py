@@ -1,15 +1,11 @@
 import copy
-import os
 import struct
-import unittest
 from unittest import mock
 
-from chirp import memmap
 from chirp import settings
-from chirp.drivers import uv5r
+from chirp.drivers import uv5r  # noqa: F401
+from tests.unit import base
 
-TEST_IMAGE = os.path.join(os.path.dirname(__file__),
-                          '..', 'images', 'Baofeng_UV-5R.img')
 # Main block the default upload ranges skip
 SKIPPED_BLOCK = 0x0CF0
 
@@ -71,13 +67,12 @@ class FakeUV5RSerial:
         return data
 
 
-class TestUV5RRangeOverride(unittest.TestCase):
+class TestUV5RRangeOverride(base.RadioTest):
+    VENDOR_MODEL = 'Baofeng_UV-5R'
+
     def setUp(self):
-        with open(TEST_IMAGE, 'rb') as f:
-            self.image = f.read()
-        self.radio = uv5r.BaofengUV5R(None)
-        self.radio._mmap = memmap.MemoryMapBytes(self.image)
-        self.radio.process_mmap()
+        super().setUp()
+        self.image = self.radio.get_mmap().get_packed()
         self.radio.status_fn = lambda status: None
         self.settings = self.radio.get_settings()
         sleep = mock.patch('time.sleep')

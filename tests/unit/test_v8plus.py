@@ -5,15 +5,11 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
-import unittest
 from unittest import mock
 
-from chirp import chirp_common, directory, errors, memmap
+from chirp import chirp_common, errors, memmap
 from chirp.drivers import leixen, v8plus
-
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "Weierwei_VEV-V8_Plus.img")
+from tests.unit import base
 
 # (tone, index stored in the record), taken from the channel data of the
 # reference radio: the vendor software's own file lists the tone as text and
@@ -83,11 +79,8 @@ def ident_reply():
     return frame + bytes([checksum])
 
 
-class TestVEVV8Plus(unittest.TestCase):
-    def setUp(self):
-        klass = directory.get_radio("Weierwei_VEV-V8_Plus")
-        self.radio = klass(IMAGE)
-        self.radio.load(IMAGE)
+class TestVEVV8Plus(base.RadioTest):
+    VENDOR_MODEL = "Weierwei_VEV-V8_Plus"
 
     def record(self, number):
         return self.radio._memobj.memory[number - 1]

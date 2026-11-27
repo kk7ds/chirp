@@ -1,25 +1,141 @@
+import copy
 import functools
 import logging
 import os
 import unittest
 
-from chirp import chirp_common
+from chirp import chirp_common, memmap
 from chirp import bandplan_na
 
 LOG = logging.getLogger(__name__)
+
+_NO_CACHE_ENTRY = object()
+
+
+class RadioTestFixture:
+    """Restore a loaded radio to its original image without reparsing it.
+
+    The fixture keeps the parsed parent and any selected subdevices. Restore
+    resets their backing maps and mutable instance state while retaining the
+    original radio, map, and bitwise-object identities.
+    """
+
+    def __init__(self, parent, sub_device=None):
+        self.parent = parent
+        self.parent_rf = parent.get_features()
+        self.sub_devices = []
+
+        if sub_device is not None:
+            self.sub_devices = list(parent.get_sub_devices())
+            self.radio = self.sub_devices[sub_device]
+            self.rf = self.radio.get_features()
+        else:
+            self.radio = parent
+            self.rf = self.parent_rf
+
+        self._snapshot()
+
+    def _snapshot(self):
+        radios = []
+        for radio in [self.parent] + self.sub_devices:
+            if all(radio is not existing for existing in radios):
+                radios.append(radio)
+
+        # Only cache byte-native maps. Legacy string maps have been removed.
+        maps = []
+        for radio in radios:
+            mmap = getattr(radio, '_mmap', None)
+            if not isinstance(mmap, memmap.MemoryMapBytes):
+                self.cacheable = False
+                return
+            if all(mmap is not existing[0] for existing in maps):
+                maps.append((mmap, mmap._data[:]))
+
+        # Preserve the objects that parsed fields refer to, and copy any
+        # other instance state so driver-specific caches reset between tests.
+        preserved = radios + [mmap for mmap, _data in maps]
+        for radio in radios:
+            for name in ('_mmap', '_memobj'):
+                value = getattr(radio, name, None)
+                if value is not None and all(
+                        value is not existing for existing in preserved):
+                    preserved.append(value)
+
+        try:
+            memo = {id(value): value for value in preserved}
+            states = []
+            for radio in radios:
+                state = {name: value
+                         for name, value in radio.__dict__.items()
+                         if name not in ('_mmap', '_memobj')}
+                states.append((radio, copy.deepcopy(state, memo),
+                               '_mmap' in radio.__dict__,
+                               getattr(radio, '_mmap', None),
+                               '_memobj' in radio.__dict__,
+                               getattr(radio, '_memobj', None)))
+            self._parent_rf = copy.deepcopy(self.parent_rf)
+            self._radio_rf = (None if self.radio is self.parent else
+                              copy.deepcopy(self.rf))
+        except Exception as e:
+            LOG.debug('Not caching driver test state for %s: %s',
+                      self.parent.__class__, e)
+            self.cacheable = False
+            return
+
+        self._maps = maps
+        self._states = states
+        self._preserved = preserved
+        self.cacheable = True
+
+    def restore(self):
+        """Restore and return this fixture's parent/radio/features."""
+        if not self.cacheable:
+            raise RuntimeError('Radio fixture does not support restoration')
+
+        for mmap, snapshot in self._maps:
+            mmap._data = snapshot[:]
+
+        memo = {id(value): value for value in self._preserved}
+        for radio, state, has_mmap, mmap, has_memobj, memobj in self._states:
+            for name in list(radio.__dict__):
+                if name not in state and name not in ('_mmap', '_memobj'):
+                    del radio.__dict__[name]
+            radio.__dict__.update(copy.deepcopy(state, memo))
+            if has_mmap:
+                radio._mmap = mmap
+            else:
+                radio.__dict__.pop('_mmap', None)
+            if has_memobj:
+                radio._memobj = memobj
+            else:
+                radio.__dict__.pop('_memobj', None)
+
+        self.parent_rf = copy.deepcopy(self._parent_rf)
+        self.rf = (self.parent_rf if self.radio is self.parent else
+                   copy.deepcopy(self._radio_rf))
+        return self
 
 
 class DriverTest(unittest.TestCase):
     RADIO_CLASS = None
     SUB_DEVICE = None
     TEST_IMAGE = None
+    CACHE_DRIVER_IMAGE = True
+
+    @classmethod
+    def tearDownClass(cls):
+        # A driver process runs many generated classes. Drop each cached
+        # image when its class finishes instead of retaining all parsed
+        # memories for the lifetime of the worker.
+        if '_driver_test_fixture' in cls.__dict__:
+            del cls._driver_test_fixture
+        super().tearDownClass()
 
     def setUp(self):
         super().setUp()
         self.patches = []
 
-        if ('CHIRP_TEST_BITWISE_STRICT_BYTES' in os.environ and
-                not self.RADIO_CLASS.NEEDS_COMPAT_SERIAL):
+        if 'CHIRP_TEST_BITWISE_STRICT_BYTES' in os.environ:
             self.use_patch(unittest.mock.patch(
                 'chirp.bitwise.DataElement._compat_bytes',
                 side_effect=self._strict_bytes))
@@ -28,17 +144,47 @@ class DriverTest(unittest.TestCase):
                 side_effect=AssertionError(
                     'string_straight_encode not allowed in strict mode')))
 
-        self.parent = self.RADIO_CLASS(self.TEST_IMAGE)
-        self.parent_rf = self.parent.get_features()
-        # If SUB_DEVICE is set to an index, then the actual radio we are
-        # to test is get_sub_devices()[SUB_DEVICE]. Otherwise, it's the
-        # actual class we were handed.
-        if self.SUB_DEVICE is not None:
-            self.radio = self.parent.get_sub_devices()[self.SUB_DEVICE]
-            self.rf = self.radio.get_features()
+        # Generated test classes represent one radio/image/subdevice. Keep
+        # their parsed template class-local so another image cannot reuse its
+        # memory snapshot.
+        cls = type(self)
+        key = (self.RADIO_CLASS,
+               os.path.realpath(self.TEST_IMAGE) if self.TEST_IMAGE else None,
+               self.SUB_DEVICE)
+        fixture = None
+        if self.CACHE_DRIVER_IMAGE:
+            entry = cls.__dict__.get('_driver_test_fixture', _NO_CACHE_ENTRY)
+            if entry is _NO_CACHE_ENTRY:
+                # The fixture owns the parsed parent and any subdevices for
+                # this image; later setups restore it instead of reparsing.
+                parent = self.RADIO_CLASS(self.TEST_IMAGE)
+                fixture = RadioTestFixture(parent, self.SUB_DEVICE)
+                if not fixture.cacheable:
+                    fixture = None
+                cls._driver_test_fixture = (key, fixture)
+            elif entry[0] != key:
+                # A generated class must remain tied to its original image.
+                raise RuntimeError(
+                    'Driver test fixture key changed for %s: was %r, now %r' %
+                    (cls.__name__, entry[0], key))
+            else:
+                fixture = entry[1]
+
+        if fixture is not None:
+            fixture.restore()
+            self.parent = fixture.parent
+            self.parent_rf = fixture.parent_rf
+            self.radio = fixture.radio
+            self.rf = fixture.rf
         else:
-            self.radio = self.parent
-            self.rf = self.parent_rf
+            self.parent = self.RADIO_CLASS(self.TEST_IMAGE)
+            self.parent_rf = self.parent.get_features()
+            if self.SUB_DEVICE is not None:
+                self.radio = self.parent.get_sub_devices()[self.SUB_DEVICE]
+                self.rf = self.radio.get_features()
+            else:
+                self.radio = self.parent
+                self.rf = self.parent_rf
 
     def use_patch(self, patch):
         self.patches.append(patch)

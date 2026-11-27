@@ -1,20 +1,11 @@
-import os
-import unittest
-
-from chirp import memmap
-from chirp.drivers import retevis_ra25
+from chirp.drivers import retevis_ra25  # noqa: F401
+from tests.unit import base
 
 
-class TestRA25SqlMode(unittest.TestCase):
+class TestRA25SqlMode(base.RadioTest):
     """Test sql_mode (Signal/Squelch Mode) feature for RA25/779UV"""
 
-    def setUp(self):
-        test_image = os.path.join(os.path.dirname(__file__),
-                                  '..', 'images', 'Retevis_RA25.img')
-        self.radio = retevis_ra25.RA25UVRadio(None)
-        with open(test_image, 'rb') as f:
-            self.radio._mmap = memmap.MemoryMapBytes(f.read())
-        self.radio.process_mmap()
+    VENDOR_MODEL = 'Retevis_RA25'
 
     def test_sql_mode_not_in_memory_extra(self):
         """sql_mode setting should NOT be present in mem.extra"""

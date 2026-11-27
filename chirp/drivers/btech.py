@@ -530,7 +530,7 @@ def _upload(radio):
     _do_ident(radio, status, True)
 
     # get the data to upload to radio
-    data = radio.get_mmap().get_byte_compatible()
+    data = radio.get_mmap()
 
     # Reset the UI progress
     status.max = MEM_SIZE // TX_BLOCK_SIZE

@@ -146,7 +146,7 @@ def __clone_out(radio):
     pos = 0
     _status()
     num_blocks = len(radio._block_lengths)
-    mmap = radio.get_mmap().get_byte_compatible()
+    mmap = radio.get_mmap()
     for block in radio._block_lengths:
         blocks += 1
         if blocks != num_blocks or num_blocks == 1:
@@ -191,8 +191,8 @@ class YaesuChecksum:
 
     @staticmethod
     def _asbytes(mmap):
-        if hasattr(mmap, 'get_byte_compatible'):
-            return mmap.get_byte_compatible()
+        if isinstance(mmap, memmap.MemoryMapBytes):
+            return mmap
         elif isinstance(mmap, bytes):
             # NOTE: this won't work for update(), but nothing should be calling
             # this with a literal expecting that to work
@@ -200,8 +200,8 @@ class YaesuChecksum:
         elif isinstance(mmap, str):
             # NOTE: this won't work for update(), but nothing should be calling
             # this with a literal expecting that to work
-            return memmap.MemoryMap(
-                bitwise.string_straight_encode(mmap)).get_byte_compatible()
+            return memmap.MemoryMapBytes(
+                bitwise.string_straight_encode(mmap))
         else:
             raise TypeError('Unable to convert %s to bytes' % (
                 type(mmap).__name__))

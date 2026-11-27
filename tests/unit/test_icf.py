@@ -20,6 +20,7 @@ import unittest
 
 from chirp import directory
 from chirp.drivers import ic2820, icf, id31
+from tests.unit import base
 
 
 class TestFileICF(unittest.TestCase):
@@ -94,46 +95,54 @@ class TestFileICF(unittest.TestCase):
                               'CD': '9674E1C86BA17D36DB9D3D8A144F1081',
                               'recordsize': 32}, icfdata)
 
-    def test_read_img_write_icf_modern(self):
-        img_file = os.path.join(os.path.dirname(__file__),
-                                '..', 'images', 'Icom_ID-31A.img')
 
-        r = id31.ID31Radio(img_file)
-        fn = os.path.join(self.tempdir, 'test.icf')
+class TestID31ImageToICF(base.RadioTest):
+    VENDOR_MODEL = 'Icom_ID-31A'
+
+    def test_read_img_write_icf(self):
+        fn = os.path.join(self.tempdir.name, 'test.icf')
         with open(fn, 'w', newline='\r\n'):
-            r.save(fn)
+            self.radio.save(fn)
 
             icfdata, mmap = icf.read_file(fn)
-            # If we sourced from an image, we use our defaults in
-            # generating the ICF metadata
             self.assertEqual({'MapRev': 1,
                               'EtcData': 5,
                               'Comment': '',
-                              'model': r.get_model(),
+                              'model': self.radio.get_model(),
                               'CD': '9F240F598EF20683726ED252278C61D0',
                               'recordsize': 32}, icfdata)
 
             self.assertIsInstance(directory.get_radio_by_image(fn),
                                   id31.ID31Radio)
 
-    def test_read_img_write_icf_old(self):
-        img_file = os.path.join(os.path.dirname(__file__),
-                                '..', 'images', 'Icom_IC-2820H.img')
+    def setUp(self):
+        super().setUp()
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tempdir.cleanup)
 
-        r = ic2820.IC2820Radio(img_file)
-        fn = os.path.join(self.tempdir, 'test.icf')
+
+class TestIC2820ImageToICF(base.RadioTest):
+    VENDOR_MODEL = 'Icom_IC-2820H'
+
+    def test_read_img_write_icf(self):
+        fn = os.path.join(self.tempdir.name, 'test.icf')
         with open(fn, 'w', newline='\r\n'):
-            r.save(fn)
+            self.radio.save(fn)
 
             icfdata, mmap = icf.read_file(fn)
             self.assertEqual({'MapRev': 1,
                               'EtcData': 0,
                               'Comment': '',
-                              'model': r.get_model(),
+                              'model': self.radio.get_model(),
                               'recordsize': 16}, icfdata)
 
             self.assertIsInstance(directory.get_radio_by_image(fn),
                                   ic2820.IC2820Radio)
+
+    def setUp(self):
+        super().setUp()
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tempdir.cleanup)
 
 
 class TestCloneICF(unittest.TestCase):

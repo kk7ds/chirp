@@ -5,16 +5,11 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
-import unittest
 from unittest import mock
 
-from chirp import chirp_common, directory
+from chirp import chirp_common
 from chirp.drivers import d9000  # noqa: F401  (registers the driver)
-
-
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "Zastone_ZT-D9000.img")
+from tests.unit import base
 
 # 512 records of 32 bytes starting here; channel 91 is the one that holds
 # 121.745MHz, the frequency the driver deliberately moves onto a real
@@ -23,11 +18,8 @@ RECORD_BASE = 0x2000
 RECORD_LEN = 32
 
 
-class TestZT_D9000(unittest.TestCase):
-    def setUp(self):
-        klass = directory.get_radio("Zastone_ZT-D9000")
-        self.radio = klass(IMAGE)
-        self.radio.load(IMAGE)
+class TestZT_D9000(base.RadioTest):
+    VENDOR_MODEL = "Zastone_ZT-D9000"
 
     def test_preserves_unknown_flags(self):
         # [13] carries 0x10 on two channels of the vendor codeplug and [17] is

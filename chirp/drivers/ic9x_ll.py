@@ -133,7 +133,7 @@ class IC92Frame:
 
     def get_raw(self):
         """Return the raw version of the frame"""
-        return self._map.get_byte_compatible().get_packed()
+        return self._map.get_packed()
 
     def __str__(self):
         string = "Frame VFO=%i (len = %i)\n" % (self.get_vfo(),

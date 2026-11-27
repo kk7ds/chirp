@@ -191,7 +191,7 @@ def _h777_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
     cmd = struct.pack(">cHb", b'W', block_addr, BLOCK_SIZE)
-    data = radio.get_mmap().get_byte_compatible()[block_addr:block_addr + 8]
+    data = radio.get_mmap()[block_addr:block_addr + 8]
 
     radio.pipe.log('Writing %i block at %04x' % (BLOCK_SIZE, block_addr))
 
@@ -787,7 +787,7 @@ class H777TestCase(unittest.TestCase):
     def setUp(self):
         self.driver = H777Radio(None)
         self.testdata = bitwise.parse("lbcd foo[2];",
-                                      memmap.MemoryMap("\x00\x00"))
+                                      memmap.MemoryMapBytes(b"\x00\x00"))
 
     def test_decode_tone_dtcs_normal(self):
         mode, value, pol = self.driver._decode_tone(8023)

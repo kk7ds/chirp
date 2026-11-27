@@ -481,7 +481,7 @@ def do_upload(radio):
     status = chirp_common.Status()
     status.msg = "Cloning to radio"
     status.max = MEM_SIZE
-    mmap = radio.get_mmap().get_byte_compatible()
+    mmap = radio.get_mmap()
     radio.pipe.timeout = 5
     for offset in range(0, MEM_SIZE, WRITE_BLOCK):
         addr = FLASH_START + offset
@@ -563,7 +563,6 @@ class UVL15WRadio(chirp_common.CloneModeRadio):
     VENDOR = "TYT"
     MODEL = "UVL-15W"
     BAUD_RATE = 115200
-    NEEDS_COMPAT_SERIAL = False
 
     # The radio and TYT's software number channels from 0
     FIRST_CHANNEL = 0
@@ -662,7 +661,7 @@ class UVL15WRadio(chirp_common.CloneModeRadio):
         Firmware 3.03.x stores "EDG1" version 1 at 0x1BB00, matching TYT's
         storage document. Firmware 3.09.x moved the zone and scan list
         areas and stores "EDG1" version 2 at 0x1EB00."""
-        data = self._mmap.get_byte_compatible()
+        data = self._mmap
         if data[0x13B00:0x13B05] == b"EDG1\x01":
             return 1
         if data[0x16B00:0x16B05] == b"EDG1\x02":

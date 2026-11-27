@@ -31,6 +31,7 @@ from unittest import mock
 
 from chirp import bitwise, chirp_common, directory, errors, memmap
 from chirp.drivers import uvk5, uvk5_cn
+from tests.unit import base
 
 __builtins__['_'] = lambda s: s
 
@@ -504,16 +505,14 @@ class TestPrompts(unittest.TestCase):
                               chirp_common.RadioPrompts)
 
 
-class TestRealImage(unittest.TestCase):
+class TestRealImage(base.RadioTest):
     """Exercise the driver against the real LOSEHU131HS capture."""
 
-    def setUp(self):
-        self.radio = directory.get_radio_by_image(IMAGE)
-        self.radio.status_fn = lambda status: True
+    VENDOR_MODEL = 'Quansheng_UV-K5_losehu'
 
-    def test_detected_as_losehu_variant(self):
-        self.assertIsInstance(self.radio, uvk5_cn.UVK5LoseHuRadio)
-        self.assertEqual('losehu', self.radio.VARIANT)
+    def setUp(self):
+        super().setUp()
+        self.radio.status_fn = lambda status: True
 
     def test_image_metadata(self):
         metadata = self.radio.metadata
@@ -927,12 +926,14 @@ class TestWriteSafety(unittest.TestCase):
         self.assertEqual(FIRMWARE, metadata['uvk5_firmware'])
 
 
-class TestOemNamePath(unittest.TestCase):
+class TestOemNamePath(base.RadioTest):
     """The byte-native name handling in the base class must not change the
     bytes the OEM driver writes."""
 
+    VENDOR_MODEL = 'Quansheng_UV-K5'
+
     def test_oem_image_name_round_trip_is_byte_identical(self):
-        radio = directory.get_radio_by_image(OEM_IMAGE)
+        radio = self.radio
         before = bytes(radio._mmap.get_packed())
         names = {}
         for number in range(1, 201):
@@ -950,7 +951,7 @@ class TestOemNamePath(unittest.TestCase):
         self.assertEqual([], diffs)
 
     def test_oem_name_read_stops_at_nul_and_ff(self):
-        radio = directory.get_radio_by_image(OEM_IMAGE)
+        radio = self.radio
         field = radio._memobj.channelname[0]
         field.set_raw(b'AB' + b'\x00' * 14)
         self.assertEqual('AB', radio.get_memory(1).name)
@@ -958,7 +959,7 @@ class TestOemNamePath(unittest.TestCase):
         self.assertEqual('CD', radio.get_memory(1).name)
 
     def test_oem_name_write_is_space_padded(self):
-        radio = directory.get_radio_by_image(OEM_IMAGE)
+        radio = self.radio
         mem = radio.get_memory(1)
         mem.name = 'XYZ'
         radio.set_memory(mem)

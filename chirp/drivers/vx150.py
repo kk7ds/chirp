@@ -301,7 +301,7 @@ def _upload(radio):
     Mirror of ft7800._download: the radio ACKs each 32-byte body block but
     does NOT ACK the 8-byte header (asymmetric vs. download direction).
     """
-    mmap = radio.get_mmap().get_byte_compatible()
+    mmap = radio.get_mmap()
 
     # Header (8 bytes) — send, then wait for the radio to ACK it
     _send(radio.pipe, mmap[0:8])
@@ -445,7 +445,7 @@ class VX150Radio(yaesu_clone.YaesuCloneModeRadio):
             offset = 0x1448 + (SPECIALS.index(number) - 1) * 16
         else:
             offset = 0x07d8 + (number - 1) * 16
-        raw16 = bytes(self._mmap.get_byte_compatible()[offset:offset + 16])
+        raw16 = self._mmap[offset:offset + 16]
         if raw16 == _EMPTY_CHANNEL:
             mem.empty = True
             return mem

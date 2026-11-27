@@ -1,12 +1,10 @@
-import os
 import struct
-import unittest
 
 from chirp.drivers import kguv8e
 from chirp.drivers import kguv8d
 from chirp.drivers import kguv8dplus
 from chirp.drivers import kg935g
-from chirp import directory
+from tests.unit import base
 
 
 class FakeUV8D:
@@ -47,8 +45,9 @@ class FakeUV8D:
         return buf
 
 
-class TestKGUV8D(unittest.TestCase):
+class TestKGUV8D(base.RadioTest):
     RCLASS = kguv8d.KGUV8DRadio
+    VENDOR_MODEL = 'Wouxun_KG-UV8D'
 
     def test_identify(self):
         f = FakeUV8D(self.RCLASS)
@@ -62,21 +61,20 @@ class TestKGUV8D(unittest.TestCase):
 
     def test_upload(self):
         f = FakeUV8D(self.RCLASS)
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images',
-                           '%s.img' % directory.radio_class_id(self.RCLASS))
-        r = self.RCLASS(img)
-        r.set_pipe(f)
-        r.sync_out()
+        self.radio.set_pipe(f)
+        self.radio.sync_out()
 
 
 class TestKGUV8DPlus(TestKGUV8D):
     RCLASS = kguv8dplus.KGUV8DPlusRadio
+    VENDOR_MODEL = 'Wouxun_KG-UV8D_Plus'
 
 
 class TestKGUV8ER(TestKGUV8D):
     RCLASS = kguv8e.KGUV8ERadio
+    VENDOR_MODEL = 'Wouxun_KG-UV8E'
 
 
 class TestKG935(TestKGUV8D):
     RCLASS = kg935g.KG935GRadio
+    VENDOR_MODEL = 'Wouxun_KG-935G'

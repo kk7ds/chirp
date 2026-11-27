@@ -82,10 +82,6 @@ class BoristoneBR3(tdxone_tdq8a.TDXoneTDQ8A):
     VENDOR = "Boristone"
     MODEL = "BR-3"
 
-    # The TD-Q8A class still uses the Python 2 string API, so opt back out of
-    # the str-flavoured memory map that it asks for.
-    NEEDS_COMPAT_SERIAL = False
-
     BAUD_RATE = 9600
     # Note: MAGIC is the image metadata marker inherited from CHIRP, so the
     # clone handshake string needs a name of its own.

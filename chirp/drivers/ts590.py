@@ -28,6 +28,7 @@ from chirp.settings import RadioSettingGroup, RadioSetting, \
 
 LOG = logging.getLogger(__name__)
 
+
 MEM_FORMAT = """
 #seekto 0x0000;
 struct {            // 20 bytes per chan
@@ -143,12 +144,17 @@ TS590_TONES = list(chirp_common.TONES)
 TS590_TONES.append(1750.0)
 
 RADIO_IDS = {   # From kenwood_live.py; used to report wrong radio
-    "ID019;": "TS-2000",
-    "ID009;": "TS-850",
-    "ID020;": "TS-480",
-    "ID021;": "TS-590S",
-    "ID023;": "TS-590SG"
+    b"ID019;": "TS-2000",
+    b"ID009;": "TS-850",
+    b"ID020;": "TS-480",
+    b"ID021;": "TS-590S",
+    b"ID023;": "TS-590SG"
 }
+
+
+def _cat_bytes(value):
+    """Encode a CAT command as ASCII, preserving pre-encoded data"""
+    return value if isinstance(value, bytes) else value.encode('ascii')
 
 
 def command(ser, cmd, rsplen, w8t=0.01, exts=""):
@@ -159,14 +165,13 @@ def command(ser, cmd, rsplen, w8t=0.01, exts=""):
 
     start = time.time()
     #   LOCK.acquire()
-    stx = cmd       # preserve cmd for response check
-    stx = stx + exts + ";"    # append arguments
+    stx = _cat_bytes(cmd) + _cat_bytes(exts) + b";"
     ser.write(stx)
     LOG.debug("PC->RADIO [%s]" % stx)
     ts = time.time()        # implement the wait after command
     while (time.time() - ts) < w8t:
         ix = 0      # NOP
-    result = ""
+    result = b""
     if rsplen > 0:  # read response
         result = ser.read(rsplen)
         LOG.debug("RADIO->PC [%s]" % result)
@@ -191,12 +196,12 @@ def _connect_radio(radio):
     for bd in bauds:
         radio.pipe.baudrate = bd
         BAUD = bd
-        radio.pipe.write(";")
-        radio.pipe.write(";")
+        radio.pipe.write(b";")
+        radio.pipe.write(b";")
         resp = radio.pipe.read(4)
         if resp:
             saw_response = True
-        radio.pipe.write("ID;")
+        radio.pipe.write(b"ID;")
         resp = radio.pipe.read(6)
         if resp:
             saw_response = True
@@ -213,15 +218,17 @@ def _connect_radio(radio):
     raise errors.RadioNoResponse()
 
 
-def read_str(radio, trm=";"):
+def read_str(radio, trm=b";"):
     """ Read chars until terminator """
-    stq = ""
-    ctq = ""
+    stq = bytearray()
+    ctq = b""
     while ctq != trm:
         ctq = radio.pipe.read(1)
-        stq += ctq
+        if not ctq:
+            raise errors.RadioNoResponse()
+        stq.extend(ctq)
     LOG.debug("   + [%s]" % stq)
-    return stq[:-1]     # Return without trm
+    return bytes(stq[:-1])     # Return without terminator
 
 
 def _read_mem(radio):
@@ -239,7 +246,7 @@ def _read_mem(radio):
     BEEPVOL = int(result0[6:])
     result0 = command(radio.pipe, "EX005000000", 0, W8L)   # Silence beeps
 
-    data = ""
+    data = bytearray()
     mrlen = 41      # Expected fixed return string length
     for chn in range(0, (radio._upper + 21)):   # Loop stops at +20
         # Request this mem chn
@@ -268,7 +275,7 @@ def _read_mem(radio):
                                   mrlen, W8S)
                 result1 += read_str(radio)
             r1ch = int(result1[3:6])
-        data += radio._parse_mem_spec(result0, result1)
+        data.extend(radio._parse_mem_spec(result0, result1))
         # UI Update
         status.cur = chn
         status.msg = "Reading Channel Memory..."
@@ -276,39 +283,31 @@ def _read_mem(radio):
 
     if len(data) == 0:       # To satisfy run_tests
         raise errors.RadioError('No data received.')
-    return data
+    return bytes(data)
 
 
 def _make_dat(sx, nb):
-    """ Split the string sx into nb binary bytes """
+    """Split the decimal value in sx into nb big-endian bytes"""
     vx = int(sx)
-    dx = ""
-    if nb > 3:
-        dx += chr((vx >> 24) & 0xFF)
-    if nb > 2:
-        dx += chr((vx >> 16) & 0xFF)
-    if nb > 1:
-        dx += chr((vx >> 8) & 0xFF)
-    dx += chr(vx & 0xFF)
-    return dx
+    return vx.to_bytes(nb, 'big')
 
 
 def _sets_val(stx, nv=3, nb=2):
     """ Split string stx into nv nb-bit values in 1 byte """
     # Right now: hardcoded for nv:3 values of nb:2 bits each
-    v1 = int(stx[0]) << 6
-    v1 = v1 | (int(stx[1]) << 4)
-    v1 = v1 | (int(stx[2]) << 2)
-    return chr(v1)
+    v1 = int(stx[0:1]) << 6
+    v1 = v1 | (int(stx[1:2]) << 4)
+    v1 = v1 | (int(stx[2:3]) << 2)
+    return bytes([v1])
 
 
 def _sets_asf(stx):
     """ Process AS0 auto-mode setting """
-    asm = _make_dat(stx[0:11], 4)   # 11-bit freq
-    a1 = int(stx[11])               # 4-bit mode
-    a2 = int(stx[12])               # 2-bit data
-    asm += chr((a1 << 4) | (a2 << 2))
-    return asm
+    asm = bytearray(_make_dat(stx[0:11], 4))   # 11-bit freq
+    a1 = int(stx[11:12])                      # 4-bit mode
+    a2 = int(stx[12:13])                      # 2-bit data
+    asm.append((a1 << 4) | (a2 << 2))
+    return bytes(asm)
 
 
 def my_val_list(setting, opts, obj, atrb, fix=0, ndx=-1):
@@ -339,7 +338,7 @@ def _read_settings(radio):
     status.msg = "Reading Settings..."
     radio.status_fn(status)
 
-    setts = ""
+    setts = bytearray()
     nc = 0
     for cmc in setc:
         skipme = False
@@ -351,7 +350,7 @@ def _read_settings(radio):
                                   "%02i" % ix)
                 xc = len(cmc) + 2
                 result0 = result0[xc:]
-                setts += _sets_asf(result0)
+                setts.extend(_sets_asf(result0))
                 nc += 1
                 status.cur = nc
                 radio.status_fn(status)
@@ -361,7 +360,7 @@ def _read_settings(radio):
                 for nx in range(5):     # 5 spots
                     result0 = command(radio.pipe, cmc, 16, W8S,
                                       "%1i%1i" % (ix, nx))
-                    setts += _make_dat(result0[4:], 4)
+                    setts.extend(_make_dat(result0[4:], 4))
                     nc += 1
                     status.cur = nc
                     radio.status_fn(status)
@@ -370,10 +369,10 @@ def _read_settings(radio):
             for ix in range(8):
                 result0 = command(radio.pipe, cmc, 6, W8S, "0%1i"
                                   % ix)   # Tx eq
-                setts += chr(int(result0[4:]))    # 'EQ13x", want the x
+                setts.append(int(result0[4:]))    # 'EQ13x", want the x
                 result0 = command(radio.pipe, cmc, 6, W8S, "1%1i"
                                   % ix)   # Rx eq
-                setts += chr(int(result0[4:]))
+                setts.append(int(result0[4:]))
                 nc += 1
                 status.cur = nc
                 radio.status_fn(status)
@@ -385,10 +384,9 @@ def _read_settings(radio):
             nx = len(result0)
             for ix in range(8):
                 if ix < nx:
-                    sx = result0[ix]    # may need to test valid char
-                    setts += sx
+                    setts.extend(result0[ix:ix + 1])
                 else:
-                    setts += chr(0)
+                    setts.append(0)
             skipme = True
             nc += 1
             status.cur = nc
@@ -407,29 +405,29 @@ def _read_settings(radio):
         # Cmd has been sent, process the result
         if cmc == "FV":      # all chars
             skipme = True
-            setts += result0
+            setts.extend(result0)
         elif cmc == "AN":    # Antenna selection has 3 values
             skipme = True
-            setts += _sets_val(result0, 3, 2)   # store as 2-bits each
+            setts.extend(_sets_val(result0, 3, 2))   # store as 2-bits each
         elif (cmc == "FA") or (cmc == "FB"):    # Response is 11-bit frq
             skipme = True
-            setts += _make_dat(result0, 4)   # 11-bit freq
+            setts.extend(_make_dat(result0, 4))   # 11-bit freq
         elif (cmc == "MF0") or (cmc == "MF1"):  # No stored response
             skipme = True
         # Generic single byte processing
         if not skipme:
-            setts += chr(int(result0))
+            setts.append(int(result0))
         if cmc == "MF":     # Save the initial Menu selection
             MEMSEL = int(result0)
         nc += 1
         status.cur = nc
         radio.status_fn(status)
-    setts += radio.MODEL.ljust(9)
+    setts.extend(radio.MODEL.encode('ascii').ljust(9, b' '))
     # Now set the inidial menu selection back
     result0 = command(radio.pipe, "MF", 0, W8L, "%1i" % MEMSEL)
     # And the original Beep Volume
     result0 = command(radio.pipe, "EX0050000%2i" % BEEPVOL, 0, W8L)
-    return setts
+    return bytes(setts)
 
 
 def _write_mem(radio):
@@ -539,11 +537,10 @@ def _write_sets(radio):
                 # Test for the power-on string
                 if (radio.SG and cmx == "EX001") or \
                         ((not radio.SG) and cmx == "EX087"):
-                    scm = cmx + "0000"
+                    scm = bytearray((cmx + "0000").encode('ascii'))
                     for chx in _mex[ix].ex001:  # Both get string here
-                        scm += chr(chx)
-                    scm = scm.strip()
-                    scm = scm.strip(chr(0))     # in case any got thru
+                        scm.append(int(chx))
+                    scm = bytes(scm).strip().strip(b"\x00")
                 # Now for the other EX cmds
                 else:
                     if radio.SG:
@@ -568,8 +565,8 @@ class TS590Radio(chirp_common.CloneModeRadio):
     """Kenwood TS-590"""
     VENDOR = "Kenwood"
     MODEL = "TS-590SG_CloneMode"
-    NEEDS_COMPAT_SERIAL = True
-    ID = "ID023;"
+    # Presumptively converted to bytes; not tested with a real radio.
+    ID = b"ID023;"
     SG = True
     # Settings read/write cmd sequence list
     SETC = ["AS0", "SS", "EQ", "AG0", "AN", "FA", "FB",
@@ -701,6 +698,8 @@ class TS590Radio(chirp_common.CloneModeRadio):
             _connect_radio(self)
             data = _read_mem(self)
             data += _read_settings(self)
+            self._mmap = memmap.MemoryMapBytes(data)
+            self.process_mmap()
         except errors.RadioError:
             # Pass through any real errors we raise
             raise
@@ -710,10 +709,6 @@ class TS590Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during download')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-
-        self._mmap = memmap.MemoryMap(data)
-        self.process_mmap()
-        return
 
     def sync_out(self):
         """Upload to radio"""
@@ -729,7 +724,6 @@ class TS590Radio(chirp_common.CloneModeRadio):
             LOG.exception('Unexpected error during upload')
             raise errors.RadioError('Unexpected error communicating '
                                     'with the radio')
-        return
 
     def process_mmap(self):
         """Process the mem map into the mem object"""
@@ -877,56 +871,56 @@ class TS590Radio(chirp_common.CloneModeRadio):
         return
 
     def _parse_mem_spec(self, spec0, spec1):
-        """ Extract ascii memory parameters; build data string """
+        """Extract CAT memory parameters and build binary channel data"""
         # spec0 is simplex result, spec1 is split
         # pad string so indexes match Kenwood docs
-        spec0 = "x" + spec0  # match CAT document 1-based description
+        spec0 = b"x" + spec0  # match CAT document 1-based description
         ix = len(spec0)
-        # _pxx variables are STRINGS
-        _p1 = spec0[3]       # P1    Split Specification
+        # _pxx values are byte slices from the ASCII CAT response.
+        _p1 = spec0[3:4]     # P1    Split Specification
         _p3 = spec0[4:7]     # P3    Memory Channel
         _p4 = spec0[7:18]    # P4    Frequency
-        _p5 = spec0[18]      # P5    Mode
-        _p6 = spec0[19]      # P6    Data Mode
-        _p7 = spec0[20]      # P7    Tone Mode
+        _p5 = spec0[18:19]   # P5    Mode
+        _p6 = spec0[19:20]   # P6    Data Mode
+        _p7 = spec0[20:21]   # P7    Tone Mode
         _p8 = spec0[21:23]   # P8    Tone Frequency Index
-        if _p8 == "00":      # Can't be 0 at upload
-            _p8 = "08"
+        if _p8 == b"00":     # Can't be 0 at upload
+            _p8 = b"08"
         _p9 = spec0[23:25]   # P9    CTCSS Frequency Index
-        if _p9 == "00":
-            _p9 = "08"
+        if _p9 == b"00":
+            _p9 = b"08"
         _p10 = spec0[25:28]  # P10   Always 0
-        _p11 = spec0[28]     # P11   Filter A/B
-        _p12 = spec0[29]     # P12   Always 0
+        _p11 = spec0[28:29]  # P11   Filter A/B
+        _p12 = spec0[29:30]  # P12   Always 0
         _p13 = spec0[30:38]  # P13   Always 0
         _p14 = spec0[38:40]  # P14   FM Mode
-        _p15 = spec0[40]     # P15   Chan Lockout (Skip)
+        _p15 = spec0[40:41]  # P15   Chan Lockout (Skip)
         _p16 = spec0[41:49]  # P16   Max 8-Char Name if assigned
 
-        spec1 = "x" + spec1
+        spec1 = b"x" + spec1
         _p4s = int(spec1[7:18])  # P4: Offset freq
 
-        datm = ""   # Fill in MEM_FORMAT sequence
-        datm += _make_dat(_p4, 4)   # rxreq: u32, 4 bytes/chars
-        datm += _make_dat(_p4s, 4)  # tx freq
-        v1 = int(_p5) << 4          # xMode: 0-9, upper 4 bits
-        v1 = v1 | (int(_p6) << 2)   # Data: 0/1
-        v1 = v1 | int(_p7)          # Tmode: 0-3
-        datm += chr(v1)
-        datm += chr(int(_p8))       # rtone: 00-42
-        datm += chr(int(_p9))       # ctone
-        v1 = int(_p11) << 7         # Filter A/B 1 bit msb
-        v1 = v1 | (int(_p14) << 6)  # fmwide: 1 bit
-        v1 = v1 | (int(_p15) << 5)  # skip: 1 bit
-        datm += chr(v1)
+        datm = bytearray()   # Fill in MEM_FORMAT sequence
+        datm.extend(_make_dat(_p4, 4))   # rxfreq: u32, 4 bytes
+        datm.extend(_make_dat(_p4s, 4))  # txfreq
+        v1 = int(_p5) << 4               # xMode: 0-9, upper 4 bits
+        v1 = v1 | (int(_p6) << 2)        # Data: 0/1
+        v1 = v1 | int(_p7)               # Tmode: 0-3
+        datm.append(v1)
+        datm.append(int(_p8))            # rtone: 00-42
+        datm.append(int(_p9))            # ctone
+        v1 = int(_p11) << 7              # Filter A/B 1 bit msb
+        v1 = v1 | (int(_p14) << 6)       # fmwide: 1 bit
+        v1 = v1 | (int(_p15) << 5)       # skip: 1 bit
+        datm.append(v1)
         v1 = len(_p16)
         for ix in range(8):
             if ix < v1:
-                datm += _p16[ix]
+                datm.extend(_p16[ix:ix + 1])
             else:
-                datm += " "
+                datm.append(0x20)
 
-        return datm
+        return bytes(datm)
 
     def _make_base_spec(self, mem, freq):
         """ Generate memory channel parameter string """
@@ -1653,7 +1647,7 @@ class TS590SRadio(TS590Radio):
     """ Kenwood TS-590S variant of the TS590 """
     VENDOR = "Kenwood"
     MODEL = "TS-590S_CloneMode"
-    ID = "ID021;"
+    ID = b"ID021;"
     SG = False
     # This is the equivalent Menu A/B list for the TS-590S
     # The equivalent S param is stored in the SG Mem_Format slot
