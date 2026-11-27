@@ -373,7 +373,7 @@ def _firmware_version_from_data(data, version_start, version_stop):
 
 def _firmware_version_from_image(radio):
     version = _firmware_version_from_data(
-        radio.get_mmap().get_byte_compatible(),
+        radio.get_mmap(),
         radio._fw_ver_file_start,
         radio._fw_ver_file_stop)
     return version
@@ -734,7 +734,7 @@ def _do_upload(radio):
         ranges_aux = _ranges_aux_default
 
     # Main block
-    mmap = radio.get_mmap().get_byte_compatible()
+    mmap = radio.get_mmap()
     for start_addr, end_addr in ranges_main:
         for i in range(start_addr, end_addr, 0x10):
             _send_block(radio, i - 0x08, mmap[i:i + 0x10])

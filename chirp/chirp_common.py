@@ -1284,7 +1284,6 @@ class Radio(Alias):
     # Whether or not we should assert RTS when opening the serial port
     WANTS_RTS = True
     ALIASES = []
-    NEEDS_COMPAT_SERIAL = False
     FORMATS: list[str] = []
 
     def status_fn(self, status):
@@ -1650,10 +1649,7 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
                     is_version_newer(self._metadata.get('chirp_version'))):
                 LOG.warning('Image is from version %s but we are %s' % (
                     self._metadata.get('chirp_version'), CHIRP_VERSION))
-        if self.NEEDS_COMPAT_SERIAL:
-            self._mmap = memmap.MemoryMap(data)
-        else:
-            self._mmap = memmap.MemoryMapBytes(bytes(data))
+        self._mmap = memmap.MemoryMapBytes(bytes(data))
         mapfile.close()
         self.process_mmap()
 
@@ -1664,7 +1660,7 @@ class CloneModeRadio(FileBackedRadio, ExternalMemoryProperties,
         """
         try:
             mapfile = open(filename, "wb")
-            mapfile.write(self._mmap.get_byte_compatible().get_packed())
+            mapfile.write(self._mmap.get_packed())
             if filename.lower().endswith(".img"):
                 mapfile.write(self.MAGIC)
                 mapfile.write(self._make_metadata())

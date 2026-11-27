@@ -855,7 +855,7 @@ class IcomCIVRadio(icf.IcomLiveRadio):
             LOG.debug("Result:\n%s" % util.hexprint(bytes(f.get_data())))
             return
 
-        # f.set_data(MemoryMap(self.get_raw_memory(mem.number)))
+        # f.set_data(MemoryMapBytes(self.get_raw_memory(mem.number)))
         # f.initialize()
 
         memobj = f.get_obj()

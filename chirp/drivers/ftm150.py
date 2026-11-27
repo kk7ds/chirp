@@ -388,7 +388,6 @@ class FTM150Radio(yaesu_clone.YaesuCloneModeRadio,
     VENDOR = "Yaesu"
     MODEL = "FTM-150E"
     BAUD_RATE = 38400  # confirmed against the radio
-    NEEDS_COMPAT_SERIAL = False
     FORMATS = [directory.register_format('Yaesu FTM-150E SD ALL', '*.dat')]
 
     _model = b"AH086"

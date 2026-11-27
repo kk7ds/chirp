@@ -200,9 +200,6 @@ class AP510Memory(object):
             self._data += "%s=%s\r\n" % (v, self._memobj[v])
         return self._data.encode('latin-1')
 
-    def get_byte_compatible(self):
-        return self
-
     def process_data(self):
         data = []
         for line in self._data.split('\r\n'):
@@ -399,8 +396,8 @@ class AP510Radio(chirp_common.CloneModeRadio):
         except Exception as e:
             raise errors.RadioError("Failed to communicate with radio: %s" % e)
 
-        # _mmap isn't a Chirp MemoryMap, but since AP510Memory implements
-        # get_packed(), the standard Chirp save feature works.
+        # AP510Memory is a custom text configuration object. Its get_packed()
+        # method returns bytes for the standard save path.
         version = '\r\n00=%s 20141215' % self._model.decode('ascii')
         if data.startswith(version):
             self._mmap = AP510Memory20141215(data)

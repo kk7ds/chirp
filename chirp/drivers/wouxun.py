@@ -303,8 +303,8 @@ class KGUVD1PRadio(chirp_common.CloneModeRadio,
             # offset 0x0010, like the radio actually stores it.  So,
             # if we find one of those old ones, convert it to the new
             # format, padding 16 bytes of 0xFF in front.
-            self._mmap = memmap.MemoryMap(
-                    ("\xFF" * 16) + self._mmap.get_packed()[8:8184])
+            self._mmap = memmap.MemoryMapBytes(
+                    (b"\xFF" * 16) + self._mmap.get_packed()[8:8184])
         self._memobj = bitwise.parse(self._MEM_FORMAT, self._mmap)
         # This sets our frequency ranges, so run it once after we process the
         # mmap to make sure they're set for later

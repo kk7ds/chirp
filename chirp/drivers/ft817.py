@@ -380,7 +380,7 @@ class FT817Radio(yaesu_clone.YaesuCloneModeRadio):
         status = chirp_common.Status()
         status.msg = _("Cloning to radio")
         status.max = len(self._block_lengths) + 39
-        mmap = self.get_mmap().get_byte_compatible()
+        mmap = self.get_mmap()
         for block in self._block_lengths:
             if blocks == 8:
                 # repeated read of 40 block same size (memory area)

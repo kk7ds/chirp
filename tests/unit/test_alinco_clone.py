@@ -144,10 +144,7 @@ class AlincoCloneTest(unittest.TestCase):
         pipe = FakeAlincoSerial(image)
         radio = rclass(pipe)
         radio.sync_in()
-        if not radio.NEEDS_COMPAT_SERIAL:
-            # Note that MemoryMap (the str-based compat class) is a subclass
-            # of MemoryMapBytes, so this must compare the type exactly.
-            self.assertEqual(type(radio._mmap), memmap.MemoryMapBytes)
+        self.assertEqual(type(radio._mmap), memmap.MemoryMapBytes)
 
     def _test_alinco_upload(self, rclass, image):
         pipe = FakeAlincoSerial(image)

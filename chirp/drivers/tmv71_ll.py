@@ -52,13 +52,14 @@ for k, v in V71_SPECIAL.items():
 def command(s, cmd, timeout=0.5):
     start = time.time()
 
-    data = ""
+    data = bytearray()
     LOG.debug("PC->V71: %s" % cmd)
-    s.write(cmd + "\r")
-    while not data.endswith("\r") and (time.time() - start) < timeout:
-        data += s.read(1)
-    LOG.debug("V71->PC: %s" % data.strip())
-    return data.strip()
+    s.write(cmd.encode('ascii') + b"\r")
+    while not data.endswith(b"\r") and (time.time() - start) < timeout:
+        data.extend(s.read(1))
+    result = bytes(data[:-1]).decode('ascii')
+    LOG.debug("V71->PC: %s" % result.strip())
+    return result.strip()
 
 
 def get_id(s):
@@ -70,39 +71,39 @@ def get_id(s):
     raise errors.RadioError("Unexpected response to ID command")
 
 
-EXCH_R = "R\x00\x00\x00"
-EXCH_W = "W\x00\x00\x00"
+EXCH_R = b"R\x00\x00\x00"
+EXCH_W = b"W\x00\x00\x00"
 
 
 def read_block(s, block, count=256):
-    s.write(struct.pack("<cHB", "R", block, 0))
+    s.write(struct.pack("<cHB", b"R", block, 0))
     r = s.read(4)
     if len(r) != 4:
         raise Exception("Did not receive block response")
 
     cmd, _block, zero = struct.unpack("<cHB", r)
-    if cmd != "W" or _block != block:
+    if cmd != b"W" or _block != block:
         raise Exception("Invalid response: %s %i" % (cmd, _block))
 
-    data = ""
+    data = bytearray()
     while len(data) < count:
-        data += s.read(count - len(data))
+        data.extend(s.read(count - len(data)))
 
-    s.write(chr(0x06))
-    if s.read(1) != chr(0x06):
+    s.write(b"\x06")
+    if s.read(1) != b"\x06":
         raise Exception("Did not receive post-block ACK!")
 
-    return data
+    return bytes(data)
 
 
 def write_block(s, block, map):
-    s.write(struct.pack("<cHB", "W", block, 0))
+    s.write(struct.pack("<cHB", b"W", block, 0))
     base = block * 256
     s.write(map[base:base+256])
 
     ack = s.read(1)
 
-    return ack == chr(0x06)
+    return ack == b"\x06"
 
 
 def download(radio):
@@ -112,9 +113,9 @@ def download(radio):
     if resp != "0M":
         raise errors.RadioError("Unexpected response to program command")
 
-    data = ""
+    data = bytearray()
     for i in range(0, 0x7F):
-        data += read_block(radio.pipe, i)
+        data.extend(read_block(radio.pipe, i))
         if radio.status_fn:
             s = chirp_common.Status()
             s.msg = "Cloning from radio"
@@ -122,9 +123,9 @@ def download(radio):
             s.cur = len(data)
             radio.status_fn(s)
 
-    radio.pipe.write("E")
+    radio.pipe.write(b"E")
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(bytes(data))
 
 
 def upload(radio):
@@ -145,7 +146,7 @@ def upload(radio):
             s.cur = 256 * i
             radio.status_fn(s)
 
-    radio.pipe.write("E")
+    radio.pipe.write(b"E")
 
 
 def get_mem_offset(number):
@@ -160,7 +161,7 @@ def get_raw_mem(map, number):
 
 def get_used(map, number):
     pos = MEM_FLG_BASE + (number * 2)
-    flag = ord(map[pos])
+    flag = map[pos]
     LOG.debug("Flag byte is %02x" % flag)
     return not (flag & 0x80)
 
@@ -169,16 +170,16 @@ def set_used(map, number, freq):
     pos = MEM_FLG_BASE + (number * 2)
     if freq == 0:
         # Erase
-        map[pos] = "\xff\xff"
+        map[pos] = b"\xff\xff"
     elif int(freq / 100) == 1:
-        map[pos] = "\x05\x00"
+        map[pos] = b"\x05\x00"
     elif int(freq / 100) == 4:
-        map[pos] = "\x08\x00"
+        map[pos] = b"\x08\x00"
 
 
 def get_skip(map, number):
     pos = MEM_FLG_BASE + (number * 2)
-    flag = ord(map[pos+1])
+    flag = map[pos+1]
     if flag & 0x01:
         return "S"
     else:
@@ -187,7 +188,7 @@ def get_skip(map, number):
 
 def set_skip(map, number, skip):
     pos = MEM_FLG_BASE + (number * 2)
-    flag = ord(map[pos+1])
+    flag = map[pos+1]
     if skip:
         flag |= 0x01
     else:
@@ -206,16 +207,16 @@ def set_freq(mmap, freq):
 
 def get_name(map, number):
     base = MEM_TAG_BASE + (8 * number)
-    return map[base:base+6].replace("\xff", "")
+    return map[base:base+6].replace(b"\xff", b"").decode('latin-1')
 
 
 def set_name(mmap, number, name):
     base = MEM_TAG_BASE + (8 * number)
-    mmap[base] = name.ljust(6)[:6].upper()
+    mmap[base] = name.upper().encode('latin-1', 'replace').ljust(6, b' ')[:6]
 
 
 def get_tmode(mmap):
-    val = ord(mmap[POS_TMODE]) & 0x70
+    val = mmap[POS_TMODE] & 0x70
 
     tmodemap = {
         0x00: "",
@@ -228,7 +229,7 @@ def get_tmode(mmap):
 
 
 def set_tmode(mmap, tmode):
-    val = ord(mmap[POS_TMODE]) & 0x8F
+    val = mmap[POS_TMODE] & 0x8F
 
     tmodemap = {
         "":     0x00,
@@ -241,7 +242,7 @@ def set_tmode(mmap, tmode):
 
 
 def get_tone(mmap, offset):
-    val = ord(mmap[offset])
+    val = mmap[offset]
 
     return chirp_common.TONES[val]
 
@@ -252,7 +253,7 @@ def set_tone(mmap, tone, offset):
 
 
 def get_dtcs(mmap):
-    val = ord(mmap[POS_DTCS])
+    val = mmap[POS_DTCS]
 
     return chirp_common.DTCS_CODES[val]
 
@@ -262,7 +263,7 @@ def set_dtcs(mmap, dtcs):
 
 
 def get_duplex(mmap):
-    val = ord(mmap[POS_DUP]) & 0x03
+    val = mmap[POS_DUP] & 0x03
 
     dupmap = {
         0x00: "",
@@ -274,7 +275,7 @@ def get_duplex(mmap):
 
 
 def set_duplex(mmap, duplex):
-    val = ord(mmap[POS_DUP]) & 0xFC
+    val = mmap[POS_DUP] & 0xFC
 
     dupmap = {
         "":  0x00,
@@ -295,7 +296,7 @@ def set_offset(mmap, offset):
 
 
 def get_mode(mmap):
-    val = ord(mmap[POS_MODE]) & 0x03
+    val = mmap[POS_MODE] & 0x03
     modemap = {
         0x00: "FM",
         0x01: "NFM",
@@ -306,7 +307,7 @@ def get_mode(mmap):
 
 
 def set_mode(mmap, mode):
-    val = ord(mmap[POS_MODE]) & 0xFC
+    val = mmap[POS_MODE] & 0xFC
     modemap = {
         "FM":  0x00,
         "NFM": 0x01,
@@ -353,16 +354,16 @@ def get_memory(map, number):
 
 
 def initialize(mmap):
-    mmap[0] = \
-        "\x80\xc8\xb3\x08\x00\x01\x00\x08" + \
-        "\x08\x00\xc0\x27\x09\x00\x00\xff"
+    mmap[0] = (
+        b"\x80\xc8\xb3\x08\x00\x01\x00\x08"
+        b"\x08\x00\xc0\x27\x09\x00\x00\xff")
 
 
 def set_memory(map, mem):
     if mem.number < 0 or mem.number > (max(V71_SPECIAL.values()) + 1):
         raise errors.InvalidMemoryLocation("Number must be between 0 and 999")
 
-    mmap = memmap.MemoryMap(get_raw_mem(map, mem.number))
+    mmap = memmap.MemoryMapBytes(get_raw_mem(map, mem.number))
 
     if not get_used(map, mem.number):
         initialize(mmap)

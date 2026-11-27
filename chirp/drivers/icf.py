@@ -434,7 +434,7 @@ def clone_from_radio(radio):
 
 def send_mem_chunk(radio, stream, start, stop, bs=32):
     """Send a single chunk of the radio's memory from @start-@stop"""
-    _mmap = radio.get_mmap().get_byte_compatible()
+    _mmap = radio.get_mmap()
 
     status = chirp_common.Status()
     status.msg = "Cloning to radio"

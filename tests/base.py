@@ -4,7 +4,7 @@ import logging
 import os
 import unittest
 
-from chirp import chirp_common
+from chirp import chirp_common, memmap
 from chirp import bandplan_na
 
 LOG = logging.getLogger(__name__)
@@ -41,25 +41,19 @@ class RadioTestFixture:
             if all(radio is not existing for existing in radios):
                 radios.append(radio)
 
-        # A map wrapper can share its backing list with another wrapper.
-        # Preserve each wrapper's list reference and snapshot each unique list.
+        # Only cache byte-native maps. Legacy string maps have been removed.
         maps = []
-        buffers = []
         for radio in radios:
             mmap = getattr(radio, '_mmap', None)
-            data = getattr(mmap, '_data', None)
-            if not isinstance(data, list):
+            if not isinstance(mmap, memmap.MemoryMapBytes):
                 self.cacheable = False
                 return
             if all(mmap is not existing[0] for existing in maps):
-                maps.append((mmap, data))
-            if all(data is not existing[0] for existing in buffers):
-                buffers.append((data, data[:]))
+                maps.append((mmap, mmap._data[:]))
 
         # Preserve the objects that parsed fields refer to, and copy any
         # other instance state so driver-specific caches reset between tests.
         preserved = radios + [mmap for mmap, _data in maps]
-        preserved += [data for data, _snapshot in buffers]
         for radio in radios:
             for name in ('_mmap', '_memobj'):
                 value = getattr(radio, name, None)
@@ -89,7 +83,6 @@ class RadioTestFixture:
             return
 
         self._maps = maps
-        self._buffers = buffers
         self._states = states
         self._preserved = preserved
         self.cacheable = True
@@ -99,12 +92,8 @@ class RadioTestFixture:
         if not self.cacheable:
             raise RuntimeError('Radio fixture does not support restoration')
 
-        # Restore the map wrappers to their original lists before restoring
-        # list contents. This preserves legacy MemoryMap's shared view.
-        for mmap, data in self._maps:
-            mmap._data = data
-        for data, snapshot in self._buffers:
-            data[:] = snapshot
+        for mmap, snapshot in self._maps:
+            mmap._data = snapshot[:]
 
         memo = {id(value): value for value in self._preserved}
         for radio, state, has_mmap, mmap, has_memobj, memobj in self._states:
@@ -146,8 +135,7 @@ class DriverTest(unittest.TestCase):
         super().setUp()
         self.patches = []
 
-        if ('CHIRP_TEST_BITWISE_STRICT_BYTES' in os.environ and
-                not self.RADIO_CLASS.NEEDS_COMPAT_SERIAL):
+        if 'CHIRP_TEST_BITWISE_STRICT_BYTES' in os.environ:
             self.use_patch(unittest.mock.patch(
                 'chirp.bitwise.DataElement._compat_bytes',
                 side_effect=self._strict_bytes))

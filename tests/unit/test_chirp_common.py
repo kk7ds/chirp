@@ -711,8 +711,7 @@ class TestImageMetadata(base.BaseTest):
         fn = os.path.join(tempfile.gettempdir(), 'test.img')
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
-            b'thisisrawdata')
+        r._mmap.get_packed.return_value = b'thisisrawdata'
         r.save_mmap(fn)
         with open(fn, 'rb') as f:
             filedata = f.read()
@@ -740,8 +739,7 @@ class TestImageMetadata(base.BaseTest):
             fn = f.name
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
-            b'thisisrawdata')
+        r._mmap.get_packed.return_value = b'thisisrawdata'
         r.save_mmap(fn)
         with open(fn, 'rb') as f:
             filedata = f.read()
@@ -760,8 +758,7 @@ class TestImageMetadata(base.BaseTest):
             fn = f.name
         r = TestRadio(None)
         r._mmap = mock.Mock()
-        r._mmap.get_byte_compatible.return_value.get_packed.return_value = (
-            b'thisisrawdata')
+        r._mmap.get_packed.return_value = b'thisisrawdata'
         r.save_mmap(fn)
 
         newr = TestRadio(None)

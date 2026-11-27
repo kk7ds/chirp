@@ -24,24 +24,11 @@ class TestYaesuChecksum(unittest.TestCase):
 
         self.assertEqual(42, cs.get_existing(mmap))
         self.assertEqual(0x8A, cs.get_calculated(mmap))
-        try:
-            mmap = mmap.get_byte_compatible()
-            mmap[0] = 3
-        except AttributeError:
-            # str or bytes
-            try:
-                # str
-                mmap = memmap.MemoryMap('\x03' + mmap[1:])
-            except TypeError:
-                # bytes
-                mmap = memmap.MemoryMapBytes(b'\x03' + mmap[1:])
+        mmap = yaesu_clone.YaesuChecksum._asbytes(mmap)
+        mmap[0] = 3
 
         cs.update(mmap)
         self.assertEqual(95, cs.get_calculated(mmap))
-
-    def test_with_MemoryMap(self):
-        mmap = memmap.MemoryMap('...\x2A')
-        self._test_checksum(mmap)
 
     def test_with_MemoryMapBytes(self):
         mmap = memmap.MemoryMapBytes(bytes(b'...\x2A'))

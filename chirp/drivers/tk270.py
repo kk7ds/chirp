@@ -276,7 +276,8 @@ def do_upload(radio):
 
 def get_radio_id(data):
     """Extract the radio identification from the firmware"""
-    # Reverse the radio id string. MemoryMap does not support the step/stride
+    # Reverse the radio id string. MemoryMapBytes does not support
+    # step/stride slicing.
     # slice argument, so it is first sliced to a str then reversed.
     return data[0x03d0:0x03d8][::-1]
 

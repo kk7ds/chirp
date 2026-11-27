@@ -15,7 +15,7 @@
 
 import struct
 from chirp import chirp_common
-from chirp.memmap import MemoryMap
+from chirp.memmap import MemoryMapBytes
 
 MEM_LOC_SIZE_A = 20
 MEM_LOC_SIZE_B = MEM_LOC_SIZE_A + 1 + (3 * 8)
@@ -46,16 +46,16 @@ def get_raw_memory(mmap, number):
         size = MEM_LOC_SIZE_B
     else:
         size = MEM_LOC_SIZE_A
-    return MemoryMap(mmap[offset:offset+size])
+    return MemoryMapBytes(mmap[offset:offset+size])
 
 
 def get_freq(mmap):
     """Return the memory frequency"""
-    if ord(mmap[10]) & 0x10:
+    if mmap[10] & 0x10:
         mult = 6250
     else:
         mult = 5000
-    val, = struct.unpack(">I", "\x00" + mmap[POS_FREQ:POS_FREQ+3])
+    val, = struct.unpack(">I", b"\x00" + mmap[POS_FREQ:POS_FREQ+3])
     return val * mult
 
 
@@ -67,25 +67,25 @@ def get_offset(mmap):
 
 def get_rtone(mmap):
     """Return the memory rtone"""
-    val = (ord(mmap[POS_TONE]) & 0xFC) >> 2
+    val = (mmap[POS_TONE] & 0xFC) >> 2
     return chirp_common.TONES[val]
 
 
 def get_ctone(mmap):
     """Return the memory ctone"""
-    val = (ord(mmap[POS_TONE]) & 0x03) | ((ord(mmap[POS_TONE+1]) & 0xF0) >> 4)
+    val = (mmap[POS_TONE] & 0x03) | ((mmap[POS_TONE+1] & 0xF0) >> 4)
     return chirp_common.TONES[val]
 
 
 def get_dtcs(mmap):
     """Return the memory dtcs value"""
-    val = ord(mmap[POS_DTCS]) >> 1
+    val = mmap[POS_DTCS] >> 1
     return chirp_common.DTCS_CODES[val]
 
 
 def get_mode(mmap):
     """Return the memory mode"""
-    val = ord(mmap[POS_MODE]) & 0x07
+    val = mmap[POS_MODE] & 0x07
 
     modemap = ["FM", "NFM", "WFM", "AM", "DV", "FM"]
 
@@ -94,7 +94,7 @@ def get_mode(mmap):
 
 def get_ts(mmap):
     """Return the memory tuning step"""
-    val = (ord(mmap[POS_TS]) & 0xF0) >> 4
+    val = (mmap[POS_TS] & 0xF0) >> 4
     if val == 14:
         return 5.0  # Coerce "Auto" to 5.0
 
@@ -110,7 +110,7 @@ def get_ts(mmap):
 
 def get_dtcs_polarity(mmap):
     """Return the memory dtcs polarity"""
-    val = (ord(mmap[POS_DTCSPOL]) & 0x03)
+    val = mmap[POS_DTCSPOL] & 0x03
 
     pols = ["NN", "NR", "RN", "RR"]
 
@@ -119,7 +119,7 @@ def get_dtcs_polarity(mmap):
 
 def get_duplex(mmap):
     """Return the memory duplex"""
-    val = (ord(mmap[POS_DUPLEX]) & 0x0C) >> 2
+    val = (mmap[POS_DUPLEX] & 0x0C) >> 2
 
     dup = ["", "-", "+", ""]
 
@@ -128,7 +128,7 @@ def get_duplex(mmap):
 
 def get_name(mmap):
     """Return the memory name"""
-    return mmap[POS_NAME:POS_NAME+8]
+    return mmap[POS_NAME:POS_NAME+8].decode('latin-1')
 
 
 def get_memory(_mmap, number):

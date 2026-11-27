@@ -176,7 +176,7 @@ def do_upload(radio):
     except errors.RadioError:
         do_ident(radio)
 
-    mmap = radio._mmap.get_byte_compatible()
+    mmap = radio._mmap
     for addr in range(0, 0x0400, 8):
         eaddr = addr + 16
         send(radio, make_frame(b"W", addr, 8, mmap[eaddr:eaddr + 8]))

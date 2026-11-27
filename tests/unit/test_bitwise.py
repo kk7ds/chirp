@@ -34,42 +34,30 @@ class BaseTest(unittest.TestCase):
 
 class TestMemoryMapCoherence(BaseTest):
     def test_byte_char_coherence(self):
-        charmmap = memmap.MemoryMap('00')
-        # This will to a get_byte_compatible() from chars
-        obj = bitwise.parse('char foo[2];', charmmap)
+        mmap = memmap.MemoryMapBytes(b'00')
+        obj = bitwise.parse('char foo[2];', mmap)
         self.assertEqual('00', str(obj.foo))
         obj.foo = '11'
-        # The above assignment happens on the byte-compatible mmap,
-        # make sure it is still visible in the charmmap we know about.
-        # This confirms that get_byte_compatible() links the backing
-        # store of the original mmap to the new one.
-        self.assertEqual('11', charmmap.get_packed())
+        self.assertEqual(b'11', mmap.get_packed())
 
     def test_restore_data_under_parsed_object(self):
-        for map_type in (memmap.MemoryMapBytes, memmap.MemoryMap):
-            with self.subTest(map_type=map_type.__name__):
-                mmap = map_type(b'\x01\x02\x03')
-                obj = bitwise.parse(
-                    'struct { u8 first; u16 second; } record;', mmap)
-                original = mmap._data[:]
+        mmap = memmap.MemoryMapBytes(b'\x01\x02\x03')
+        obj = bitwise.parse(
+            'struct { u8 first; u16 second; } record;', mmap)
+        original = mmap._data[:]
 
-                obj.record.first = 0xA5
-                obj.record.second = 0x5AC3
-                self.assertEqual(b'\xA5\x5A\xC3', bytes(mmap._data))
+        obj.record.first = 0xA5
+        obj.record.second = 0x5AC3
+        self.assertEqual(b'\xA5\x5A\xC3', bytes(mmap._data))
 
-                # Elements retain the MemoryMap object, not its current list.
-                # Replacing the list resets MemoryMapBytes without reparsing.
-                # Legacy MemoryMap exposes a byte-compatible view that shares
-                # this list, so restore that one in place instead.
-                if map_type is memmap.MemoryMap:
-                    mmap._data[:] = original
-                else:
-                    mmap._data = original[:]
-                self.assertEqual(1, int(obj.record.first))
-                self.assertEqual(0x0203, int(obj.record.second))
+        # Elements retain the MemoryMapBytes object, not its backing list.
+        # Replacing that list resets the bytes without reparsing.
+        mmap._data = original[:]
+        self.assertEqual(1, int(obj.record.first))
+        self.assertEqual(0x0203, int(obj.record.second))
 
-                obj.record.second = 0x1234
-                self.assertEqual(b'\x01\x12\x34', bytes(mmap._data))
+        obj.record.second = 0x1234
+        self.assertEqual(b'\x01\x12\x34', bytes(mmap._data))
 
 
 class TestBitwiseBaseIntTypes(BaseTest):
