@@ -288,7 +288,7 @@ Retevis:
   model: RB27V (full band support)
 - alt: Retevis RB27
   model: RB627B (full band support)
-  alt: Retevis RA89R
+- alt: Retevis RA89R
   model: RA89G
 Ruyage:
 - alt: Abbree AR-518
