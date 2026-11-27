@@ -210,6 +210,8 @@ class TestCaseEdges(base.DriverTest):
 
 
 class TestBitwiseStrict(base.DriverTest):
+    CACHE_DRIVER_IMAGE = False
+
     def setUp(self):
         pass
 
