@@ -61,7 +61,7 @@ struct {
 u8 skipflags[2];  // SCAN_ADD
 """
 
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 
 NC630A_POWER_LEVELS = [chirp_common.PowerLevel("Low",  watts=1.00),
                        chirp_common.PowerLevel("High", watts=5.00)]
@@ -80,7 +80,7 @@ def _nc630a_enter_programming_mode(radio):
     serial = radio.pipe
 
     try:
-        serial.write("PROGRAM")
+        serial.write(b"PROGRAM")
         ack = serial.read(1)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -91,7 +91,7 @@ def _nc630a_enter_programming_mode(radio):
         raise errors.RadioError("Radio refused to enter programming mode")
 
     try:
-        serial.write("\x02")
+        serial.write(b"\x02")
         ident = serial.read(8)
     except:
         raise errors.RadioError("Error communicating with radio")
@@ -113,8 +113,8 @@ def _nc630a_enter_programming_mode(radio):
 def _nc630a_read_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'R', block_addr, block_size)
-    expectedresponse = "W" + cmd[1:]
+    cmd = struct.pack(">cHb", b'R', block_addr, block_size)
+    expectedresponse = b"W" + cmd[1:]
     LOG.debug("Reading block %04x..." % (block_addr))
 
     try:
@@ -139,7 +139,7 @@ def _nc630a_read_block(radio, block_addr, block_size):
 def _nc630a_write_block(radio, block_addr, block_size):
     serial = radio.pipe
 
-    cmd = struct.pack(">cHb", 'W', block_addr, block_size)
+    cmd = struct.pack(">cHb", b'W', block_addr, block_size)
     data = radio.get_mmap()[block_addr:block_addr + block_size]
 
     LOG.debug("Writing Data:")
@@ -158,7 +158,7 @@ def do_download(radio):
     LOG.debug("download")
     _nc630a_enter_programming_mode(radio)
 
-    data = ""
+    data = bytearray()
 
     status = chirp_common.Status()
     status.msg = "Cloning from radio"
@@ -171,12 +171,12 @@ def do_download(radio):
         radio.status_fn(status)
 
         block = _nc630a_read_block(radio, addr, radio._block_size)
-        data += block
+        data.extend(block)
 
         LOG.debug("Address: %04x" % addr)
         LOG.debug(util.hexprint(block))
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(bytes(data))
 
 
 def do_upload(radio):
@@ -207,7 +207,7 @@ class NC630aRadio(chirp_common.CloneModeRadio):
     MODEL = "NC-630A"
     ALIASES = [MT700Alias]
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
 
     _ranges = [
                (0x0000, 0x0330),

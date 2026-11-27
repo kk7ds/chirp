@@ -51,14 +51,27 @@ def drain(pipe):
     raise errors.RadioError('Your pipes are clogged.')
 
 
+def _read_text(pipe, amount):
+    """Read the AP510's text protocol as a reversible Latin-1 string"""
+    data = pipe.read(amount)
+    return data.decode('latin-1') if isinstance(data, bytes) else data
+
+
+def _write_text(pipe, data):
+    """Encode AP510 protocol text as bytes for the serial interface"""
+    if isinstance(data, str):
+        data = data.encode('latin-1')
+    return pipe.write(data)
+
+
 def enter_setup(pipe):
     """Put AP510 in configuration mode."""
     for x in range(30):
         if x % 2:
-            pipe.write("@SETUP")
+            _write_text(pipe, "@SETUP")
         else:
-            pipe.write("\r\nSETUP\r\n")
-        s = pipe.read(64)
+            _write_text(pipe, "\r\nSETUP\r\n")
+        s = _read_text(pipe, 64)
         if s and "\r\nSETUP" in s:
             return True
         elif s and "SETUP" in s:
@@ -79,13 +92,13 @@ def download(radio):
     status.msg = "Downloading"
     radio.status_fn(status)
     if new:
-        radio.pipe.write("\r\nDISP\r\n")
+        _write_text(radio.pipe, "\r\nDISP\r\n")
     else:
-        radio.pipe.write("@DISP")
+        _write_text(radio.pipe, "@DISP")
     buf = ""
 
     for status.cur in range(status.cur, status.max):
-        buf += radio.pipe.read(1024)
+        buf += _read_text(radio.pipe, 1024)
         if buf.endswith("\r\n"):
             status.cur = status.max
             radio.status_fn(status)
@@ -114,18 +127,18 @@ def upload(radio):
         if k == '00':
             continue
         if new:
-            radio.pipe.write("%s=%s\r\n" % (k, v))
+            _write_text(radio.pipe, "%s=%s\r\n" % (k, v))
             sleep(0.05)
         elif k in ('09', '10', '15'):
-            radio.pipe.write("@" + k + v + "\x00\r\n")
+            _write_text(radio.pipe, "@" + k + v + "\x00\r\n")
         else:
-            radio.pipe.write("@" + k + v)
+            _write_text(radio.pipe, "@" + k + v)
         # Older firmware acks every command except 15 with OK.
-        if not new and radio.pipe.read(2) != "OK" and k != '15':
+        if not new and _read_text(radio.pipe, 2) != "OK" and k != '15':
             raise errors.RadioError("Radio did not acknowledge upload: %s" % k)
         status.cur += 1
         radio.status_fn(status)
-    if new and radio.pipe.read(6) != "\r\n\r\nOK":
+    if new and _read_text(radio.pipe, 6) != "\r\n\r\nOK":
         raise errors.RadioError("Radio did not acknowledge upload.")
 
 
@@ -177,14 +190,18 @@ class AP510Memory(object):
     }
 
     def __init__(self, data):
-        self._data = data
+        self._data = (data.decode('latin-1') if isinstance(data, bytes)
+                      else data)
         self.process_data()
 
     def get_packed(self):
         self._data = "\r\n"
         for v in sorted(self.ATTR_MAP.values()):
             self._data += "%s=%s\r\n" % (v, self._memobj[v])
-        return self._data
+        return self._data.encode('latin-1')
+
+    def get_byte_compatible(self):
+        return self
 
     def process_data(self):
         data = []
@@ -224,20 +241,17 @@ class AP510Memory(object):
             'turntime',
         ), map(
             decode_base100,
-            struct.unpack(">7H", self._memobj[self.ATTR_MAP['smartbeacon']]))
+            struct.unpack(">7H", self._memobj[
+                self.ATTR_MAP['smartbeacon']].encode('latin-1')))
         ))
 
     def set_smartbeacon(self, d):
-        self._memobj[self.ATTR_MAP['smartbeacon']] = \
-            struct.pack(">7H",
-                        encode_base100(d['lowspeed']),
-                        encode_base100(d['slowrate']),
-                        encode_base100(d['highspeed']),
-                        encode_base100(d['fastrate']),
-                        encode_base100(d['turnslope']),
-                        encode_base100(d['turnangle']),
-                        encode_base100(d['turntime']),
-                        )
+        packed = struct.pack(
+            ">7H", encode_base100(d['lowspeed']),
+            encode_base100(d['slowrate']), encode_base100(d['highspeed']),
+            encode_base100(d['fastrate']), encode_base100(d['turnslope']),
+            encode_base100(d['turnangle']), encode_base100(d['turntime']))
+        self._memobj[self.ATTR_MAP['smartbeacon']] = packed.decode('latin-1')
 
 
 class AP510Memory20141215(AP510Memory):
@@ -349,7 +363,7 @@ class AP510Radio(chirp_common.CloneModeRadio):
     BAUD_RATE = 9600
     VENDOR = "Sainsonic"
     MODEL = "AP510"
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
 
     _model = b"AVRT5"
     mem_upper_limit = 0
@@ -387,7 +401,8 @@ class AP510Radio(chirp_common.CloneModeRadio):
 
         # _mmap isn't a Chirp MemoryMap, but since AP510Memory implements
         # get_packed(), the standard Chirp save feature works.
-        if data.startswith('\r\n00=%s 20141215' % self._model):
+        version = '\r\n00=%s 20141215' % self._model.decode('ascii')
+        if data.startswith(version):
             self._mmap = AP510Memory20141215(data)
         else:
             self._mmap = AP510Memory(data)
@@ -406,8 +421,8 @@ class AP510Radio(chirp_common.CloneModeRadio):
     def load_mmap(self, filename):
         """Load the radio's memory map from @filename"""
         mapfile = open(filename, "rb")
-        data = mapfile.read()
-        if data.startswith('\r\n00=%s 20141215' % self._model):
+        data = mapfile.read().decode('latin-1')
+        if data.startswith('\r\n00=%s 20141215' % self._model.decode('ascii')):
             self._mmap = AP510Memory20141215(data)
         else:
             self._mmap = AP510Memory(data)

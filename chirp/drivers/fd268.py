@@ -93,7 +93,7 @@ struct {
 """
 
 MEM_SIZE = 0x0800
-CMD_ACK = "\x06"
+CMD_ACK = b"\x06"
 BLOCK_SIZE = 0x08
 POWER_LEVELS = ["Low", "High"]
 LIST_SQL = ["Off"] + ["%s" % x for x in range(1, 10)]
@@ -111,7 +111,7 @@ ANI = ["Off", "BOT", "EOT", "Both"]
 
 def raw_recv(radio, amount):
     """Raw read from the radio device"""
-    data = ""
+    data = b""
     try:
         data = radio.pipe.read(amount)
     except:
@@ -130,7 +130,7 @@ def raw_send(radio, data):
 
 def make_frame(cmd, addr, length=BLOCK_SIZE):
     """Pack the info in the format it likes"""
-    return struct.pack(">BHB", ord(cmd), addr, length)
+    return struct.pack(">cHB", cmd, addr, length)
 
 
 def check_ack(r, text):
@@ -143,10 +143,10 @@ def check_ack(r, text):
         return True
 
 
-def send(radio, frame, data=""):
+def send(radio, frame, data=b""):
     """Generic send data to the radio"""
     raw_send(radio, frame)
-    if data != "":
+    if data:
         raw_send(radio, data)
         check_ack(radio, "Radio didn't ack the last block of data")
 
@@ -178,7 +178,7 @@ def do_magic(radio):
     radio.status_fn(status)
 
     # every byte of this magic chain must be send separately
-    magic = "\x02PROGRA"
+    magic = b"\x02PROGRA"
 
     # start the fun, finger crossed please...
     for a in range(0, tries):
@@ -188,7 +188,7 @@ def do_magic(radio):
         radio.status_fn(status)
 
         for i in range(0, len(magic)):
-            send(radio, magic[i])
+            send(radio, magic[i:i + 1])
 
         # Now you get a x06 of ACK
         ack = raw_recv(radio, 1)
@@ -208,8 +208,8 @@ def do_program(radio):
         raise errors.RadioError(erc)
 
     # now we request identification
-    send(radio, "M")
-    send(radio, "\x02")
+    send(radio, b"M")
+    send(radio, b"\x02")
     ident = raw_recv(radio, 8)
 
     # ################ WARNING ##########################################
@@ -240,16 +240,16 @@ def do_download(radio):
     status.max = MEM_SIZE
     status.msg = "Cloning from radio..."
     radio.status_fn(status)
-    data = ""
+    data = bytearray()
     for addr in range(0x0000, MEM_SIZE, BLOCK_SIZE):
-        send(radio, make_frame("R", addr))
+        send(radio, make_frame(b"R", addr))
         d = recv(radio)
-        data += d
+        data.extend(d)
         # UI Update
         status.cur = addr
         radio.status_fn(status)
 
-    return memmap.MemoryMap(data)
+    return memmap.MemoryMapBytes(bytes(data))
 
 
 def do_upload(radio):
@@ -263,7 +263,7 @@ def do_upload(radio):
     radio.status_fn(status)
 
     for addr in range(0x0000, MEM_SIZE, BLOCK_SIZE):
-        send(radio, make_frame("W", addr),
+        send(radio, make_frame(b"W", addr),
              radio.get_mmap()[addr:addr+BLOCK_SIZE])
         # UI Update
         status.cur = addr
@@ -286,7 +286,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
     VENDOR = "Feidaxin"
     MODEL = "FD-268 & alike Radios"
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
     _memsize = MEM_SIZE
     _upper = 99
     _VFO_DEFAULT = 0
@@ -380,7 +380,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
 
     def _decode_tone(self, val):
         """Parse the tone data to decode from mem, it returns"""
-        if val.get_raw(asbytes=False) == "\xFF\xFF":
+        if val.get_raw() == b"\xFF\xFF":
             return '', None, None
 
         val = int(val)
@@ -419,7 +419,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         mem.number = number
 
         # empty
-        if _mem.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.get_raw()[0] == 0xFF:
             mem.empty = True
             return mem
 
@@ -428,7 +428,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
 
         # checking if tx freq is empty, this is "possible" on the
         # original soft after a warning, and radio is happy with it
-        if _mem.tx_freq.get_raw(asbytes=False) == "\xFF\xFF\xFF\xFF":
+        if _mem.tx_freq.get_raw() == b"\xFF\xFF\xFF\xFF":
             mem.duplex = "off"
             mem.offset = 0
         else:
@@ -562,7 +562,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         work.append(active_ch)
 
         # vfo rx validation
-        if _mem.vfo.vrx_freq.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.vfo.vrx_freq.get_raw()[0] == 0xFF:
             # if the vfo is not set, the UI cares about the
             # length of the field, so set a default
             LOG.debug("Setting VFO to default %s" % self._VFO_DEFAULT)
@@ -596,7 +596,7 @@ class FeidaxinFD2x8yRadio(chirp_common.CloneModeRadio):
         work.append(shift)
 
         # vfo shift validation if none set it to ZERO
-        if _mem.settings.vfo_shift.get_raw(asbytes=False)[0] == "\xFF":
+        if _mem.settings.vfo_shift.get_raw()[0] == 0xFF:
             # if the shift is not set, the UI cares about the
             # length of the field, so set to zero
             LOG.debug("VFO shift not set, setting it to zero")

@@ -50,7 +50,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
     VENDOR = 'Boblov'
     MODEL = 'X3Plus'
     BAUD_RATE = 9600
-    NEEDS_COMPAT_SERIAL = True
+    # Presumptively converted to bytes; not tested with a real radio.
     CHANNELS = 16
 
     MEM_FORMAT = """
@@ -87,12 +87,12 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
     """
 
     # Radio command data
-    CMD_ACK = '\x06'
-    CMD_IDENTIFY = '\x02'
-    CMD_PROGRAM_ENTER = '.VKOGRAM'
-    CMD_PROGRAM_EXIT = '\x62'  # 'b'
-    CMD_READ = 'R'
-    CMD_WRITE = 'W'
+    CMD_ACK = b'\x06'
+    CMD_IDENTIFY = b'\x02'
+    CMD_PROGRAM_ENTER = b'.VKOGRAM'
+    CMD_PROGRAM_EXIT = b'\x62'  # 'b'
+    CMD_READ = b'R'
+    CMD_WRITE = b'W'
 
     BLOCK_SIZE = 0x08
 
@@ -173,7 +173,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
 
         self._enter_programming_mode()
 
-        data = ''
+        data = b''
         for addr in range(0, self._memsize, self.BLOCK_SIZE):
             status.cur = addr + self.BLOCK_SIZE
             self.status_fn(status)
@@ -186,7 +186,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
 
         self._exit_programming_mode()
 
-        self._mmap = memmap.MemoryMap(data)
+        self._mmap = memmap.MemoryMapBytes(data)
         self.process_mmap()
 
     def sync_out(self):
@@ -256,14 +256,13 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
         mem.freq = int(rmem.rxfreq) * 10
 
         # A blank (0 MHz) or 0xFFFFFFFF frequency is considered empty
-        if mem.freq == 0 or (
-                rmem.rxfreq.get_raw(asbytes=False) == '\xFF\xFF\xFF\xFF'):
+        if mem.freq == 0 or rmem.rxfreq.get_raw() == b'\xFF\xFF\xFF\xFF':
             LOG.debug('empty channel %d', number)
             mem.freq = 0
             mem.empty = True
             return mem
 
-        if rmem.txfreq.get_raw(asbytes=False) == '\xFF\xFF\xFF\xFF':
+        if rmem.txfreq.get_raw() == b'\xFF\xFF\xFF\xFF':
             mem.duplex = 'off'
             mem.offset = 0
         elif int(rmem.rxfreq) == int(rmem.txfreq):
@@ -530,7 +529,7 @@ class BoblovX3Plus(chirp_common.CloneModeRadio,
             self._write(self.CMD_IDENTIFY)
             ident = self._read(8)
 
-            if not ident.startswith('SMP558'):
+            if not ident.startswith(b'SMP558'):
                 LOG.debug(util.hexprint(ident))
                 raise errors.RadioError('Radio returned unknown ID string')
 
