@@ -7,7 +7,6 @@ import subprocess
 import tempfile
 import unittest
 
-from chirp import directory
 from chirp import errors
 from chirp.drivers import ft60
 from chirp.drivers import ft4
@@ -16,6 +15,7 @@ from chirp.drivers import ftm300d
 from chirp.drivers import yaesu_clone
 from chirp import memmap
 from chirp.settings import RadioSetting
+from tests.unit import base
 
 
 class TestYaesuChecksum(unittest.TestCase):
@@ -73,7 +73,9 @@ class FakeFT60:
         return buf
 
 
-class TestFT60(unittest.TestCase):
+class TestFT60(base.RadioTest):
+    VENDOR_MODEL = 'Yaesu_FT-60'
+
     def test_download(self):
         f = FakeFT60()
         f.start_download()
@@ -85,11 +87,8 @@ class TestFT60(unittest.TestCase):
 
     def test_upload(self):
         f = FakeFT60()
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'Yaesu_FT-60.img')
-        r = ft60.FT60Radio(img)
-        r.set_pipe(f)
-        r.sync_out()
+        self.radio.set_pipe(f)
+        self.radio.sync_out()
 
 
 class FakeFTX4:
@@ -133,9 +132,10 @@ class FakeFT25R_Asian(FakeFTX4):
     ID = ft4.YaesuFT25RRadio.id_str[:-1] + b'\x03'
 
 
-class TestFTX4(unittest.TestCase):
+class TestFTX4(base.RadioTest):
     RCLASS = ft4.YaesuFT4XERadio
     FAKE = FakeFTX4
+    VENDOR_MODEL = 'Yaesu_FT-4XE'
 
     def test_download(self):
         f = self.FAKE()
@@ -145,12 +145,8 @@ class TestFTX4(unittest.TestCase):
 
     def test_upload(self):
         f = self.FAKE()
-        fn = directory.radio_class_id(self.RCLASS)
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', '%s.img' % fn)
-        r = self.RCLASS(img)
-        r.set_pipe(f)
-        r.sync_out()
+        self.radio.set_pipe(f)
+        self.radio.sync_out()
 
     def test_download_open(self):
         f = self.FAKE()
@@ -171,6 +167,7 @@ class TestFTX4(unittest.TestCase):
 class TestFT25(TestFTX4):
     RCLASS = ft4.YaesuFT25RRadio
     FAKE = FakeFT25R
+    VENDOR_MODEL = 'Yaesu_FT-25R'
 
 
 class TestFT25_Asian(TestFT25):
@@ -281,11 +278,11 @@ class FakeFTM300:
         return buf
 
 
-class TestFTM300Clone(unittest.TestCase):
+class TestFTM300Clone(base.RadioTest):
+    VENDOR_MODEL = 'Yaesu_FTM-300DR'
+
     def _golden(self):
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'Yaesu_FTM-300DR.img')
-        return ftm300d.FTM300Radio(img)
+        return self.radio
 
     def test_clone_address_list(self):
         addrs = ftm300d.clone_addresses()
@@ -755,11 +752,11 @@ class TestFTM150Clone(unittest.TestCase):
         self.assertEqual([], pipe.frames)
 
 
-class TestFTM150SqlOverride(unittest.TestCase):
+class TestFTM150SqlOverride(base.RadioTest):
+    VENDOR_MODEL = 'Yaesu_FTM-150E'
+
     def setUp(self):
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'Yaesu_FTM-150E.img')
-        self.radio = ftm150.FTM150Radio(img)
+        super().setUp()
         self._mem = self.radio._memobj.memory[0]
         self.assertTrue(int(self._mem.used))
 
@@ -841,15 +838,15 @@ class TestFTM150SqlOverride(unittest.TestCase):
         self.assertEqual(0, int(self._mem.pr_freq))
 
 
-class TestFTM150PMG(unittest.TestCase):
+class TestFTM150PMG(base.RadioTest):
+    VENDOR_MODEL = 'Yaesu_FTM-150E'
+
     # Slot records as the radio wrote them; FREQ is a VFO frequency
     # (145.6125 MHz, -600 kHz) stored in the slot itself.
     FREQ = bytes.fromhex("81 02 41 45 61 04 00 00 00 8c 00 8f 00 0c 00 00")
 
     def setUp(self):
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', 'Yaesu_FTM-150E.img')
-        self.radio = ftm150.FTM150Radio(img)
+        super().setUp()
         pmg = self.radio._memobj.pmg
         pmg[0].set_raw(ftm150._pmg_ref(10, 3))
         pmg[1].set_raw(ftm150._pmg_ref(1, 1))

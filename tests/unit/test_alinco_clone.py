@@ -14,20 +14,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import os
 import unittest
 from unittest import mock
 
 from chirp import directory
 from chirp.drivers import alinco, alinco_dr735t
 from chirp import memmap
+from tests.unit import base
 
 
 class FakeAlincoSerial:
     """Behaves like a Serial with an Alinco radio connected"""
 
     def __init__(self, image):
-        self.image = memmap.MemoryMapBytes(open(image, 'rb').read())
+        self.image = memmap.MemoryMapBytes(image)
         self.readbuf = []
         self.ident = b''
 
@@ -139,7 +139,7 @@ class FakeAlincoSerial:
                 length, len(self.readbuf[0]), self.readbuf[0]))
 
 
-class AlincoCloneTest(unittest.TestCase):
+class AlincoCloneTest:
     def _test_alinco_download(self, rclass, image):
         pipe = FakeAlincoSerial(image)
         radio = rclass(pipe)
@@ -149,10 +149,9 @@ class AlincoCloneTest(unittest.TestCase):
     def _test_alinco_upload(self, rclass, image):
         pipe = FakeAlincoSerial(image)
         pipe.zero()
-        radio = rclass(image)
-        radio.pipe = pipe
-        radio.sync_out()
-        ref_image = open(image, 'rb').read()
+        self.radio.pipe = pipe
+        self.radio.sync_out()
+        ref_image = image
         self.assertEqual(ref_image[0x200:rclass._memsize],
                          pipe.image.get_packed()[0x200:rclass._memsize])
 
@@ -167,15 +166,12 @@ class AlincoCloneTest(unittest.TestCase):
         pipe.zero()
         with mock.patch('time.sleep'):
             radio.sync_out()
-        ref_image = open(image, 'rb').read()
+        ref_image = image
         self.assertEqual(ref_image[0x200:rclass._memsize],
                          pipe.image.get_packed()[0x200:rclass._memsize])
 
     def _test_alinco(self, rclass):
-        ident = directory.radio_class_id(rclass)
-        image = os.path.join(os.path.dirname(__file__),
-                             '..', 'images',
-                             '%s.img' % ident)
+        image = self.radio.get_mmap().get_packed()
         with mock.patch('time.sleep'):
             # The round-trip goes first, as it is the flow that actually
             # broke in the field (#12611)
@@ -185,26 +181,46 @@ class AlincoCloneTest(unittest.TestCase):
 
     def _test_roundtrip(self, rclass):
         """Run only the read-then-write-back test for @rclass"""
-        ident = directory.radio_class_id(rclass)
-        image = os.path.join(os.path.dirname(__file__),
-                             '..', 'images',
-                             '%s.img' % ident)
+        image = self.radio.get_mmap().get_packed()
         with mock.patch('time.sleep'):
             self._test_alinco_roundtrip(rclass, image)
 
+
+class TestAlincoDJG7(AlincoCloneTest, base.RadioTest):
+    RCLASS = alinco.AlincoDJG7EG
+    VENDOR_MODEL = directory.radio_class_id(RCLASS)
+
     def test_djg7(self):
-        self._test_alinco(alinco.AlincoDJG7EG)
+        self._test_alinco(self.RCLASS)
+
+
+class TestAlincoDR235(AlincoCloneTest, base.RadioTest):
+    RCLASS = alinco.DR235Radio
+    VENDOR_MODEL = directory.radio_class_id(RCLASS)
 
     def test_dr235(self):
-        self._test_alinco(alinco.DR235Radio)
+        self._test_alinco(self.RCLASS)
+
+    def test_dr235_roundtrip(self):
+        self._test_roundtrip(self.RCLASS)
+
+
+class TestAlincoDR735(AlincoCloneTest, base.RadioTest):
+    RCLASS = alinco_dr735t.AlincoDR735T
+    VENDOR_MODEL = directory.radio_class_id(RCLASS)
 
     def test_dr735(self):
-        self._test_alinco(alinco_dr735t.AlincoDR735T)
+        self._test_alinco(self.RCLASS)
+
+
+class TestAlincoDJ175(AlincoCloneTest, base.RadioTest):
+    RCLASS = alinco.DJ175Radio
+    VENDOR_MODEL = directory.radio_class_id(RCLASS)
 
     def test_dj175(self):
         # The 175 has a slightly different download string, so test it
         # specifically
-        self._test_alinco(alinco.DJ175Radio)
+        self._test_alinco(self.RCLASS)
 
     def test_dj175_roundtrip(self):
         # Uploading after a download used to fail with
@@ -212,18 +228,17 @@ class AlincoCloneTest(unittest.TestCase):
         # object is required, not 'str')" (#12611). This is kept as its
         # own test so that the actual failure is reported, rather than
         # tripping over the mmap type check in _test_alinco_download().
-        self._test_roundtrip(alinco.DJ175Radio)
+        self._test_roundtrip(self.RCLASS)
 
-    def test_dr235_roundtrip(self):
-        self._test_roundtrip(alinco.DR235Radio)
 
+class TestAlincoIdentify(unittest.TestCase):
     def test_all_alinco_identify(self):
         # Make sure all the alinco models have bytes for their _model
         # and can identify properly
         alincos = [x for x in directory.DRV_TO_RADIO.values()
                    if x.VENDOR == 'Alinco']
         for rclass in alincos:
-            pipe = FakeAlincoSerial(__file__)
+            pipe = FakeAlincoSerial(b'')
             radio = rclass(None)
             radio.pipe = pipe
             radio._identify()

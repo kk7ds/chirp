@@ -5,23 +5,28 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
-
 import pytest
 
-from chirp import chirp_common, directory
+from chirp import chirp_common
 from chirp.drivers import br3, tdxone_tdq8a
+from tests.unit import base
 
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "Boristone_BR-3.img")
+
+class _BR3Radio(base.RadioTest):
+    VENDOR_MODEL = "Boristone_BR-3"
+
+    def runTest(self):
+        pass
 
 
 @pytest.fixture()
 def radio():
-    klass = directory.get_radio("Boristone_BR-3")
-    r = klass(IMAGE)
-    r.load(IMAGE)
-    return r
+    test = _BR3Radio()
+    test.setUp()
+    try:
+        yield test.radio
+    finally:
+        test.tearDown()
 
 
 def test_image_size(radio):
@@ -195,9 +200,9 @@ def test_upload_ranges(radio):
 
 def test_clone_frames():
     # these are the exact frames the vendor CPS builds (see BR3_TD6格式.md)
-    assert tdxone_tdq8a.MSTRING_TDQ8A == "\x02PYNCRAM"
-    assert tdxone_tdq8a._make_frame("R", 0x0010, 0x40) == b"R\x00\x10\x40"
-    assert tdxone_tdq8a._make_frame("W", 0x0F80, 0x10) == b"W\x0F\x80\x10"
+    assert tdxone_tdq8a.MSTRING_TDQ8A == b"\x02PYNCRAM"
+    assert tdxone_tdq8a._make_frame(b"R", 0x0010, 0x40) == b"R\x00\x10\x40"
+    assert tdxone_tdq8a._make_frame(b"W", 0x0F80, 0x10) == b"W\x0F\x80\x10"
     assert br3.BoristoneBR3._recv_block_size == 0x40
     assert br3.BoristoneBR3._send_block_size == 0x10
     assert br3.BoristoneBR3._mem_size == 0x2000

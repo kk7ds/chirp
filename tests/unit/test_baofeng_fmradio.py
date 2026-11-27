@@ -1,29 +1,22 @@
-import os
 import struct
 
 import pytest
 
 from tests.unit import base
-from chirp.drivers import bf_t1
-from chirp.drivers import uv5r
+from chirp.drivers import bf_t1  # noqa: F401
+from chirp.drivers import uv5r  # noqa: F401
 from chirp import settings
 
 
-class FMRadioTest(base.BaseTest):
-    IMAGE = None
-    RADIO_CLASS = None
+class FMRadioTest(base.RadioTest):
+    VENDOR_MODEL = None
     MEMOBJ = 'element'
     SETTINGS_INDEX = (0, 'element')
 
     def setUp(self):
-        if self.IMAGE is None:
+        if self.VENDOR_MODEL is None:
             self.skipTest('Base test')
-
-        img = os.path.join(os.path.dirname(__file__),
-                           '..', 'images', self.IMAGE)
-        self.radio = self.RADIO_CLASS(img)
-
-        return super().setUp()
+        super().setUp()
 
     def set_fmvfo_raw(self, value):
         """Set FM VFO as integer directly in memory"""
@@ -151,15 +144,13 @@ class FMRadioTest(base.BaseTest):
 
 
 class TestBFT1(FMRadioTest):
-    IMAGE = 'Baofeng_BF-T1.img'
-    RADIO_CLASS = bf_t1.BFT1
+    VENDOR_MODEL = 'Baofeng_BF-T1'
     SETTINGS_INDEX = (1, 'fm_vfo')
     MEMOBJ = 'settings.fm_vfo'
 
 
 @pytest.mark.skip('This radio needs fixing')
 class TestUV5R(FMRadioTest):
-    IMAGE = 'Baofeng_UV-5R.img'
-    RADIO_CLASS = uv5r.BaofengUV5R
+    VENDOR_MODEL = 'Baofeng_UV-5R'
     SETTINGS_INDEX = (3, 'fm_presets')
     MEMOBJ = 'fm_presets'

@@ -5,15 +5,11 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
-import unittest
 from unittest import mock
 
 from chirp import chirp_common, errors, memmap
 from chirp.drivers import bridgecom_bcm
-
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "BridgeCom_BCM-220.img")
+from tests.unit import base
 
 
 class FakeRadio:
@@ -102,12 +98,14 @@ def _without_radio_state(data):
     return bytes(data)
 
 
-class TestBCM220(unittest.TestCase):
+class TestBCM220(base.RadioTest):
+    VENDOR_MODEL = "BridgeCom_BCM-220"
+
     def setUp(self):
+        super().setUp()
         patcher = mock.patch('time.sleep')
         patcher.start()
         self.addCleanup(patcher.stop)
-        self.radio = bridgecom_bcm.BCM220Radio(IMAGE)
         self.radio.status_fn = lambda s: None
 
     def test_image(self):

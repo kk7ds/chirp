@@ -5,15 +5,12 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-import os
 import unittest
 from unittest import mock
 
-from chirp import chirp_common, directory
+from chirp import chirp_common
 from chirp.drivers import v6
-
-IMAGE = os.path.join(os.path.dirname(__file__), "..", "images",
-                     "Weierwei_VEV-V6.img")
+from tests.unit import base
 
 _gettext = None
 
@@ -29,11 +26,8 @@ def tearDownModule():
     _gettext.stop()
 
 
-class TestVEVV6(unittest.TestCase):
-    def setUp(self):
-        klass = directory.get_radio("Weierwei_VEV-V6")
-        self.radio = klass(IMAGE)
-        self.radio.load(IMAGE)
+class TestVEVV6(base.RadioTest):
+    VENDOR_MODEL = "Weierwei_VEV-V6"
 
     def record(self, number):
         page, index = v6._record_index(number)

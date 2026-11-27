@@ -1,11 +1,6 @@
-from pathlib import Path
-import unittest
-
 from chirp import memmap
 from chirp.drivers import vx8
-
-
-FIXTURE = Path(__file__).parents[1] / 'images' / 'Yaesu_VX-8GE.img'
+from tests.unit import base
 
 FLAG_BASE = 0x2C4A
 MEMORY_BASE = 0x328A
@@ -26,9 +21,11 @@ OFFSET_159007 = b'\x15\x90\x07'  # 159.007 MHz, not aligned to any step
 NAME_KEYPAD = b'\x14\x0e\x22\x19\x0a\x0d'  # "KEYPAD" in the VX-8 charset
 
 
-class TestVX8(unittest.TestCase):
+class TestVX8(base.RadioTest):
+    VENDOR_MODEL = 'Yaesu_VX-8GE'
+
     def setUp(self):
-        self.radio = vx8.VX8GERadio(str(FIXTURE))
+        super().setUp()
         self.data = self.radio.get_mmap().get_packed()
         self.number = self.radio.get_features().memory_bounds[1]
 

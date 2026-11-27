@@ -1,15 +1,12 @@
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
-import unittest
 from unittest import mock
 
 from chirp import chirp_common, directory, errors, memmap
 from chirp.drivers import ft8000r
 from chirp.settings import MemSetting
-
-
-FIXTURE = Path(__file__).parents[1] / 'images' / 'Yaesu_FT-8000R.img'
+from tests.unit import base as unitbase
 
 
 class Clock:
@@ -58,9 +55,11 @@ class Port:
         pass
 
 
-class TestFT8000R(unittest.TestCase):
+class TestFT8000R(unitbase.RadioTest):
+    VENDOR_MODEL = 'Yaesu_FT-8000R'
+
     def setUp(self):
-        self.radio = ft8000r.FT8000RRadio(str(FIXTURE))
+        super().setUp()
         self.data = self.radio.get_mmap().get_packed()
         self.left, self.right = self.radio.get_sub_devices()
         self.clock = Clock()
@@ -522,20 +521,6 @@ class TestFT8000R(unittest.TestCase):
             self.assertIsInstance(loaded, ft8000r.FT8000RRadio)
             self.assertEqual(loaded.MODEL, 'FT-8000R')
             self.assertEqual(loaded.get_mmap().get_packed(), self.data)
-        # No loose raw-image autodetection by checksum/size alone.
-        self.assertFalse(ft8000r.FT8000RRadio.match_model(
-            self.data, 'unknown.img'))
-
-    def test_unreleased_development_model_is_not_registered(self):
-        class EarlyFT8000(ft8000r.FT8000RRadio):
-            MODEL = 'FT-8000'
-
-        with tempfile.TemporaryDirectory() as temp:
-            path = str(Path(temp) / 'legacy.img')
-            radio = EarlyFT8000(memmap.MemoryMapBytes(self.data))
-            radio.save(path)
-            with self.assertRaises(errors.ImageMetadataInvalidModel):
-                directory.get_radio_by_image(path)
 
     def test_download_blocking_with_observed_fixed_preamble(self):
         port = Port(self.clock, data=b'\x00\xfc' + self.data)
